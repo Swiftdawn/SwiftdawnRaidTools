@@ -88,6 +88,42 @@ SwiftdawnRaidTools.DEFAULTS = {
                 backgroundOpacity = 0.4,
                 iconSize = 14
             }
+        },
+        assignmentexplorer = {
+            anchorX = GetScreenWidth()/2,
+            anchorY = -(GetScreenHeight()/2),
+            locked = false,
+            show = false,
+            appearance = {
+                scale = 1.0,
+                titleFontType = "Friz Quadrata TT",
+                titleFontSize = 10,
+                headerFontType = "Friz Quadrata TT",
+                headerFontSize = 10,
+                playerFontType = "Friz Quadrata TT",
+                playerFontSize = 10,
+                titleBarOpacity = 0.8,
+                backgroundOpacity = 0.6,
+                iconSize = 14
+            }
+        },
+        rosterbuilder = {
+            anchorX = GetScreenWidth()/2,
+            anchorY = -(GetScreenHeight()/2),
+            locked = false,
+            show = false,
+            appearance = {
+                scale = 1.0,
+                titleFontType = "Friz Quadrata TT",
+                titleFontSize = 10,
+                headerFontType = "Friz Quadrata TT",
+                headerFontSize = 10,
+                playerFontType = "Friz Quadrata TT",
+                playerFontSize = 10,
+                titleBarOpacity = 0.8,
+                backgroundOpacity = 0.6,
+                iconSize = 14
+            }
         }
     },
 }
@@ -108,6 +144,12 @@ function SwiftdawnRaidTools:OnInitialize()
 
     self.debugLog = SRTDebugLog:New(100, 400)
     self.debugLog:Initialize()
+
+    self.assignmentExplorer = AssignmentExplorer:New(600)
+    self.assignmentExplorer:Initialize()
+
+    self.rosterBuilder = RosterBuilder:New(600)
+    self.rosterBuilder:Initialize()
 
     self:RegisterComm(self.PREFIX_SYNC)
     self:RegisterComm(self.PREFIX_SYNC_PROGRESS)
@@ -156,6 +198,8 @@ function SwiftdawnRaidTools:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloading
     end
     self.overview:Update()
     self.debugLog:Update()
+    self.assignmentExplorer:Update()
+    self.rosterBuilder:Update()
 end
 
 function SwiftdawnRaidTools:SendRaidMessage(event, data, prefix, prio, callbackFn)

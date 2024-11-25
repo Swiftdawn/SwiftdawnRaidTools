@@ -38,7 +38,7 @@ function SRTOverview:GetAssignmentGroupHeight()
     return (playerFontSize > iconSize and playerFontSize or iconSize) + 7
 end
 
-function SRTOverview:GetPlayerNameFont()
+function SRTOverview:GetPlayerFont()
     return SharedMedia:Fetch("font", self:GetAppearance().playerFontType)
 end
 
@@ -57,7 +57,7 @@ function SRTOverview:UpdateAppearance()
         for _, assignmentGroupFrame in pairs(bossAbilityFrame.groups) do
             assignmentGroupFrame:SetHeight(self:GetAssignmentGroupHeight())
             for _, assignmentFrame in pairs(assignmentGroupFrame.assignments) do
-                assignmentFrame.text:SetFont(self:GetPlayerNameFont(), playerFontSize)
+                assignmentFrame.text:SetFont(self:GetPlayerFont(), playerFontSize)
                 assignmentFrame.iconFrame:SetSize(iconSize, iconSize)
                 assignmentFrame.text:SetPoint("LEFT", assignmentFrame.iconFrame, "CENTER", iconSize/2+4, -1)
             end
@@ -230,7 +230,7 @@ function SRTOverview:UpdateMain()
                     cd:Hide()
                 end
                 for assignmentIndex, assignment in ipairs(group) do
-                    local assignmentFrame = groupFrame.assignments[assignmentIndex] or FrameBuilder.CreateAssignmentFrame(groupFrame, assignmentIndex, self:GetPlayerNameFont(), self:GetAppearance().playerFontSize, self:GetAppearance().iconSize)
+                    local assignmentFrame = groupFrame.assignments[assignmentIndex] or FrameBuilder.CreateAssignmentFrame(groupFrame, assignmentIndex, self:GetPlayerFont(), self:GetAppearance().playerFontSize, self:GetAppearance().iconSize)
                     FrameBuilder.UpdateAssignmentFrame(assignmentFrame, assignment)
                     
                     assignmentFrame:ClearAllPoints()

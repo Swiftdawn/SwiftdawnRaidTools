@@ -2,24 +2,30 @@
 Roster = {}
 Roster.__index = Roster
 
+local function timestamp()
+    local currentTimestamp = time()
+    ---@class string
+    return date("%d-%m-%Y %H:%M:%S", currentTimestamp)
+end
+
 ---@return Roster
 function Roster:New()
     ---@class Roster
     local obj = setmetatable({}, self)
     self.__index = self
+    obj.id = Utils:GenerateUUID()
     obj.name = nil
-    obj.timestamp = Utils:Timestamp()
+    obj.timestamp = timestamp()
     obj.players = {}
     obj.encounters = {}
     return obj
 end
 
 function Roster.GetName(roster)
-    if roster.name then
-        return roster.name
-    else
-        return "Roster"
+    if not roster.name then
+        roster.name = "Roster"
     end
+    return roster.name
 end
 
 function Roster.GetTimestamp(roster)
@@ -40,7 +46,7 @@ function Roster.Parse(raw, name)
         roster.name = name
     end
     roster.encounters = raw
-    roster.timestamp = Utils:Timestamp()
+    roster.timestamp = timestamp()
     for _, encounter in pairs(roster.encounters) do
         for _, ability in pairs(encounter) do
             for _, group in pairs(ability.assignments) do

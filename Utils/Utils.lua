@@ -263,6 +263,18 @@ function Utils:GenerateUUID()
     end)
 end
 
+function Utils:ValidateUUID(input)
+    -- UUID pattern (version 4)
+    local uuidPattern = "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$"
+    
+    -- Check if input matches the UUID pattern
+    if input:match(uuidPattern) then
+        return true  -- Valid UUID
+    else
+        return false, "Invalid UUID. Please enter a valid UUID version 4."
+    end
+end
+
 function Utils:IsArray(table)
     local i = 0
     for _ in pairs(table) do

@@ -34,6 +34,56 @@ local defaultAssignments = {
             },
         },
     },
+    [1200] = {
+        {
+            ["assignments"] = {},
+            ["triggers"] = {
+                {
+                    ["delay"] = 40,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 80,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 120,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 160,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 200,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 240,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 280,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 320,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 360,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 400,
+                    ["type"] = "ENCOUNTER_START",
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Mana Return...",
+            },
+        },
+    },
     [1204] = {
         [1] = {
             ["assignments"] = {},
@@ -996,13 +1046,12 @@ function SRTData.GetClass(className)
 end
 
 ---Create new roster
----@return string, Roster
+---@return Roster
 function SRTData.CreateNewRoster()
     local data = SRT_Global().srt_data
-    local rosterID = Utils:GenerateUUID()
     local roster = Roster:New()
-    data.rosters[rosterID] = roster
-    return rosterID, roster
+    data.rosters[roster.id] = roster
+    return roster
 end
 
 function SRTData.RemoveRoster(rosterID)
@@ -1052,7 +1101,7 @@ function SRTData.GetClassColorBySpellID(spellID)
             end
         end
     end
-    return { r = 0, g = 0, b = 0, colorStr = "ffffffff" }
+    return { r = 0.8, g = 0.8, b = 0.8, colorStr = "ffcccccc" }
 end
 
 ---comment
@@ -1075,17 +1124,12 @@ function SRTData.GetActiveRosterID()
 end
 
 function SRTData.SetActiveRosterID(rosterID)
-    SRT_Global().srt_data.activeRosterID = rosterID
+    local data = SRT_Global().srt_data
+    data.activeRosterID = rosterID
 end
 
 function SRTData.AddRoster(rosterID, roster)
     local data = SRT_Global().srt_data
-
-    -- FIXME: THIS IS ONLY ONE ROSTER FOR THIS VERSION, CLEANING UP TO AVOID BULKING UP!
-    Log.debug("Clearing rosters old...")
-    data.rosters = {}
-    -- FIXME: THIS IS ONLY ONE ROSTER FOR THIS VERSION, CLEANING UP TO AVOID BULKING UP!
-
     Log.debug("Adding new roster with ID: "..rosterID)
     data.rosters[rosterID] = roster
 end
