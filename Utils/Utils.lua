@@ -357,3 +357,13 @@ function Utils:CombinedIteratorWithUniqueNames(t1, t2)
         end
     end
 end
+
+function Utils:GetFullSenderName(sender)
+    local name, realm = strsplit("-", sender)
+    return name .. "-" .. realm or GetRealmName()
+end
+
+function Utils:GetFullPlayerName()
+    local playerName, playerRealm = UnitName("player")
+    return playerName .. "-" .. (playerRealm or GetRealmName())
+end

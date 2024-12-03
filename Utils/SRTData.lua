@@ -1067,7 +1067,7 @@ end
 ---@return Roster
 function SRTData.CreateNewRoster()
     local data = SRT_Global().srt_data
-    local roster = Roster:New()
+    local roster = Roster:New("Roster", time(), Utils:GetFullPlayerName())
     data.rosters[roster.id] = roster
     return roster
 end

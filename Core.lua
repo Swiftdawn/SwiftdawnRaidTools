@@ -271,7 +271,8 @@ function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
             Log.debug("Received message SYNC from "..tostring(sender), payload)
             self.encountersProgress = nil
             SRTData.SetActiveRosterID(payload.d.encountersId)
-            SRTData.AddRoster(payload.d.encountersId, Roster.Parse(payload.d.encounters, "Received Roster", payload.d.lastUpdated))
+            local parsedRoster = Roster.Parse(payload.d.encounters, "Received Roster", payload.d.lastUpdated, Utils:GetFullSenderName(sender))
+            SRTData.AddRoster(payload.d.encountersId, parsedRoster)
             self.overview:Update()
         elseif payload.d.encountersId == SRTData.GetActiveRosterID() and payload.d.lastUpdated == Roster.GetLastUpdated(SRTData.GetActiveRoster()) then
             Log.debug("Ignoring SYNC from "..tostring(sender)..", already have this version", payload)

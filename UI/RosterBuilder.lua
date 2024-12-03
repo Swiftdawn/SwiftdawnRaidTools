@@ -396,11 +396,23 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         end)
         self.loadCreate.editButton.color = SRTColor.Green
         self.loadCreate.editButton.colorHighlight = SRTColor.GreenHighlight
+        if self.selectedRoster.owner == Utils:GetFullPlayerName() then
+            self.loadCreate.editButton.displayText = "Edit"
+            self.loadCreate.editButton:SetScript("OnMouseDown", function (button)
+                self.state = State.ADD_OR_REMOVE_PLAYERS
+                self:UpdateAppearance()
+            end)
+        else
+            self.loadCreate.editButton.displayText = "Copy"
+            self.loadCreate.editButton:SetScript("OnMouseDown", function (button)
+                local copy = Roster.Copy(self.selectedRoster)
+                SRTData.AddRoster(copy.id, copy)
+                self.selectedRoster = copy
+                self:UpdateAppearance()
+            end)
+        end
         FrameBuilder.UpdateButton(self.loadCreate.editButton)
-        self.loadCreate.editButton:SetScript("OnMouseDown", function (button)
-            self.state = State.ADD_OR_REMOVE_PLAYERS
-            self:UpdateAppearance()
-        end)
+        self.loadCreate.editButton:Show()
         if Utils:IsPlayerRaidLeader() and not IsEncounterInProgress() then
             self.loadCreate.activateButton.color = SRTColor.Blue
             self.loadCreate.activateButton.colorHighlight = SRTColor.BlueHighlight
@@ -422,6 +434,13 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         rosterInfo.timestamp:SetPoint("TOPLEFT", 10, -5)
         rosterInfo.timestamp:Show()
 
+        rosterInfo.owner = rosterInfo.owner or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        rosterInfo.owner:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+        rosterInfo.owner:SetText("Owned by: "..tostring(self.selectedRoster.owner))
+        rosterInfo.owner:SetTextColor(0.8, 0.8, 0.8, 1)
+        rosterInfo.owner:SetPoint("TOPLEFT", rosterInfo.timestamp, "BOTTOMLEFT", 0, -12)
+        rosterInfo.owner:Show()
+
         rosterInfo.players = rosterInfo.players or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         rosterInfo.players:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
         local playerNames = nil
@@ -437,12 +456,11 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         rosterInfo.players:SetWidth(260)
         rosterInfo.players:SetJustifyH("LEFT")
         rosterInfo.players:SetWordWrap(true)
-        rosterInfo.players:SetPoint("TOPLEFT", rosterInfo.timestamp, "BOTTOMLEFT", 0, -3)
+        rosterInfo.players:SetPoint("TOPLEFT", rosterInfo.owner, "BOTTOMLEFT", 0, -3)
         rosterInfo.players:Show()
 
         rosterInfo.encounters = rosterInfo.encounters or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         rosterInfo.encounters:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
-
         local encounters = nil
         for _, encounterID in pairs(self:EncounterIDsWithFilledAssignments()) do
             if encounters then
