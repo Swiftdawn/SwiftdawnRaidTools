@@ -358,7 +358,7 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
             rosterFrame.text:SetTextColor(SRTColor.BlueHighlight.r, SRTColor.BlueHighlight.g, SRTColor.BlueHighlight.b, SRTColor.BlueHighlight.a)
         elseif roster.id == SRTData.GetSyncedRosterID() and Roster.GetLastUpdated(roster) > SRTData.GetSyncedRosterLastUpdated() then
             -- Green for synced and altered roster (does this ever happen?)
-            rosterFrame.text:SetTextColor(SRTColor.Green.r, SRTColor.Green.g, SRTColor.Green.b, SRTColor.Green.a)
+            rosterFrame.text:SetTextColor(SRTColor.Pink.r, SRTColor.Pink.g, SRTColor.Pink.b, SRTColor.Pink.a)
         else
             -- Light gray for the rest
             rosterFrame.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
