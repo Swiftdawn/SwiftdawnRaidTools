@@ -8,6 +8,7 @@ local State = {
     ADD_OR_REMOVE_PLAYERS = 2,
     CREATE_ASSIGNMENTS = 3,
     PICK_SPELL = 4,
+    IMPORT_ROSTER = 5
 }
 
 --- Roster Builder window class object
@@ -109,6 +110,7 @@ function RosterBuilder:Initialize()
     self:InitializeLoadOrCreateRoster()
     self:InitializeAddOrRemovePlayers()
     self:InitializeCreateAssignments()
+    self:InitializeImportRoster()
 
     -- Update appearance
     self:UpdateAppearance()
@@ -134,6 +136,15 @@ function RosterBuilder:InitializeLoadOrCreateRoster()
         self.selectedRoster = nil
         self:UpdateAppearance()
     end)
+
+    -- Create buttons
+    self.loadCreate.deleteButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Delete", SRTColor.Gray, SRTColor.Gray)
+    self.loadCreate.deleteButton:SetPoint("BOTTOMLEFT", self.loadCreate.load.pane, "BOTTOMLEFT", 0, 5)
+
+    self.loadCreate.activateButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Activate", SRTColor.Gray, SRTColor.Gray)
+    self.loadCreate.activateButton:SetPoint("BOTTOMRIGHT", self.loadCreate.load.pane, "BOTTOMRIGHT", 0, 5)
+    self.loadCreate.activateButton:SetScript("OnMouseDown", nil)
+
     self.loadCreate.info = {}
     self.loadCreate.info.pane = CreateFrame("Frame", "SRTRoster_SelectedInfo", self.content)
     self.loadCreate.info.pane:SetClipsChildren(false)
@@ -150,21 +161,124 @@ function RosterBuilder:InitializeLoadOrCreateRoster()
     self.loadCreate.info.scroll:SetPoint("BOTTOMRIGHT", self.loadCreate.info.pane, "BOTTOMRIGHT", 0, 35)
 
     -- Create buttons
-    self.loadCreate.deleteButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Delete", SRTColor.Gray, SRTColor.Gray)
-    self.loadCreate.deleteButton:SetPoint("BOTTOMLEFT", self.loadCreate.load.pane, "BOTTOMLEFT", 0, 5)
-
-    self.loadCreate.activateButton = FrameBuilder.CreateButton(self.loadCreate.info.pane, 70, 25, "Activate", SRTColor.Gray, SRTColor.Gray)
-    self.loadCreate.activateButton:SetPoint("BOTTOMRIGHT", self.loadCreate.load.pane, "BOTTOMRIGHT", 0, 5)
-    self.loadCreate.activateButton:SetScript("OnMouseDown", nil)
-
-    self.loadCreate.editButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Edit", SRTColor.Gray, SRTColor.Gray)
-    self.loadCreate.editButton:SetPoint("BOTTOMLEFT", self.loadCreate.info.pane, "BOTTOMLEFT", 0, 5)
-
-    self.loadCreate.createButton = FrameBuilder.CreateButton(self.loadCreate.info.pane, 95, 25, "Create New", SRTColor.Green, SRTColor.GreenHighlight)
+    self.loadCreate.importButton = FrameBuilder.CreateButton(self.loadCreate.info.pane, 70, 25, "Import", SRTColor.Green, SRTColor.GreenHighlight)
+    self.loadCreate.importButton:SetPoint("BOTTOMLEFT", self.loadCreate.info.pane, "BOTTOMLEFT", 0, 5)
+    self.loadCreate.importButton:SetScript("OnMouseDown", function ()
+        self.state = State.IMPORT_ROSTER
+        self:UpdateAppearance()
+    end)
+    self.loadCreate.createButton = FrameBuilder.CreateButton(self.loadCreate.info.pane, 70, 25, "Create", SRTColor.Green, SRTColor.GreenHighlight)
     self.loadCreate.createButton:SetPoint("BOTTOMRIGHT", self.loadCreate.info.pane, "BOTTOMRIGHT", 0, 5)
     self.loadCreate.createButton:SetScript("OnMouseDown", function ()
         self.selectedRoster = SRTData.CreateNewRoster()
         self.state = State.ADD_OR_REMOVE_PLAYERS
+        self:UpdateAppearance()
+    end)
+    self.loadCreate.editButton = FrameBuilder.CreateButton(self.loadCreate.info.pane, 70, 25, "Edit", SRTColor.Gray, SRTColor.Gray)
+    self.loadCreate.editButton:SetPoint("RIGHT", self.loadCreate.createButton, "LEFT", -10, 0)
+    self.loadCreate.editButton:Hide()
+end
+
+function RosterBuilder:InitializeImportRoster()
+    self.import = {}
+    self.import.input = {}
+    self.import.input.pane = CreateFrame("Frame", "SRTRoster_ImportRoster", self.content)
+    self.import.input.pane:SetClipsChildren(false)
+    self:SetToLeftSide(self.import.input.pane, self.content)
+    self.import.input.title = self.import.input.pane:CreateFontString(self.import.input.pane:GetName().."_Title", "OVERLAY", "GameFontNormal")
+    self.import.input.title:SetPoint("TOPLEFT", self.import.input.pane, "TOPLEFT", 5 , -5)
+    self.import.input.title:SetText("Import Roster")
+    self.import.input.title:SetFont(self:GetHeaderFont(), 16)
+    self.import.input.title:SetTextColor(1, 1, 1, 0.8)
+
+    self.import.input.scrollPane = CreateFrame("Frame", "SRTRoster_ImportScrollPane", self.import.input.pane, "BackdropTemplate")
+    self.import.input.scrollPane:SetPoint("TOPLEFT", self.import.input.pane, "TOPLEFT", 0, -28)
+    self.import.input.scrollPane:SetPoint("TOPRIGHT", self.import.input.pane, "TOPRIGHT", 0, -28)
+    self.import.input.scrollPane:SetPoint("BOTTOMLEFT", self.import.input.pane, "BOTTOMLEFT", 0, 5)
+    self.import.input.scrollPane:SetPoint("BOTTOMRIGHT", self.import.input.pane, "BOTTOMRIGHT", 0, 5)
+    self.import.input.scrollPane:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = self.import.input.scrollPane:GetHeight(),
+    })
+    self.import.input.scrollPane:SetBackdropColor(0, 0, 0, 0.3)
+    self.import.input.scroll = FrameBuilder.CreateScrollArea(self.import.input.scrollPane, "RosterInfo")
+    self.import.input.scroll:SetAllPoints()
+    self.import.input.scroll.content:SetWidth(280)
+    self.import.input.scroll.content:SetHeight(self.import.input.scrollPane:GetHeight())
+
+    self.import.input.editBox = CreateFrame("EditBox", "ImportEditBox", self.import.input.scroll.content)
+    self.import.input.editBox:SetPoint("TOPLEFT", self.import.input.scroll.content, "TOPLEFT", 5, -5)
+    self.import.input.editBox:SetPoint("TOPRIGHT", self.import.input.scroll.content, "TOPRIGHT", -5, -5)
+    self.import.input.editBox:SetPoint("BOTTOMLEFT", self.import.input.scroll.content, "BOTTOMLEFT", 5, 5)
+    self.import.input.editBox:SetPoint("BOTTOMRIGHT", self.import.input.scroll.content, "BOTTOMRIGHT", -5, 5)
+    self.import.input.editBox:SetMultiLine(true) -- Enable multi-line input
+    self.import.input.editBox:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize, "") -- Set font
+    self.import.input.editBox:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.import.input.editBox:SetAutoFocus(false) -- Disable auto-focus
+    -- self.import.input.editBox:SetText("<Import String>") -- Initialize with empty text
+    -- Create a hidden FontString for measurement
+    self.import.input.editBox.fontString = self.import.input.editBox:CreateFontString(nil, "ARTWORK", "ChatFontNormal")
+    self.import.input.editBox.fontString:SetWidth(270) -- Match the EditBox width for accurate line wrapping
+    self.import.input.editBox.fontString:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize, "") -- Set font
+    self.import.input.editBox.fontString:SetText(self.import.input.editBox:GetText()) -- Set the same text as the EditBox
+    self.import.input.editBox.fontString:Hide() -- Keep it hidden
+    self.import.input.editBox:SetScript("OnTextChanged", function()
+        local text = self.import.input.editBox:GetText()
+        self.import.input.editBox.fontString:SetText(text) -- Update the text in the FontString
+        local textHeight = self.import.input.editBox.fontString:GetStringHeight()
+        local newHeight = math.max(textHeight + 10, self.import.input.scrollPane:GetHeight())
+        self.import.input.scroll.content:SetHeight(newHeight)
+        
+        local ok, parseResult = SRTImport:ParseYAML(text)
+        if not ok then
+            self.import.info.error:SetText(parseResult)
+            self.import.importButton.color = SRTColor.Gray
+            self.import.importButton.colorHighlight = SRTColor.Gray
+            FrameBuilder.UpdateButton(self.import.importButton)
+            self.import.importButton:SetScript("OnMouseUp", nil)
+        else
+            self.import.info.error:SetText("No errors")
+            self.import.importButton.color = SRTColor.Green
+            self.import.importButton.colorHighlight = SRTColor.GreenHighlight
+            FrameBuilder.UpdateButton(self.import.importButton)
+            self.import.importButton:SetScript("OnMouseUp", function ()
+                local encounters = SRTImport:AddIDs(parseResult)
+                local parsedRoster = Roster.Parse(encounters, "Imported Roster", time(), Utils:GetFullPlayerName())
+                SRTData.AddRoster(parsedRoster.id, parsedRoster)
+                self.state = State.LOAD_OR_CREATE_ROSTER
+                self:UpdateAppearance()
+            end)
+        end
+    end)
+    self.import.input.editBox:SetScript("OnEscapePressed", function()
+        self.import.input.editBox:ClearFocus() -- Clear focus when Escape is pressed
+    end)
+
+    self.import.info = {}
+    self.import.info.pane = CreateFrame("Frame", "SRTRoster_ImportInfo", self.content)
+    self.import.info.pane:SetClipsChildren(false)
+    self:SetToRightSide(self.import.info.pane, self.content)
+    self.import.info.title = self.import.info.pane:CreateFontString(self.import.info.pane:GetName().."_Title", "OVERLAY", "GameFontNormal")
+    self.import.info.title:SetPoint("TOPLEFT", self.import.info.pane, "TOPLEFT", 5 , -5)
+    self.import.info.title:SetText("Roster Info")
+    self.import.info.title:SetFont(self:GetHeaderFont(), 16)
+    self.import.info.title:SetTextColor(1, 1, 1, 0.8)
+    self.import.info.error = self.import.info.pane:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    self.import.info.error:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+    self.import.info.error:SetText("No errors")
+    self.import.info.error:SetJustifyH("LEFT")
+    self.import.info.error:SetTextColor(SRTColor.Red.r, SRTColor.Red.g, SRTColor.Red.b, SRTColor.Red.a)
+    self.import.info.error:SetPoint("TOPLEFT", self.import.info.title, "BOTTOMLEFT", 0, -10)
+
+    -- Create buttons
+    self.import.importButton = FrameBuilder.CreateButton(self.import.info.pane, 70, 25, "Import", SRTColor.Gray, SRTColor.Gray)
+    self.import.importButton:SetPoint("BOTTOMRIGHT", self.import.info.pane, "BOTTOMRIGHT", 0, 5)
+    self.import.importButton:SetScript("OnMouseDown", nil)
+    self.import.cancelButton = FrameBuilder.CreateButton(self.import.info.pane, 70, 25, "Cancel", SRTColor.Red, SRTColor.RedHighlight)
+    self.import.cancelButton:SetPoint("BOTTOMLEFT", self.import.info.pane, "BOTTOMLEFT", 0, 5)
+    self.import.cancelButton:SetScript("OnMouseDown", function ()
+        self.state = State.LOAD_OR_CREATE_ROSTER
         self:UpdateAppearance()
     end)
 end
@@ -288,7 +402,7 @@ function RosterBuilder:InitializeCreateAssignments()
         self.state = State.ADD_OR_REMOVE_PLAYERS
         self:UpdateAppearance()
     end)
-    self.assignments.finishButton = FrameBuilder.CreateButton(self.assignments.encounter.pane, 95, 25, "Finish Edit", SRTColor.Green, SRTColor.GreenHighlight)
+    self.assignments.finishButton = FrameBuilder.CreateButton(self.assignments.encounter.pane, 70, 25, "Finish", SRTColor.Green, SRTColor.GreenHighlight)
     self.assignments.finishButton:SetPoint("BOTTOMRIGHT", self.content, "BOTTOMRIGHT", 0, 5)
     self.assignments.finishButton:SetScript("OnMouseDown", function (button)
         if SRTData.GetSyncedRosterID() == self.selectedRoster.id and SRTData.GetSyncedRosterLastUpdated() ~= self.selectedRoster.lastUpdated then
@@ -305,6 +419,7 @@ function RosterBuilder:UpdateAppearance()
     self:UpdateLoadOrCreateRoster()
     self:UpdateAddOrRemovePlayers()
     self:UpdateCreateAssignments()
+    self:UpdateImportRoster()
 end
 
 local rosterInfo = {}
@@ -358,7 +473,7 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
             rosterFrame.text:SetTextColor(SRTColor.BlueHighlight.r, SRTColor.BlueHighlight.g, SRTColor.BlueHighlight.b, SRTColor.BlueHighlight.a)
         elseif roster.id == SRTData.GetSyncedRosterID() and Roster.GetLastUpdated(roster) > SRTData.GetSyncedRosterLastUpdated() then
             -- Green for synced and altered roster (does this ever happen?)
-            rosterFrame.text:SetTextColor(SRTColor.Pink.r, SRTColor.Pink.g, SRTColor.Pink.b, SRTColor.Pink.a)
+            rosterFrame.text:SetTextColor(SRTColor.Purple.r, SRTColor.Purple.g, SRTColor.Purple.b, SRTColor.Purple.a)
         else
             -- Light gray for the rest
             rosterFrame.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
@@ -388,6 +503,12 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         self.loadCreate.deleteButton.colorHighlight = SRTColor.RedHighlight
         FrameBuilder.UpdateButton(self.loadCreate.deleteButton)
         self.loadCreate.deleteButton:SetScript("OnMouseDown", function (button)
+            if SRTData.GetActiveRosterID() == self.selectedRoster.id then
+                if not Utils:IsPlayerRaidLeader() then
+                    return
+                end
+                SRTData.SetActiveRosterID(nil)
+            end
             SRTData.RemoveRoster(self.selectedRoster.id)
             self.availableRosters[self.selectedRoster.id]:Hide()
             self.availableRosters[self.selectedRoster.id] = nil
@@ -436,9 +557,9 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
 
         rosterInfo.owner = rosterInfo.owner or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         rosterInfo.owner:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
-        rosterInfo.owner:SetText("Owned by: "..tostring(self.selectedRoster.owner))
+        rosterInfo.owner:SetText("Owned by: "..string.gsub(tostring(self.selectedRoster.owner), "-", ", ", 1))
         rosterInfo.owner:SetTextColor(0.8, 0.8, 0.8, 1)
-        rosterInfo.owner:SetPoint("TOPLEFT", rosterInfo.timestamp, "BOTTOMLEFT", 0, -12)
+        rosterInfo.owner:SetPoint("TOPLEFT", rosterInfo.timestamp, "BOTTOMLEFT", 0, -18)
         rosterInfo.owner:Show()
 
         rosterInfo.players = rosterInfo.players or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -456,7 +577,7 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         rosterInfo.players:SetWidth(260)
         rosterInfo.players:SetJustifyH("LEFT")
         rosterInfo.players:SetWordWrap(true)
-        rosterInfo.players:SetPoint("TOPLEFT", rosterInfo.owner, "BOTTOMLEFT", 0, -3)
+        rosterInfo.players:SetPoint("TOPLEFT", rosterInfo.owner, "BOTTOMLEFT", 0, -8)
         rosterInfo.players:Show()
 
         rosterInfo.encounters = rosterInfo.encounters or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -474,30 +595,23 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         rosterInfo.encounters:SetWidth(260)
         rosterInfo.encounters:SetJustifyH("LEFT")
         rosterInfo.encounters:SetWordWrap(true)
-        rosterInfo.encounters:SetPoint("TOPLEFT", rosterInfo.players, "BOTTOMLEFT", 0, -3)
+        rosterInfo.encounters:SetPoint("TOPLEFT", rosterInfo.players, "BOTTOMLEFT", 0, -8)
         rosterInfo.encounters:Show()
     else
         self.loadCreate.deleteButton.color = SRTColor.Gray
         self.loadCreate.deleteButton.colorHighlight = SRTColor.Gray
         FrameBuilder.UpdateButton(self.loadCreate.deleteButton)
         self.loadCreate.deleteButton:SetScript("OnMouseDown", nil)
-        self.loadCreate.editButton.color = SRTColor.Gray
-        self.loadCreate.editButton.colorHighlight = SRTColor.Gray
-        FrameBuilder.UpdateButton(self.loadCreate.editButton)
+        self.loadCreate.editButton:Hide()
         self.loadCreate.editButton:SetScript("OnMouseDown", nil)
         self.loadCreate.activateButton.color = SRTColor.Gray
         self.loadCreate.activateButton.colorHighlight = SRTColor.Gray
         FrameBuilder.UpdateButton(self.loadCreate.activateButton)
         self.loadCreate.activateButton:SetScript("OnMouseDown", nil)
-        if rosterInfo.timestamp then
-            rosterInfo.timestamp:Hide()
-        end
-        if rosterInfo.players then
-            rosterInfo.players:Hide()
-        end
-        if rosterInfo.encounters then
-            rosterInfo.encounters:Hide()
-        end
+        if rosterInfo.timestamp then rosterInfo.timestamp:Hide() end
+        if rosterInfo.owner then rosterInfo.owner:Hide() end
+        if rosterInfo.players then rosterInfo.players:Hide() end
+        if rosterInfo.encounters then rosterInfo.encounters:Hide() end
         self.loadCreate.info.title:SetText("No roster selected")
     end
 end
@@ -946,6 +1060,17 @@ function RosterBuilder:UpdateCreateAssignments()
             scrollHeight = scrollHeight + spellFrame:GetHeight() + 7
         end
         self.assignments.pickspell.scroll.content:SetHeight(scrollHeight)
+    end
+end
+
+function RosterBuilder:UpdateImportRoster()
+    if self.state == State.IMPORT_ROSTER then
+        self.import.input.pane:Show()
+        self.import.info.pane:Show()
+    else
+        self.import.input.pane:Hide()
+        self.import.info.pane:Hide()
+        return
     end
 end
 

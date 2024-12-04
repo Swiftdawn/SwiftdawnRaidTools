@@ -968,9 +968,10 @@ local importOptions = {
 
                 if val ~= nil and val ~= "" then
                     local _, result = SRTImport:ParseYAML(val)
-                    local encounters, encountersId = SRTImport:AddIDs(result)
-                    SRTData.SetActiveRosterID(encountersId or "none")
-                    SRTData.AddRoster(encountersId, Roster.Parse(encounters, "Imported Roster", time(), Utils:GetFullPlayerName()))
+                    local encounters = SRTImport:AddIDs(result)
+                    local parsedRoster = Roster.Parse(encounters, "Imported Roster", time(), Utils:GetFullPlayerName())
+                    SRTData.AddRoster(parsedRoster.id, parsedRoster)
+                    SRTData.SetActiveRosterID(parsedRoster.id or "none")
                     SyncController:SyncAssignmentsNow()
                     SwiftdawnRaidTools.overview:Update()
                     SwiftdawnRaidTools.assignmentEditor:Update()

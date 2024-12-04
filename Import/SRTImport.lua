@@ -45,7 +45,5 @@ function SRTImport:AddIDs(import)
         table.insert(result[part.encounter], part)
     end
 
-    local uuid = Utils:GenerateUUID()
-
-    return result, uuid
+    return result
 end
