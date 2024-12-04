@@ -10,12 +10,12 @@ function SRTImport:ParseYAML(str)
     local ok, result = SwiftdawnRaidTools.YAML.evalm(str)
 
     if not ok then
-        return false, "Error in document " .. result .. ": Failed to parse YAML."
+        return false, "Error in assignment " .. result .. ":\nFailed to parse YAML."
     end
 
     for i, part in ipairs(result) do
         if type(part) ~= "table" then
-            return false, "Error in document " .. i .. ": Invalid import."
+            return false, "Error in assignment " .. i .. ":\nInvalid import."
         end
     end
 
@@ -23,7 +23,7 @@ function SRTImport:ParseYAML(str)
         local ok, result = Validation:ValidateImport(part)
 
         if not ok then
-            return false, "Error in document " .. i .. ": " .. result
+            return false, "Error in assignment " .. i .. ":\n" .. result
         end
     end
 
