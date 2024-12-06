@@ -17,14 +17,20 @@ local function performSync()
         encounters = SRTData.GetActiveRoster().encounters,
         lastUpdated = SRTData.GetActiveRoster().lastUpdated
     }
+    local announce = {
+        encountersId = SRTData.GetActiveRosterID(),
+        lastUpdated = SRTData.GetActiveRoster().lastUpdated
+    }
     Log.debug("Sending raid sync", data)
+    SwiftdawnRaidTools:SendRaidMessage("SYNC_ANNOUNCE", announce, SwiftdawnRaidTools.PREFIX_ANNOUNCE, "ALERT")
     SwiftdawnRaidTools:SendRaidMessage("SYNC", data, SwiftdawnRaidTools.PREFIX_SYNC, "BULK", function(_, sent, total)
-        local progressData = {
-            encountersId = data.encountersId,
-            progress = sent / total * 100,
-        }
-        SwiftdawnRaidTools.encountersProgress = progressData.progress
-        SwiftdawnRaidTools:SendRaidMessage("SYNC_PROG", progressData, SwiftdawnRaidTools.PREFIX_SYNC_PROGRESS)
+        local progressPercent = sent / total * 100
+        if progressPercent >= 99.9 then
+            SwiftdawnRaidTools.encountersProgress = nil
+        else
+            SwiftdawnRaidTools.encountersProgress = progressPercent
+        end
+        SwiftdawnRaidTools.overview:Update()
     end)
     SRTData.UpdateSyncedRosterInfo(SRTData.GetActiveRosterID(), SRTData.GetActiveRoster().lastUpdated)
 end
