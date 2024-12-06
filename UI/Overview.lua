@@ -97,19 +97,12 @@ function SRTOverview:Update()
 end
 
 function SRTOverview:UpdateHeaderText()
-    local encountersExists = #SRTData.GetActiveEncounters() and true or false
-
-    self.headerText:SetAlpha(1)
-
-    if encountersExists then
+    if SwiftdawnRaidTools.encountersProgress then
+        self.headerText:SetText("Syncing Assignments... |cFFFFFFFF" .. string.format("%.1f", SwiftdawnRaidTools.encountersProgress) .. "%|r")
+    elseif #SRTData.GetActiveEncounters() then
         self.headerText:SetText(BossEncounters:GetNameByID(self:GetProfile().selectedEncounterId))
     else
-        if SwiftdawnRaidTools.encountersProgress then
-            self.headerText:SetText((SRTData.GetActiveRosterID() == "none" and "Loading" or "Syncing").." Assignments... |cFFFFFFFF" .. string.format("%.1f", SwiftdawnRaidTools.encountersProgress) .. "%|r")
-        else
-            self.headerText:SetText("SRT |cFFFFFFFF" .. tostring(SwiftdawnRaidTools.VERSION) .. "|r")
-            self.headerText:SetAlpha(0.8)
-        end
+        self.headerText:SetText("SRT |cFFFFFFFF" .. tostring(SwiftdawnRaidTools.VERSION) .. "|r")
     end
 end
 

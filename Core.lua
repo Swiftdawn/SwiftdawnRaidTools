@@ -19,8 +19,8 @@ function SRT_SetTestMode(mode)
     SRTTestMode = mode
 end
 
+SwiftdawnRaidTools.PREFIX_ANNOUNCE = "SRT-SA"
 SwiftdawnRaidTools.PREFIX_SYNC = "SRT-S"
-SwiftdawnRaidTools.PREFIX_SYNC_PROGRESS = "SRT-SP"
 SwiftdawnRaidTools.PREFIX_MAIN = "SRT-M"
 
 SwiftdawnRaidTools.VERSION = C_AddOns.GetAddOnMetadata("SwiftdawnRaidTools", "Version")
@@ -107,9 +107,11 @@ function SwiftdawnRaidTools:OnInitialize()
     self.debugLog = SRTDebugLog:New(100, 400)
     self.debugLog:Initialize()
 
+    self:RegisterComm(self.PREFIX_ANNOUNCE)
     self:RegisterComm(self.PREFIX_SYNC)
-    self:RegisterComm(self.PREFIX_SYNC_PROGRESS)
     self:RegisterComm(self.PREFIX_MAIN)
+
+    print("|cffE00E00SwiftdawnRaidTools "..self.VERSION.." by Anti & Bush loaded. /srt config to open options|r")
 end
 
 function SwiftdawnRaidTools:OnEnable()
@@ -171,7 +173,8 @@ function SwiftdawnRaidTools:SendRaidMessage(event, data, prefix, prio, callbackF
     self:HandleMessagePayload(payload)
     -- Send to raid
     if IsInRaid() then
-        self:SendCommMessage(prefix, self:Serialize(payload), "RAID", nil, prio, callbackFn)
+        local message = self:Serialize(payload)
+        self:SendCommMessage(prefix, message, "RAID", nil, prio, callbackFn)
     end
 end
 
@@ -180,7 +183,7 @@ function SwiftdawnRaidTools:OnCommReceived(prefix, message, _, sender)
         return
     end
 
-    if prefix == self.PREFIX_MAIN or prefix == self.PREFIX_SYNC or prefix == self.PREFIX_SYNC_PROGRESS then
+    if prefix == self.PREFIX_MAIN or prefix == self.PREFIX_SYNC or prefix == self.PREFIX_ANNOUNCE then
         local ok, payload = self:Deserialize(message)
 
         if ok then
@@ -206,7 +209,7 @@ end
 
 function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
     if payload.e == "SYNC_REQ_VERSIONS" then
-        Log.debug("Received message SYNC_REQ_VERSIONS from "..tostring(sender), payload)
+        Log.debug("Received message version request from "..tostring(sender), payload)
         SyncController:SendVersion()
     elseif payload.e == "SYNC_STATUS" then
         if IsEncounterInProgress() or not Utils:IsPlayerRaidLeader() then
@@ -215,16 +218,15 @@ function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
         if TriggerSyncOrNot(payload.d) then
             SyncController:ScheduleAssignmentsSync()
         end
-    elseif payload.e == "SYNC_PROG" then
+    elseif payload.e == "SYNC_ANNOUNCE" then
         if AcceptIncomingSyncOrNot(payload.d) then
-            self.encountersProgress = payload.d.progress
-            SRTData.SetActiveRosterID("none")
+            Log.debug("Assignment synchronization incoming")
+            SRTData.SetActiveRosterID(nil)
             self.overview:Update()
         end
     elseif payload.e == "SYNC" then
         if AcceptIncomingSyncOrNot(payload.d) then
-            Log.debug("Received message SYNC from "..tostring(sender), payload)
-            self.encountersProgress = nil
+            Log.debug("Received assignment synchronization from "..tostring(sender), payload)
             SRTData.SetActiveRosterID(payload.d.encountersId)
             SRTData.AddRoster(payload.d.encountersId, Roster.Parse(payload.d.encounters, "Synced Roster", payload.d.lastUpdated))
             self.overview:Update()
@@ -234,11 +236,11 @@ function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
             Log.debug("Ignoring SYNC from "..tostring(sender)..", outdated version!", payload)
         end
     elseif payload.e == "ACT_GRPS" then
-        Log.debug("Received message ACT_GRPS from "..tostring(sender), payload)
+        Log.debug("Received activate groups message from "..tostring(sender), payload)
         Groups.SetAllActive(payload.d)
         self.overview:UpdateActiveGroups()
     elseif payload.e == "TRIGGER" then
-        Log.debug("Received message TRIGGER from "..tostring(sender), payload)
+        Log.debug("Received message trigger from "..tostring(sender), payload)
         self.debugLog:AddItem(payload.d)
         Groups.SetActive(payload.d.uuid, payload.d.activeGroups)
         self.notification:ShowRaidAssignment(payload.d.uuid, payload.d.context, payload.d.delay, payload.d.countdown)
