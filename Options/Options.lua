@@ -480,6 +480,34 @@ local appearanceOptions = {
             name = "Notifications",
             order = 2,
             args = {
+                showOnlyOwnNotificationsDescription = {
+                    type = "description",
+                    name = "Only show Raid Notifications that apply to you.",
+                    width = "double",
+                    order = 1,
+                },
+                showOnlyOwnNotificationsCheckbox = {
+                    type = "toggle",
+                    name = "Only Own Notifications",
+                    width = "normal",
+                    order = 2,
+                    get = function() return SwiftdawnRaidTools.db.profile.notifications.showOnlyOwnNotifications end,
+                    set = function(_, value) SwiftdawnRaidTools.db.profile.notifications.showOnlyOwnNotifications = value end,
+                },
+                muteDescription = {
+                    type = "description",
+                    name = "Mute all Raid Notification Sounds.",
+                    width = "double",
+                    order = 3,
+                },
+                muteCheckbox = {
+                    type = "toggle",
+                    name = "Mute Sounds",
+                    width = "normal",
+                    order = 4,
+                    get = function() return SwiftdawnRaidTools.db.profile.notifications.mute end,
+                    set = function(_, value)SwiftdawnRaidTools.db.profile.notifications.mute = value end,
+                },
                 notificationsPositionDescription = {
                     type = "description",
                     name = "Position",
@@ -850,46 +878,6 @@ local appearanceOptions = {
     },
 }
 
-local notificationOptions = {
-    name = "Notifications",
-    type = "group",
-    args =  {
-        showOnlyOwnNotificationsCheckbox = {
-            type = "toggle",
-            name = "Limit Notifications",
-            desc = "Only show Raid Notifications that apply to You.",
-            width = "full",
-            order = 1,
-            get = function() return SwiftdawnRaidTools.db.profile.notifications.showOnlyOwnNotifications end,
-            set = function(_, value) SwiftdawnRaidTools.db.profile.notifications.showOnlyOwnNotifications = value end,
-        },
-        showOnlyOwnNotificationsDescription = {
-            type = "description",
-            name = "Only show Raid Notifications that apply to you.",
-            order = 2,
-        },
-        separator = {
-            type = "description",
-            name = " ",
-            order = 3,
-        },
-        muteCheckbox = {
-            type = "toggle",
-            name = "Mute Sounds",
-            desc = "Mute all Raid Notification Sounds.",
-            width = "full",
-            order = 4,
-            get = function() return SwiftdawnRaidTools.db.profile.notifications.mute end,
-            set = function(_, value)SwiftdawnRaidTools.db.profile.notifications.mute = value end,
-        },
-        muteDescription = {
-            type = "description",
-            name = "Mute all Raid Notification Sounds.",
-            order = 5,
-        },
-    },
-}
-
 local fojjiIntegrationOptions = {
     name = "Fojji Integration (Experimental)",
     type = "group",
@@ -927,57 +915,6 @@ local fojjiIntegrationOptions = {
             end) end,
             order = 5,
             hidden = function() return not WAHelper:IsWeakaurasInstalled() or WAHelper:IsHelperInstalled() end
-        },
-    },
-}
-
-local importDescription = [[
-Paste your raid assignments and other import data below. The import should be valid YAML.
-
-For the full Import API spec, visit https://github.com/gonstr/SwiftdawnRaidTools.
-]]
-
-local importOptions = {
-    name = "Import",
-    type = "group",
-    args = {
-        description = {
-            type = "description",
-            name = importDescription,
-            fontSize = "medium",
-            order = 1,
-        },
-        import = {
-            type = "input",
-            name = "Import",
-            desc = "Paste your import data here.",
-            multiline = 25,
-            width = "full",
-            dialogControl = "ImportMultiLineEditBox",
-            order = 2,
-            get = function() return SwiftdawnRaidTools.db.profile.options.import end,
-            set = function(_, val)
-                if val then
-                    val = val:trim()
-                end
-
-                SwiftdawnRaidTools:TestModeEnd()
-
-                SwiftdawnRaidTools.db.profile.options.import = val
-
-
-                if val ~= nil and val ~= "" then
-                    local _, result = SRTImport:ParseYAML(val)
-                    local encounters = SRTImport:AddIDs(result)
-                    local parsedRoster = Roster.Parse(encounters, "Imported Roster", time(), Utils:GetFullPlayerName())
-                    SRTData.AddRoster(parsedRoster.id, parsedRoster)
-                    SRTData.SetActiveRosterID(parsedRoster.id or "none")
-                    SyncController:SyncAssignmentsNow()
-                    SwiftdawnRaidTools.overview:Update()
-                    SwiftdawnRaidTools.assignmentEditor:Update()
-                    SwiftdawnRaidTools.rosterBuilder:Update()
-                end
-            end,
         },
     },
 }
@@ -1058,14 +995,8 @@ function SwiftdawnRaidTools:OptionsInit()
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Appearance", appearanceOptions)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Appearance", "Appearance", "Swiftdawn Raid Tools")
 
-    LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Notifications", notificationOptions)
-    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Notifications", "Notifications", "Swiftdawn Raid Tools")
-
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Fojji Integration", fojjiIntegrationOptions)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Fojji Integration", "Fojji Integration", "Swiftdawn Raid Tools")
-
-    LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Import", importOptions)
-    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Import", "Import", "Swiftdawn Raid Tools")
 
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Troubleshooting", troubleshootOptions)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Troubleshooting", "Troubleshooting", "Swiftdawn Raid Tools")
