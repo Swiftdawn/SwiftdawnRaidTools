@@ -72,7 +72,7 @@ function FrameBuilder.CreateRosterFrame(parentFrame, id, name, width, height, fo
     rosterFrame.text:EnableMouse(false)
     rosterFrame.text:SetPoint("LEFT", rosterFrame, "LEFT", 5, 0)
     rosterFrame.text:SetFont(font, fontSize)
-    rosterFrame.text:SetTextColor(0.8, 0.8, 0.8, 1)
+    rosterFrame.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     rosterFrame:SetScript("OnEnter", function () rosterFrame:SetBackdropColor(1, 1, 1, 0.4) end)
     rosterFrame:SetScript("OnLeave", function () rosterFrame:SetBackdropColor(0, 0, 0, 0) end)
     rosterFrame.Update = function ()
@@ -160,7 +160,7 @@ function FrameBuilder.CreateAssignmentFrame(parentFrame, index, font, fontSize, 
     assignmentFrame.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
     assignmentFrame.text = assignmentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     assignmentFrame.text:SetFont(font, fontSize)
-    assignmentFrame.text:SetTextColor(0.8, 0.8, 0.8, 1)
+    assignmentFrame.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     assignmentFrame.text:SetPoint("LEFT", assignmentFrame.iconFrame, "CENTER", iconSize/2+4, -1)
     return assignmentFrame
 end
@@ -311,7 +311,7 @@ function FrameBuilder.CreateSelector(parentFrame, items, width, font, fontSize, 
     selector.text:SetPoint("LEFT", selector, "LEFT", 5, 0)
     selector.text:SetFont(selector.font, selector.fontSize)
     selector.text:SetText(selectedName)
-    selector.text:SetTextColor(0.8, 0.8, 0.8, 1)
+    selector.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     selector.text:SetJustifyH("LEFT")
     selector.button = CreateFrame("Button", "SRT_DropdownButton", selector)
     selector.button:SetSize(selector.fontSize*1.4, selector.fontSize*1.4)
@@ -371,7 +371,7 @@ function FrameBuilder.UpdateSelector(selector)
         })
         row:SetBackdropColor(0, 0, 0, 0)
         row:SetScript("OnEnter", function(r)
-            r:SetBackdropColor(1, 0.8235, 0, 1)
+            r:SetBackdropColor(SRTColor.GameYellow.r, SRTColor.GameYellow.g, SRTColor.GameYellow.b, SRTColor.GameYellow.a)
             if item.highlight then
                 r.text:SetTextColor(0.2, 0.5, 0.2, 1)
             else
@@ -383,7 +383,7 @@ function FrameBuilder.UpdateSelector(selector)
             if item.highlight then
                 r.text:SetTextColor(0.3, 0.8, 0.3, 1)
             else
-                r.text:SetTextColor(0.8, 0.8, 0.8, 1)
+                r.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
             end
         end)
         row:SetScript("OnMouseDown", function (r)
@@ -404,7 +404,7 @@ function FrameBuilder.UpdateSelector(selector)
         if item.highlight then
             row.text:SetTextColor(0.3, 0.8, 0.3, 1)
         else
-            row.text:SetTextColor(0.8, 0.8, 0.8, 1)
+            row.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
         end
         row.text:SetJustifyH("LEFT")
         selector.dropdown.rows[rowIndex] = row
@@ -444,7 +444,7 @@ function FrameBuilder.CreateFilterMenu(parentFrame, structure, font, updateFunct
         popup.items.close.text = popup.items.close:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         popup.items.close.text:SetText("Close")
         popup.items.close.text:SetFont(font, 12)
-        popup.items.close.text:SetTextColor(1, 1, 1, 0.8)
+        popup.items.close.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
         popup.items.close.text:SetPoint("TOPLEFT", 3, -3)
         popup.items.close:SetScript("OnEnter", function ()
             for _, otherItem in pairs(popup.items) do
@@ -485,7 +485,7 @@ function FrameBuilder.CreateFilterMenuItem(popupFrame, previousItem, name, nameF
         item.text:SetText(name)
     end
     item.text:SetFont(font, 12)
-    item.text:SetTextColor(1, 1, 1, 0.8)
+    item.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     item.text:SetPoint("TOPLEFT", 3, -3)
     if type(structure) == "boolean" then
         item.value = structure
@@ -517,7 +517,7 @@ function FrameBuilder.CreateFilterMenuItem(popupFrame, previousItem, name, nameF
         item.arrow = item:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         item.arrow:SetText(">")
         item.arrow:SetFont(font, 12)
-        item.arrow:SetTextColor(1, 1, 1, 0.8)
+        item.arrow:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
         item.arrow:SetPoint("TOPRIGHT", -3, -3)
 
         item.popup = FrameBuilder.CreateFilterMenu(item, structure, font, updateFunction, depth+1)
@@ -665,7 +665,7 @@ function FrameBuilder.CreateBossAbilityAssignmentsFrame(parentFrame, name, abili
     })
     frame:SetBackdropColor(0, 0, 0, 0)
     frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    frame.title:SetTextColor(0.8, 0.8, 0.8, 1)
+    frame.title:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     frame.title:SetPoint("TOPLEFT", 5, -3)
     frame.groups = {}
     frame.IsMouseOverFrame = function ()
@@ -749,9 +749,9 @@ function FrameBuilder.CreatePopupMenuItem(popupMenu, text, onClick, isSetting)
     item.text = item:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     item.text:SetFont(AppearancePopupFontType(), 10)
     if isSetting then
-        item.text:SetTextColor(0.8, 0.8, 0.8, 1)
+        item.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     else
-        item.text:SetTextColor(1, 0.8235, 0, 1)
+        item.text:SetTextColor(SRTColor.GameYellow.r, SRTColor.GameYellow.g, SRTColor.GameYellow.b, SRTColor.GameYellow.a)
     end
     item.text:SetPoint("BOTTOMLEFT", 15, 5)
     item.Update = function (t, oc)

@@ -207,7 +207,7 @@ function SRTOverview:UpdateMain()
             abilityFrame.name:SetPoint("TOPLEFT", abilityFrame, "TOPLEFT", 10, 0)
             abilityFrame.name:SetText(ability.metadata.name)
             abilityFrame.name:SetFont(self:GetHeaderFont(), self:GetAppearance().headerFontSize)
-            abilityFrame.name:SetTextColor(1, 1, 1, 0.8)
+            abilityFrame.name:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
             abilityFrameHeight = abilityFrameHeight + self:GetAppearance().headerFontSize
 
             abilityFrame.groups = abilityFrame.groups or {}

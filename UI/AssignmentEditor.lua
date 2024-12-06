@@ -63,7 +63,7 @@ function AssignmentEditor:Initialize()
 
     self.player.name = self.player.name or self.selectedPlayerPane:CreateFontString("SRT_AssignmentEditor_PlayerPane_Name", "OVERLAY", "GameFontNormalLarge")
     self.player.name:SetPoint("TOPLEFT", self.selectedPlayerPane, "TOPLEFT", 0, -5)
-    self.player.name:SetTextColor(1, 1, 1, 0.8)
+    self.player.name:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     self.player.cooldowns = self.player.cooldowns or {}
 
     self.applyBuffChangesButton = FrameBuilder.CreateButton(self.selectedPlayerPane, 75, 25, "Apply", SRTColor.Green, SRTColor.GreenHighlight)
@@ -220,7 +220,7 @@ function AssignmentEditor:UpdateEncounterPane()
         abilityFrame.name:SetPoint("TOPLEFT", abilityFrame, "TOPLEFT", 0, 0)
         abilityFrame.name:SetText(ability.metadata.name)
         abilityFrame.name:SetFont(self:GetHeaderFontType(), 12)
-        abilityFrame.name:SetTextColor(1, 1, 1, 0.8)
+        abilityFrame.name:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
         self:SetDefaultFontStyle(abilityFrame.name)
         bossAbilityFrameHeight = bossAbilityFrameHeight + 12
 
@@ -387,13 +387,13 @@ function AssignmentEditor:UpdateRosterPane()
     self.rosterPane.title:SetPoint("TOPLEFT", self.rosterPane, "TOPLEFT", 0, -5)
     self.rosterPane.title:SetFont(self:GetHeaderFontType(), 14)
     self.rosterPane.title:SetHeight(self.rosterPane.title:GetStringHeight())
-    self.rosterPane.title:SetTextColor(0.8, 0.8, 0.8, 1)
+    self.rosterPane.title:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     self.rosterPane.guildTitle = self.rosterPane.guildTitle or self.rosterPane:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.rosterPane.guildTitle:SetText("Swiftdawn")
     self.rosterPane.guildTitle:SetPoint("TOPLEFT", self.rosterPane.title, "BOTTOMLEFT", 10, -7)
     self.rosterPane.guildTitle:SetFont(self:GetHeaderFontType(), 13)
     self.rosterPane.guildTitle:SetHeight(self.rosterPane.guildTitle:GetStringHeight())
-    self.rosterPane.guildTitle:SetTextColor(0.8, 0.8, 0.8, 1)
+    self.rosterPane.guildTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
 
     self.rosterPane.roster = self.rosterPane.roster or {}
     
@@ -460,7 +460,7 @@ function AssignmentEditor:UpdateApplyChangePane()
     self.applyChangePane.questionPartOne:SetPoint("TOPLEFT", self.applyChangePane, "TOPLEFT", 0, -5)
     self.applyChangePane.questionPartOne:SetFont(self:GetHeaderFontType(), 14)
     self.applyChangePane.questionPartOne:SetHeight(self.applyChangePane.questionPartOne:GetStringHeight())
-    self.applyChangePane.questionPartOne:SetTextColor(1, 1, 1, 0.8)
+    self.applyChangePane.questionPartOne:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     
     local iconSize = self:GetAppearance().iconSize * 3
     self.applyChangePane.originalSpellFrame = self.applyChangePane.originalSpellFrame or FrameBuilder.CreateLargeSpellFrame(self.applyChangePane)
@@ -475,7 +475,7 @@ function AssignmentEditor:UpdateApplyChangePane()
     self.applyChangePane.questionPartTwo:SetPoint("TOPLEFT", self.applyChangePane.originalSpellFrame, "BOTTOMLEFT", -5, -7)
     self.applyChangePane.questionPartTwo:SetFont(self:GetHeaderFontType(), 14)
     self.applyChangePane.questionPartTwo:SetHeight(self.applyChangePane.questionPartTwo:GetStringHeight())
-    self.applyChangePane.questionPartTwo:SetTextColor(1, 1, 1, 0.8)
+    self.applyChangePane.questionPartTwo:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     
     self.applyChangePane.replacementSpellFrame = self.applyChangePane.replacementSpellFrame or FrameBuilder.CreateLargeSpellFrame(self.applyChangePane)
     FrameBuilder.UpdateLargeSpellFrame(self.applyChangePane.replacementSpellFrame, replacementSpellInfo.spellID, self:GetPlayerFont(), self:GetAppearance().playerFontSize, iconSize)
