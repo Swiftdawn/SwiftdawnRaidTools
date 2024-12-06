@@ -167,7 +167,7 @@ function RosterBuilder:InitializeLoadOrCreateRoster()
         self.state = State.IMPORT_ROSTER
         self:UpdateAppearance()
     end)
-    self.loadCreate.createButton = FrameBuilder.CreateButton(self.loadCreate.info.pane, 70, 25, "Create", SRTColor.Green, SRTColor.GreenHighlight)
+    self.loadCreate.createButton = FrameBuilder.CreateButton(self.loadCreate.info.pane, 70, 25, "New", SRTColor.Green, SRTColor.GreenHighlight)
     self.loadCreate.createButton:SetPoint("BOTTOMRIGHT", self.loadCreate.info.pane, "BOTTOMRIGHT", 0, 5)
     self.loadCreate.createButton:SetScript("OnMouseDown", function ()
         self.selectedRoster = SRTData.CreateNewRoster()
