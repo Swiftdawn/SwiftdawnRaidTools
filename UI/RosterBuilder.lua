@@ -400,7 +400,7 @@ function RosterBuilder:InitializeCreateAssignments()
     self.assignments.players.pane:SetClipsChildren(false)
     self:SetToLeftSide(self.assignments.players.pane, self.content)
     self.assignments.bossSelector = FrameBuilder.CreateSelector(self.assignments.players.pane, {}, 280, self:GetHeaderFontType(), 16, "Select encounter...")
-    self.assignments.bossSelector:SetPoint("TOPLEFT", 0, -5)
+    self.assignments.bossSelector:SetPoint("TOPLEFT", 0, -4)
     self.assignments.players.title = self.assignments.players.pane:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.assignments.players.title:SetFont(self:GetHeaderFontType(), 14)
     self.assignments.players.title:SetTextColor(0.8, 0.8, 0.8, 1)
@@ -421,8 +421,8 @@ function RosterBuilder:InitializeCreateAssignments()
     self.assignments.encounter.title:SetText("")
     self.assignments.encounter.title:SetPoint("TOPLEFT", self.assignments.encounter.pane, "TOPLEFT", 10, -8)
     self.assignments.encounter.scroll = FrameBuilder.CreateScrollArea(self.assignments.encounter.pane, "Encounter")
-    self.assignments.encounter.scroll:SetPoint("TOPLEFT", 0, -5)
-    self.assignments.encounter.scroll:SetPoint("TOPRIGHT", 0, -5)
+    self.assignments.encounter.scroll:SetPoint("TOPLEFT", 0, -2)
+    self.assignments.encounter.scroll:SetPoint("TOPRIGHT", 0, -2)
     self.assignments.encounter.scroll:SetPoint("BOTTOMLEFT", 0, 35)
     self.assignments.encounter.scroll:SetPoint("BOTTOMRIGHT", 0, 35)
 
@@ -933,7 +933,7 @@ function RosterBuilder:UpdateCreateAssignments()
         for bossAbilityIndex, bossAbility in ipairs(encounterAssignments) do
             -- Create frame for boss ability assignment groups
             local abilityFrameID = string.format("%d-%d", self.selectedEncounterID, bossAbilityIndex)
-            local abilityFrame = self.assignments.encounter.scroll.items[abilityFrameID] or FrameBuilder.CreateBossAbilityAssignmentsFrame(self.assignments.encounter.scroll.content, bossAbility.metadata.name, bossAbilityIndex, 260, self:GetPlayerFont(), 14)
+            local abilityFrame = self.assignments.encounter.scroll.items[abilityFrameID] or FrameBuilder.CreateBossAbilityAssignmentsFrame(self.assignments.encounter.scroll.content, bossAbility.metadata.name, bossAbilityIndex, 260, self:GetPlayerFont(), 16)
             if lastAbilityFrame then
                 abilityFrame:SetPoint("TOPLEFT", lastAbilityFrame, "BOTTOMLEFT", 0, -3)
             else
