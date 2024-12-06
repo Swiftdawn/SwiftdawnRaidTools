@@ -673,7 +673,7 @@ function RosterBuilder:UpdateAddOrRemovePlayers()
         lastPlayerFrame = playerFrame
     end
 
-    self.addRemove.roster.title:SetText(string.format("Roster (%d)", visiblePlayers))
+    self.addRemove.roster.title:SetText(string.format("%s (%d)", self.selectedRoster.name, visiblePlayers))
     self.addRemove.roster.scroll.content:SetHeight(23 * visiblePlayers)
 
     local shouldShowPlayer = function(guildMember)
