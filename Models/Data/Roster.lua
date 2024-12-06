@@ -16,9 +16,9 @@ function Roster:New(name, lastUpdated, owner)
     return obj
 end
 
-function Roster.MarkUpdated(roster)
+function Roster.MarkUpdated(roster, changes)
     roster.lastUpdated = time()
-    Log.debug("Roster updated at "..Roster.GetLastUpdatedTimestamp(roster), { rosterID = roster.id })
+    Log.debug("Roster updated at "..Roster.GetLastUpdatedTimestamp(roster), { rosterID = roster.id, changes = changes })
 end
 
 function Roster.GetLastUpdated(roster)

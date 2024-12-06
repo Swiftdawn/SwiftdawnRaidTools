@@ -937,6 +937,7 @@ function RosterBuilder:UpdateCreateAssignments()
                             self:UpdateCreateAssignments()
                         elseif button == "RightButton" then
                             af:Hide()
+                            local changes = { removed = encounterAssignments[bossAbilityIndex].assignments[groupIndex][af.index] }
                             if af.index == 1 and #encounterAssignments[bossAbilityIndex].assignments[groupIndex] > 1 then
                                 encounterAssignments[bossAbilityIndex].assignments[groupIndex][af.index] = encounterAssignments[bossAbilityIndex].assignments[groupIndex][af.index + 1]
                                 encounterAssignments[bossAbilityIndex].assignments[groupIndex][af.index + 1] = nil
@@ -957,7 +958,7 @@ function RosterBuilder:UpdateCreateAssignments()
                                     end
                                 end
                             end
-                            Roster.MarkUpdated(self.selectedRoster)
+                            Roster.MarkUpdated(self.selectedRoster, changes)
                             self:UpdateCreateAssignments()
                         end
                     end)
@@ -1019,7 +1020,7 @@ function RosterBuilder:UpdateCreateAssignments()
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
                         }
-                        Roster.MarkUpdated(self.selectedRoster)
+                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][assignmentIndex] })
                     elseif groupIndex == 0 then
                         self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1] = {}
                         table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1], {
@@ -1027,7 +1028,7 @@ function RosterBuilder:UpdateCreateAssignments()
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
                         })
-                        Roster.MarkUpdated(self.selectedRoster)
+                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1][1] })
                     elseif not self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] or #self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] < 2 then
                         self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] or {}
                         table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex], {
@@ -1035,7 +1036,7 @@ function RosterBuilder:UpdateCreateAssignments()
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
                         })
-                        Roster.MarkUpdated(self.selectedRoster)
+                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][#self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex]] })
                     elseif #self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] >= 2 then
                         self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1] = {}
                         table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1], {
@@ -1043,7 +1044,7 @@ function RosterBuilder:UpdateCreateAssignments()
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
                         })
-                        Roster.MarkUpdated(self.selectedRoster)
+                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1][1] })
                     end
                     self.state = State.CREATE_ASSIGNMENTS
                     self:UpdateCreateAssignments()
