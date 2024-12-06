@@ -216,7 +216,6 @@ function RosterBuilder:InitializeImportRoster()
     self.import.input.editBox:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize, "") -- Set font
     self.import.input.editBox:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     self.import.input.editBox:SetAutoFocus(false) -- Disable auto-focus
-    -- self.import.input.editBox:SetText("<Import String>") -- Initialize with empty text
     -- Create a hidden FontString for measurement
     self.import.input.editBox.fontString = self.import.input.editBox:CreateFontString(nil, "ARTWORK", "ChatFontNormal")
     self.import.input.editBox.fontString:SetWidth(270) -- Match the EditBox width for accurate line wrapping
@@ -232,23 +231,46 @@ function RosterBuilder:InitializeImportRoster()
         
         local ok, parseResult = SRTImport:ParseYAML(text)
         if not ok then
+            self.import.info.roster:Hide()
+            self.import.info.error:Show()
             self.import.info.error:SetText(parseResult)
             self.import.importButton.color = SRTColor.Gray
             self.import.importButton.colorHighlight = SRTColor.Gray
             FrameBuilder.UpdateButton(self.import.importButton)
             self.import.importButton:SetScript("OnMouseUp", nil)
         else
+            local encounters = SRTImport:AddIDs(parseResult)
+            self.importRoster = Roster.Parse(encounters, nil, Utils:GetFullPlayerName())
+            self.import.info.error:Hide()
             self.import.info.error:SetText("No errors")
             self.import.importButton.color = SRTColor.Green
             self.import.importButton.colorHighlight = SRTColor.GreenHighlight
             FrameBuilder.UpdateButton(self.import.importButton)
             self.import.importButton:SetScript("OnMouseUp", function ()
                 local encounters = SRTImport:AddIDs(parseResult)
-                local parsedRoster = Roster.Parse(encounters, "Imported Roster", time(), Utils:GetFullPlayerName())
+                local parsedRoster = Roster.Parse(encounters, self.importRosterName or "Imported Roster", time(), Utils:GetFullPlayerName())
                 SRTData.AddRoster(parsedRoster.id, parsedRoster)
                 self.state = State.LOAD_OR_CREATE_ROSTER
                 self:UpdateAppearance()
             end)
+            self.import.info.roster:Show()
+            local playerNames = nil
+            for _, player in pairs(self.importRoster.players) do
+                if playerNames then
+                    playerNames = string.format("%s, %s", playerNames, strsplit("-", player.name))
+                else
+                    playerNames = string.format("Players: \n\n%s", strsplit("-", player.name))
+                end
+            end
+            local encounters = nil
+            for _, encounterID in pairs(self:EncounterIDsWithFilledAssignments(self.importRoster.encounters)) do
+                if encounters then
+                    encounters = string.format("%s, %s", encounters, BossInfo.GetNameByID(encounterID))
+                else
+                    encounters = string.format("\nEncounters: \n\n%s", BossInfo.GetNameByID(encounterID))
+                end
+            end
+            self.import.info.roster:SetText(playerNames.."\n\n"..encounters)
         end
     end)
     self.import.input.editBox:SetScript("OnEscapePressed", function()
@@ -261,16 +283,68 @@ function RosterBuilder:InitializeImportRoster()
     self:SetToRightSide(self.import.info.pane, self.content)
     self.import.info.title = self.import.info.pane:CreateFontString(self.import.info.pane:GetName().."_Title", "OVERLAY", "GameFontNormal")
     self.import.info.title:SetPoint("TOPLEFT", self.import.info.pane, "TOPLEFT", 5 , -5)
-    self.import.info.title:SetText("Roster Info")
+    self.import.info.title:SetText(self.importRosterName or "Imported Roster")
     self.import.info.title:SetFont(self:GetHeaderFont(), 16)
     self.import.info.title:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.import.info.titleEditBox = CreateFrame("EditBox", self.import.info.pane:GetName().."TitleEditBox", self.import.info.pane)
+    self.import.info.titleEditBox:SetSize(260, 16)
+    self.import.info.titleEditBox:SetPoint("TOPLEFT", self.import.info.pane, "TOPLEFT", 5 , -5)
+    self.import.info.titleEditBox:SetMultiLine(false)
+    self.import.info.titleEditBox:SetFont(self:GetHeaderFont(), 16, "")
+    self.import.info.titleEditBox:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.import.info.titleEditBox:SetAutoFocus(true)
+    self.import.info.titleEditBox:SetScript("OnEnterPressed", function()
+        self.importRosterName = self.import.info.titleEditBox:GetText()
+        self.import.info.titleEditBox:ClearFocus()
+        self.import.info.titleEditBox:Hide()
+        self.import.info.title:Show()
+        self:UpdateImportRoster()
+    end)
+    self.import.info.titleEditBox:SetScript("OnEscapePressed", function()
+        self.import.info.titleEditBox:ClearFocus()
+        self.import.info.titleEditBox:Hide()
+        self.import.info.title:Show()
+    end)
+    self.import.info.titleEditBox:Hide()
+    self.import.info.editTitleButton = CreateFrame("Button", self.import.info.pane:GetName().."_EditTitle", self.import.info.pane, "BackdropTemplate")
+    self.import.info.editTitleButton:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = 16,
+    })
+    self.import.info.editTitleButton:SetBackdropColor(0, 0, 0, 0)
+    self.import.info.editTitleButton.texture = self.import.info.editTitleButton:CreateTexture(nil, "BACKGROUND")
+    self.import.info.editTitleButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\marker-drawing-on-paper.png")
+    self.import.info.editTitleButton.texture:SetAllPoints()
+    self.import.info.editTitleButton.texture:SetAlpha(0.8)
+    self.import.info.editTitleButton:SetSize(16, 16)
+    self.import.info.editTitleButton:SetPoint("TOPRIGHT", self.import.info.pane, "TOPRIGHT", -5, -5)
+    self.import.info.editTitleButton:SetScript("OnMouseUp", function ()
+        self.import.info.titleEditBox:SetText(self.importRosterName or "Imported Roster")
+        self.import.info.titleEditBox:Show()
+        self.import.info.titleEditBox:SetFocus()
+        self.import.info.title:Hide()
+    end)
+    self.import.info.editTitleButton:SetScript("OnEnter", function ()
+        self.import.info.editTitleButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\marker-drawing-on-paper_hover.png")
+    end)
+    self.import.info.editTitleButton:SetScript("OnLeave", function ()
+        self.import.info.editTitleButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\marker-drawing-on-paper.png")
+    end)
     self.import.info.error = self.import.info.pane:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     self.import.info.error:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
     self.import.info.error:SetText("No errors")
     self.import.info.error:SetJustifyH("LEFT")
     self.import.info.error:SetTextColor(SRTColor.Red.r, SRTColor.Red.g, SRTColor.Red.b, SRTColor.Red.a)
     self.import.info.error:SetPoint("TOPLEFT", self.import.info.title, "BOTTOMLEFT", 0, -10)
-
+    self.import.info.roster = self.import.info.pane:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    self.import.info.roster:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+    self.import.info.roster:SetText("Parsed roster information")
+    self.import.info.roster:SetWidth(260)
+    self.import.info.roster:SetJustifyH("LEFT")
+    self.import.info.roster:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.import.info.roster:SetPoint("TOPLEFT", self.import.info.title, "BOTTOMLEFT", 0, -10)
+    self.import.info.roster:Hide()
     -- Create buttons
     self.import.importButton = FrameBuilder.CreateButton(self.import.info.pane, 70, 25, "Import", SRTColor.Gray, SRTColor.Gray)
     self.import.importButton:SetPoint("BOTTOMRIGHT", self.import.info.pane, "BOTTOMRIGHT", 0, 5)
@@ -474,9 +548,9 @@ end
 
 local rosterInfo = {}
 
-function RosterBuilder:EncounterIDsWithFilledAssignments()
+function RosterBuilder:EncounterIDsWithFilledAssignments(encounters)
     local ids = {}
-    for encounterID, encounter in pairs(self.selectedRoster.encounters) do
+    for encounterID, encounter in pairs(encounters) do
         for _, abilityFrame in pairs(encounter) do
             if #abilityFrame.assignments > 0 then
                 table.insert(ids, encounterID)
@@ -633,7 +707,7 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         rosterInfo.encounters = rosterInfo.encounters or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         rosterInfo.encounters:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
         local encounters = nil
-        for _, encounterID in pairs(self:EncounterIDsWithFilledAssignments()) do
+        for _, encounterID in pairs(self:EncounterIDsWithFilledAssignments(self.selectedRoster.encounters)) do
             if encounters then
                 encounters = string.format("%s, %s", encounters, BossInfo.GetNameByID(encounterID))
             else
@@ -808,7 +882,7 @@ function RosterBuilder:UpdateCreateAssignments()
         return true
     end
 
-    local filledIDs = self:EncounterIDsWithFilledAssignments()
+    local filledIDs = self:EncounterIDsWithFilledAssignments(self.selectedRoster.encounters)
     for _, item in pairs(self.assignments.bossSelector.items) do
         item.highlight = false
     end
@@ -1123,6 +1197,7 @@ function RosterBuilder:UpdateImportRoster()
         self.import.info.pane:Hide()
         return
     end
+    self.import.info.title:SetText(self.importRosterName or "Imported Roster")
 end
 
 function RosterBuilder:GetAssignmentGroupHeight()
