@@ -294,7 +294,12 @@ function RosterBuilder:InitializeImportRoster()
     self.import.info.titleEditBox:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     self.import.info.titleEditBox:SetAutoFocus(true)
     self.import.info.titleEditBox:SetScript("OnEnterPressed", function()
-        self.importRosterName = self.import.info.titleEditBox:GetText()
+        local newName = self.import.info.titleEditBox:GetText()
+        newName = newName:gsub("%s+", "")
+        if #newName == 0 then
+            newName = "Imported Roster"
+        end
+        self.importRosterName = newName
         self.import.info.titleEditBox:ClearFocus()
         self.import.info.titleEditBox:Hide()
         self.import.info.title:Show()
