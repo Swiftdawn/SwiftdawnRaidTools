@@ -304,8 +304,8 @@ function SwiftdawnRaidTools:ENCOUNTER_START(_, encounterID, encounterName, ...)
     AssignmentsController:StartEncounter(encounterID, encounterName)
 end
 
-function SwiftdawnRaidTools:ENCOUNTER_END(_, ...)
-    AssignmentsController:EndEncounter()
+function SwiftdawnRaidTools:ENCOUNTER_END(_, encounterID, encounterName, difficultyID, groupSize, success)
+    AssignmentsController:EndEncounter(encounterID, encounterName, success)
     SpellCache.Reset()
     UnitCache:ResetDeadCache()
     self.overview:UpdateSpells()
@@ -323,7 +323,7 @@ function SwiftdawnRaidTools:UNIT_HEALTH(_, unitId, ...)
     local guid = UnitGUID(unitId)
 
     if UnitCache:IsDead(guid) and UnitHealth(unitId) > 0 and not UnitIsGhost(unitId) then
-        Log.debug("Handling cached unit coming back to life", { guid = guid, unitId = unitId, extra = ... })
+        Log.debug(UnitName(unitId) .. " coming back to life", { guid = guid, unitId = unitId, extra = ... })
         UnitCache:SetAlive(guid)
         AssignmentsController:UpdateGroups()
         self.overview:UpdateSpells()

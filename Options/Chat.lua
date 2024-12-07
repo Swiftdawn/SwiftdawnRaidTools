@@ -4,7 +4,7 @@ local reqVersionsTimer = nil
 
 function SwiftdawnRaidTools:ChatHandleCommand(input)
     if not input or input:trim() == "" then
-        Log.info("Usage: /srt [config,show,hide,versions]")
+        Log.info("Usage: /srt [config,show,hide,versions,debug]")
     else
         local trimmed = input:trim()
         
@@ -32,15 +32,11 @@ function SwiftdawnRaidTools:ChatHandleCommand(input)
             end
         elseif trimmed == "debug" then
             SRT_SetDebugMode(not SRT_IsDebugging())
-            Log.info("debug", SRT_IsDebugging())
+            Log.info("Debug logging: " .. SRT_IsDebugging() and "On" or "Off")
         elseif trimmed == "teststart" then
             self:InternalTestStart()
         elseif trimmed == "testend" then
             self:InternalTestEnd()
-        elseif trimmed == "stringfind" then
-            local str = "throws a |cff6699FFred|r vial into the cauldron!"
-            local match = "red|r vial into the cauldron!"
-            Log.info(str:find(match))
         end
     end
 end

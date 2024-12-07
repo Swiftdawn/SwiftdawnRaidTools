@@ -84,8 +84,6 @@ function AssignmentsController:StartEncounter(encounterID, encounterName)
     AssignmentsController.activeEncounterID = encounterID
     AssignmentsController.encounterStart = Utils:Timestamp()
 
-    Log.debug("Encounter starting at " .. AssignmentsController.encounterStart)
-
     AssignmentsController:UpdateGroups()
 
     -- Populate caches
@@ -169,15 +167,19 @@ function AssignmentsController:StartEncounter(encounterID, encounterName)
             end
         end
     end
-    Log.debug("Starting encounter with ID: '"..encounterID.."' Name: '"..encounterName.."'")
+
+    Log.info(string.format("Encounter '%s' (id:%s) starting at %s", tostring(encounterName), tostring(encounterID), tostring(AssignmentsController.encounterStart)))
 end
 
-function AssignmentsController:EndEncounter()
+function AssignmentsController:EndEncounter(encounterID, encounterName, success)
     if not AssignmentsController.activeEncounterID then
         return
     end
-
-    Log.debug("Encounter ended at "..Utils:Timestamp())
+    if not encounterID then
+        Log.info("Encounter ended, zone changed!")
+    else
+        Log.info(string.format("Encounter '%s' (id:%s) ended with %s at %s", tostring(encounterName), tostring(encounterID), success and "SUCCESS" or "FAILURE", Utils:Timestamp()))
+    end
 
     AssignmentsController:ResetState()
     Groups.Reset()
