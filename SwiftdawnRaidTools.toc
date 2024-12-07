@@ -39,7 +39,6 @@ UI\DebugLog.lua
 UI\Minimap.lua
 UI\Overview.lua
 UI\Notifications.lua
-UI\AssignmentEditor.lua
 UI\RosterBuilder.lua
 Utils\FrameBuilder.lua
 Utils\SRTData.lua
