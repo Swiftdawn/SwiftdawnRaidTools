@@ -113,7 +113,7 @@ function SwiftdawnRaidTools:TestModeEnd()
 
         cancelTimers()
 
-        AssignmentsController:EndEncounter()
+        AssignmentsController:EndEncounter(42001, "The Boss", true)
         SpellCache.Reset()
         UnitCache:ResetDeadCache()
         self.overview:Update()
