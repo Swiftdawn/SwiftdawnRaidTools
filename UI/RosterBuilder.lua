@@ -897,7 +897,7 @@ function RosterBuilder:UpdateCreateAssignments()
             end
         end
     end
-    self.assignments.bossSelector.Update()
+    FrameBuilder.UpdateSelector(self.assignments.bossSelector)
 
     for _, playerFrame in pairs(self.assignments.players.scroll.items) do
         playerFrame:Hide()
@@ -1226,7 +1226,7 @@ function RosterBuilder:Update()
             table.insert(self.assignments.bossSelector.items, item)
         end
     end
-    self.assignments.bossSelector.selectedName = self.selectedEncounterID and BossInfo.GetEncounterInfoByID(self.selectedEncounterID) or "Select encounter..."
+    self.assignments.bossSelector.selectedName = self.selectedEncounterID and BossInfo.GetEncounterInfoByID(self.selectedEncounterID).name or "Select encounter..."
     self.assignments.bossSelector.Update()
 end
 
