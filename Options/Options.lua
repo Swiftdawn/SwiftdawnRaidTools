@@ -103,12 +103,6 @@ local mainOptions = {
                     end,
                     order = 2,
                 },
-                separator01 = {
-                    type = "description",
-                    name = " ",
-                    width = "full",
-                    order = 3,
-                },
                 resetAppearance = {
                     type = "execute",
                     name = "Reset Appearance",
@@ -906,11 +900,30 @@ local troubleshootOptions = {
     name = "Troubleshooting Options",
     type = "group",
     args = {
+        forceSyncDescription = {
+            type = "description",
+            name = "Synchronize Now",
+            width = "normal",
+            order = 1
+        },
+        forceSync = {
+            type = "execute",
+            name = "Force Sync",
+            width = "double",
+            desc = "Synchronize raid assignments with Raid.",
+            func = function()
+                SyncController:SyncAssignmentsNow()
+            end,
+            disabled = function()
+                return not Utils:IsPlayerRaidLeader()
+            end,
+            order = 2,
+        },
         activeRosterIDInputDescription = {
             type = "description",
             name = "Active Roster ID",
             width = "normal",
-            order = 1
+            order = 11
         },
         activeRosterIDInput = {
             type = "input",
@@ -923,13 +936,13 @@ local troubleshootOptions = {
                 SRTData.SetActiveRosterID(value)
                 SwiftdawnRaidTools.overview:Update()
             end,
-            order = 2
+            order = 12
         },
         activeRosterIDSelectDescription = {
             type = "description",
             name = "Active Roster ID",
             width = "normal",
-            order = 11
+            order = 21
         },
         activeRosterIDSelect = {
             type = "select",
@@ -947,26 +960,7 @@ local troubleshootOptions = {
                 SRTData.SetActiveRosterID(key)
                 SwiftdawnRaidTools.overview:Update()
             end,
-            order = 12
-        },
-        forceSyncDescription = {
-            type = "description",
-            name = "Synchronize Now",
-            width = "normal",
-            order = 14
-        },
-        forceSync = {
-            type = "execute",
-            name = "Force Sync",
-            width = "normal",
-            desc = "Synchronize raid assignments with Raid.",
-            func = function()
-                SyncController:SyncAssignmentsNow()
-            end,
-            disabled = function()
-                return not Utils:IsPlayerRaidLeader()
-            end,
-            order = 15,
+            order = 22
         },
     }
 }
