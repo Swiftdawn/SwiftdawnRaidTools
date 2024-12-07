@@ -144,32 +144,6 @@ local mainOptions = {
                 },
             },
         },
-        separator00 = {
-            type = "description",
-            name = " ",
-            width = "full",
-            order = 2,
-        },
-        openAssignmentEditor = {
-            type = "execute",
-            name = "Assignment Editor",
-            desc = "Open Assignment Editor window.",
-            func = function()
-                SwiftdawnRaidTools.db.profile.assignmenteditor.show = true
-                SwiftdawnRaidTools.assignmentEditor:Update()
-            end,
-            order = 3,
-        },
-        openRosterBuilder = {
-            type = "execute",
-            name = "Roster Builder",
-            desc = "Open Roster Builder window.",
-            func = function()
-                SwiftdawnRaidTools.db.profile.rosterbuilder.show = true
-                SwiftdawnRaidTools.rosterBuilder:Update()
-            end,
-            order = 4,
-        },
         separator01 = {
             type = "description",
             name = " ",

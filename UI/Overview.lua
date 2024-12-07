@@ -161,14 +161,6 @@ function SRTOverview:UpdatePopupMenu()
         isSetting = true
     })
     table.insert(menuItems, {
-        name = "Assignment Editor",
-        onClick = function()
-            SRT_Profile().assignmenteditor.show = true
-            SwiftdawnRaidTools.assignmentEditor:Update()
-        end,
-        isSetting = true
-    })
-    table.insert(menuItems, {
         name = "Configuration",
         onClick = function() Settings.OpenToCategory("Swiftdawn Raid Tools") end,
         isSetting = true
