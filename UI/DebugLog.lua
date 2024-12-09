@@ -134,9 +134,10 @@ function SRTDebugLog:UpdatePopupMenu()
         { name = "Clear Log", onClick = function() self:ClearWindow() end },
         { name = self:GetProfile().scrollToBottom and "Don't autoscroll" or "Autoscroll", onClick = function() self:ToggleAutoScroll() end },
         {},
+        { name = "Configuration", onClick = function() Settings.OpenToCategory("Swiftdawn Raid Tools") end, isSetting = true },
+        {},
         { name = self:GetProfile().locked and "Unlock Window" or "Lock Window", onClick = function() self:ToggleLock() end, isSetting = true },
         { name = "Close Window", onClick = function() self:CloseWindow() end, isSetting = true },
-        { name = "Configuration", onClick = function() Settings.OpenToCategory("Swiftdawn Raid Tools") end, isSetting = true },
         {},
         { name = "Close", onClick = nil, isSetting = true },
     })

@@ -32,6 +32,7 @@ local function performSync()
         end
         SwiftdawnRaidTools.overview:Update()
     end)
+    SRTData.UpdateSyncedRosterInfo(SRTData.GetActiveRosterID(), SRTData.GetActiveRoster().lastUpdated)
 end
 
 function SyncController:ScheduleAssignmentsSync()

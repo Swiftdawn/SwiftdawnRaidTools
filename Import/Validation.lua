@@ -66,12 +66,12 @@ local function validateTypeAndVersion(import)
     return true
 end
 
-local function validateEncounter(import, bossEncounters)
+local function validateEncounter(import)
     if type(import.encounter) ~= "number" or import.encounter ~= math.floor(import.encounter) then
         return false, "Import has an invalid encounter value: " .. stringSafe(import.encounter) .. ".."
     end
 
-    if not bossEncounters[import.encounter] then
+    if not BossInfo.GetEncounterInfoByID(import.encounter) then
         return false, "Import has an unknown encounter value: " .. stringSafe(import.encounter) .. "."
     end
 
@@ -388,15 +388,13 @@ end
 Validation = {}
 
 function Validation:ValidateImport(import)
-    local bossEncounters = BossEncounters:BossEncountersGetAll()
-
     local ok, err = validateRequiredFields(import)
     if not ok then return false, err end
 
     ok, err = validateTypeAndVersion(import)
     if not ok then return false, err end
 
-    ok, err = validateEncounter(import, bossEncounters)
+    ok, err = validateEncounter(import)
     if not ok then return false, err end
 
     ok, err = validateTriggers(import)

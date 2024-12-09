@@ -30,7 +30,6 @@ Options\Options.lua
 Import\SRTImport.lua
 Import\Validation.lua
 State\SpellCache.lua
-State\BossEncounters.lua
 State\Groups.lua
 State\UnitCache.lua
 Controllers\AssignmentsController.lua
@@ -40,6 +39,7 @@ UI\DebugLog.lua
 UI\Minimap.lua
 UI\Overview.lua
 UI\Notifications.lua
+UI\RosterBuilder.lua
 Utils\FrameBuilder.lua
 Utils\SRTData.lua
 Utils\Log.lua
@@ -47,10 +47,18 @@ Utils\Utils.lua
 Utils\YAML.lua
 Utils\WAHelper.lua
 Utils\BossInfo.lua
-Models\Frame\LogItem.lua
-Models\Data\Spell.lua
-Models\Data\Spec.lua
+Models\Conditions\Condition.lua
+Models\Conditions\UnitHealthCondition.lua
+Models\Conditions\SpellCastCountCondition.lua
+Models\Data\BossAbility.lua
 Models\Data\Class.lua
+Models\Data\Encounter.lua
 Models\Data\Player.lua
 Models\Data\Roster.lua
+Models\Data\Spec.lua
+Models\Data\Spell.lua
+Models\Enum\Comparison.lua
 Models\Enum\SRTColor.lua
+Models\Frame\LogItem.lua
+Models\Triggers\Trigger.lua
+Models\Triggers\UnitHealthTrigger.lua

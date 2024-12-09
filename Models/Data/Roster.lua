@@ -3,20 +3,22 @@ Roster = {}
 Roster.__index = Roster
 
 ---@return Roster
-function Roster:New()
+function Roster:New(name, lastUpdated, owner)
     ---@class Roster
     local obj = setmetatable({}, self)
     self.__index = self
-    obj.name = "Roster"
-    obj.lastUpdated = time()
+    obj.id = Utils:GenerateUUID()
+    obj.name = name
+    obj.lastUpdated = lastUpdated
+    obj.owner = owner
     obj.players = {}
     obj.encounters = {}
     return obj
 end
 
-function Roster.MarkUpdated(roster)
+function Roster.MarkUpdated(roster, changes)
     roster.lastUpdated = time()
-    Log.debug("Roster "..roster.id.." updated at "..Roster.GetLastUpdatedTimestamp(roster))
+    Log.debug("Roster updated at "..Roster.GetLastUpdatedTimestamp(roster), { rosterID = roster.id, changes = changes })
 end
 
 function Roster.GetLastUpdated(roster)
@@ -32,11 +34,9 @@ function Roster.AddPlayer(roster, player)
     roster.players[player.name] = player
 end
 
-function Roster.Parse(raw, name, lastUpdated)
-    local roster = Roster:New()
-    roster.name = name or "Roster"
+function Roster.Parse(raw, name, lastUpdated, owner)
+    local roster = Roster:New(name, lastUpdated or time(), owner)
     roster.encounters = raw
-    roster.lastUpdated = lastUpdated or time()
     for _, encounter in pairs(roster.encounters) do
         for _, ability in pairs(encounter) do
             for _, group in pairs(ability.assignments) do
@@ -47,4 +47,13 @@ function Roster.Parse(raw, name, lastUpdated)
         end
     end
     return roster
+end
+
+function Roster.Copy(roster)
+    local copiedRoster = Utils:DeepClone(roster)
+    copiedRoster.id = Utils:GenerateUUID()
+    copiedRoster.name = "Copied Roster"
+    copiedRoster.lastUpdated = time()
+    copiedRoster.owner = Utils:GetFullPlayerName()
+    return copiedRoster
 end

@@ -68,11 +68,20 @@ local mainOptions = {
     name = "Swiftdawn Raid Tools " .. SwiftdawnRaidTools.VERSION,
     type = "group",
     args =  {
+        customSplash = {
+            type = "description",
+            name = "",
+            fontSize = "large",
+            image = "Interface\\AddOns\\SwiftdawnRaidTools\\Media\\banner3.png", -- Path to the banner image
+            imageWidth = 600,
+            imageHeight = 223,
+            order = 1, -- Show this at the top
+        },
         buttonGroup = {
             type = "group",
             inline = true,
             name = "",
-            order = 1,
+            order = 2,
             args = {
                 toggleAnchors = {
                     type = "execute",
@@ -93,12 +102,6 @@ local mainOptions = {
                         end
                     end,
                     order = 2,
-                },
-                separator01 = {
-                    type = "description",
-                    name = " ",
-                    width = "full",
-                    order = 3,
                 },
                 resetAppearance = {
                     type = "execute",
@@ -148,26 +151,26 @@ local mainOptions = {
             type = "description",
             name = " ",
             width = "full",
-            order = 2,
+            order = 12,
         },
         showEnableWindowsDescription = {
             type = "description",
             name = "Enable or Disable Windows",
             width = "full",
             fontSize = "large",
-            order = 3,
+            order = 13,
         },
         separator02 = {
             type = "description",
             name = " ",
             width = "full",
-            order = 4,
+            order = 14,
         },
         showOverviewDescription = {
             type = "description",
             name = "Show Overview",
             width = "normal",
-            order = 10,
+            order = 20,
         },
         showOverview = {
             name = " ",
@@ -179,13 +182,13 @@ local mainOptions = {
                 SwiftdawnRaidTools.overview:Update()
             end,
             get = function(info) return SwiftdawnRaidTools.db.profile.overview.show end,
-            order = 11,
+            order = 21,
         },
         lockOverviewDescription = {
             type = "description",
             name = "Lock Overview",
             width = "normal",
-            order = 12,
+            order = 22,
         },
         lockOverview = {
             name = " ",
@@ -197,13 +200,13 @@ local mainOptions = {
                 SwiftdawnRaidTools.overview:Update()
             end,
             get = function(info) return SwiftdawnRaidTools.db.profile.overview.locked end,
-            order = 13,
+            order = 23,
         },
         showDebugLogDescription = {
             type = "description",
             name = "Show Debug Log",
             width = "normal",
-            order = 20,
+            order = 30,
         },
         showDebugLog = {
             name = " ",
@@ -215,13 +218,13 @@ local mainOptions = {
                 SwiftdawnRaidTools.debugLog:Update()
             end,
             get = function(info) return SwiftdawnRaidTools.db.profile.debuglog.show end,
-            order = 21,
+            order = 31,
         },
         lockDebugLogDescription = {
             type = "description",
             name = "Lock Debug Log",
             width = "normal",
-            order = 22,
+            order = 32,
         },
         lockDebugLog = {
             name = " ",
@@ -233,7 +236,7 @@ local mainOptions = {
                 SwiftdawnRaidTools.debugLog:Update()
             end,
             get = function(info) return SwiftdawnRaidTools.db.profile.debuglog.locked end,
-            order = 23,
+            order = 33,
         }
     },
 }
@@ -454,6 +457,34 @@ local appearanceOptions = {
             name = "Notifications",
             order = 2,
             args = {
+                showOnlyOwnNotificationsDescription = {
+                    type = "description",
+                    name = "Only show Raid Notifications that apply to you.",
+                    width = "double",
+                    order = 1,
+                },
+                showOnlyOwnNotificationsCheckbox = {
+                    type = "toggle",
+                    name = "Only Own Notifications",
+                    width = "normal",
+                    order = 2,
+                    get = function() return SwiftdawnRaidTools.db.profile.notifications.showOnlyOwnNotifications end,
+                    set = function(_, value) SwiftdawnRaidTools.db.profile.notifications.showOnlyOwnNotifications = value end,
+                },
+                muteDescription = {
+                    type = "description",
+                    name = "Mute all Raid Notification Sounds.",
+                    width = "double",
+                    order = 3,
+                },
+                muteCheckbox = {
+                    type = "toggle",
+                    name = "Mute Sounds",
+                    width = "normal",
+                    order = 4,
+                    get = function() return SwiftdawnRaidTools.db.profile.notifications.mute end,
+                    set = function(_, value)SwiftdawnRaidTools.db.profile.notifications.mute = value end,
+                },
                 notificationsPositionDescription = {
                     type = "description",
                     name = "Position",
@@ -824,46 +855,6 @@ local appearanceOptions = {
     },
 }
 
-local notificationOptions = {
-    name = "Notifications",
-    type = "group",
-    args =  {
-        showOnlyOwnNotificationsCheckbox = {
-            type = "toggle",
-            name = "Limit Notifications",
-            desc = "Only show Raid Notifications that apply to You.",
-            width = "full",
-            order = 1,
-            get = function() return SwiftdawnRaidTools.db.profile.notifications.showOnlyOwnNotifications end,
-            set = function(_, value) SwiftdawnRaidTools.db.profile.notifications.showOnlyOwnNotifications = value end,
-        },
-        showOnlyOwnNotificationsDescription = {
-            type = "description",
-            name = "Only show Raid Notifications that apply to you.",
-            order = 2,
-        },
-        separator = {
-            type = "description",
-            name = " ",
-            order = 3,
-        },
-        muteCheckbox = {
-            type = "toggle",
-            name = "Mute Sounds",
-            desc = "Mute all Raid Notification Sounds.",
-            width = "full",
-            order = 4,
-            get = function() return SwiftdawnRaidTools.db.profile.notifications.mute end,
-            set = function(_, value)SwiftdawnRaidTools.db.profile.notifications.mute = value end,
-        },
-        muteDescription = {
-            type = "description",
-            name = "Mute all Raid Notification Sounds.",
-            order = 5,
-        },
-    },
-}
-
 local fojjiIntegrationOptions = {
     name = "Fojji Integration (Experimental)",
     type = "group",
@@ -883,14 +874,14 @@ local fojjiIntegrationOptions = {
             fontSize = "medium",
             name = "|cffff0000WeakAuras is not installed.|r",
             order = 3,
-            hidden = function() return SwiftdawnRaidTools:WeakAurasIsInstalled() end
+            hidden = function() return WAHelper:IsWeakaurasInstalled() end
         },
         helperWeakAuraInstalledMessage = {
             type = "description",
             fontSize = "medium",
             name = "|cff00ff00Swiftdawn Raid Tools Helper WeakAura Installed.|r",
             order = 4,
-            hidden = function() return not SwiftdawnRaidTools:WeakaurasIsHelperInstalled() end
+            hidden = function() return not WAHelper:IsHelperInstalled() end
         },
         installWeakAuraButton = {
             type = "execute",
@@ -900,60 +891,7 @@ local fojjiIntegrationOptions = {
                 LibStub("AceConfigRegistry-3.0"):NotifyChange("SwiftdawnRaidTools Fojji Integration")
             end) end,
             order = 5,
-            hidden = function() return not SwiftdawnRaidTools:WeakAurasIsInstalled() or SwiftdawnRaidTools:WeakaurasIsHelperInstalled() end
-        },
-    },
-}
-
-local importDescription = [[
-Paste your raid assignments and other import data below. The import should be valid YAML.
-
-For the full Import API spec, visit https://github.com/gonstr/SwiftdawnRaidTools.
-]]
-
-local importOptions = {
-    name = "Import",
-    type = "group",
-    args = {
-        description = {
-            type = "description",
-            name = importDescription,
-            fontSize = "medium",
-            order = 1,
-        },
-        import = {
-            type = "input",
-            name = "Import",
-            desc = "Paste your import data here.",
-            multiline = 25,
-            width = "full",
-            dialogControl = "ImportMultiLineEditBox",
-            order = 2,
-            get = function() return SwiftdawnRaidTools.db.profile.options.import end,
-            set = function(_, val)
-                if val then
-                    val = val:trim()
-                end
-
-                SwiftdawnRaidTools:TestModeEnd()
-
-                SwiftdawnRaidTools.db.profile.options.import = val
-
-
-                if val ~= nil and val ~= "" then
-                    local _, result = SRTImport:ParseYAML(val)
-                    local encounters, encountersId = SRTImport:AddIDs(result)
-
-                    SRTData.SetActiveRosterID(encountersId)
-                    SRTData.AddRoster(encountersId, Roster.Parse(encounters, "Imported Roster"))
-                    if Utils:IsPlayerRaidLeader() then
-                        SyncController:SyncAssignmentsNow()
-                    else
-                        Log.info("Not syncing import. You are not the raid leader")
-                    end
-                    SwiftdawnRaidTools.overview:Update()
-                end
-            end,
+            hidden = function() return not WAHelper:IsWeakaurasInstalled() or WAHelper:IsHelperInstalled() end
         },
     },
 }
@@ -962,11 +900,30 @@ local troubleshootOptions = {
     name = "Troubleshooting Options",
     type = "group",
     args = {
+        forceSyncDescription = {
+            type = "description",
+            name = "Synchronize Now",
+            width = "normal",
+            order = 1
+        },
+        forceSync = {
+            type = "execute",
+            name = "Force Sync",
+            width = "double",
+            desc = "Synchronize raid assignments with Raid.",
+            func = function()
+                SyncController:SyncAssignmentsNow()
+            end,
+            disabled = function()
+                return not Utils:IsPlayerRaidLeader()
+            end,
+            order = 2,
+        },
         activeRosterIDInputDescription = {
             type = "description",
             name = "Active Roster ID",
             width = "normal",
-            order = 1
+            order = 11
         },
         activeRosterIDInput = {
             type = "input",
@@ -979,13 +936,13 @@ local troubleshootOptions = {
                 SRTData.SetActiveRosterID(value)
                 SwiftdawnRaidTools.overview:Update()
             end,
-            order = 2
+            order = 12
         },
         activeRosterIDSelectDescription = {
             type = "description",
             name = "Active Roster ID",
             width = "normal",
-            order = 11
+            order = 21
         },
         activeRosterIDSelect = {
             type = "select",
@@ -1003,26 +960,7 @@ local troubleshootOptions = {
                 SRTData.SetActiveRosterID(key)
                 SwiftdawnRaidTools.overview:Update()
             end,
-            order = 12
-        },
-        forceSyncDescription = {
-            type = "description",
-            name = "Synchronize Now",
-            width = "normal",
-            order = 14
-        },
-        forceSync = {
-            type = "execute",
-            name = "Force Sync",
-            width = "normal",
-            desc = "Synchronize raid assignments with Raid.",
-            func = function()
-                SyncController:SyncAssignmentsNow()
-            end,
-            disabled = function()
-                return not Utils:IsPlayerRaidLeader()
-            end,
-            order = 15,
+            order = 22
         },
     }
 }
@@ -1034,14 +972,8 @@ function SwiftdawnRaidTools:OptionsInit()
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Appearance", appearanceOptions)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Appearance", "Appearance", "Swiftdawn Raid Tools")
 
-    LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Notifications", notificationOptions)
-    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Notifications", "Notifications", "Swiftdawn Raid Tools")
-
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Fojji Integration", fojjiIntegrationOptions)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Fojji Integration", "Fojji Integration", "Swiftdawn Raid Tools")
-
-    LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Import", importOptions)
-    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Import", "Import", "Swiftdawn Raid Tools")
 
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Troubleshooting", troubleshootOptions)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Troubleshooting", "Troubleshooting", "Swiftdawn Raid Tools")
