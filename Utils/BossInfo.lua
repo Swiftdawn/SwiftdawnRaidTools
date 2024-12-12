@@ -52,6 +52,14 @@ function BossInfo.Initialize()
         end
     end
 
+    -- Switch Shannox and Alysrazor
+    if BossInfo.instances[78] then
+        local actuallyShannox = BossInfo.instances[78].encounters[1205] or nil
+        local actuallyAlysrazor = BossInfo.instances[78].encounters[1206] or nil
+        BossInfo.instances[78].encounters[1205] = actuallyAlysrazor
+        BossInfo.instances[78].encounters[1206] = actuallyShannox
+    end
+
     -- Add bosses not in the encounter journal until discovered
     BossInfo.instances[72].encounters[1082] = { name = "Sinestra" }
     BossInfo.instances[72].encounters[1083] = { name = "Sinestra" }
