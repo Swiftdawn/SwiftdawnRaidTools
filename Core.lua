@@ -195,16 +195,28 @@ end
 
 local function AcceptIncomingSyncOrNot(incomingData)
     -- If the sync coming in has a different Roster ID, accept the new roster
-    -- If the Roster ID is the same, but the lastUpdated is higher, accept the new version
+    if incomingData.encountersId ~= SRTData.GetActiveRosterID() then
+        return true
+    end
     -- If the lastUpdated is not in the payload, its coming from an old version; accept it for backward compatibility
-    return incomingData.encountersId ~= SRTData.GetActiveRosterID() or (incomingData.lastUpdated > Roster.GetLastUpdated(SRTData.GetActiveRoster()) or not incomingData.lastUpdated)
+    if not incomingData.lastUpdated then
+        return true
+    end
+    -- If the Roster ID is the same, but the lastUpdated is higher, accept the new version
+    return incomingData.lastUpdated > Roster.GetLastUpdated(SRTData.GetActiveRoster())
 end
 
 local function TriggerSyncOrNot(incomingData)
     -- If the sync coming in has a different Roster ID, trigger the sync
-    -- If the Roster ID is the same, but the lastUpdated is lower, trigger the sync
+    if incomingData.encountersId ~= SRTData.GetActiveRosterID() then
+        return true
+    end
     -- If the lastUpdated is not in the payload, its coming from an old version; trigger the sync
-    return incomingData.encountersId ~= SRTData.GetActiveRosterID() or (incomingData.lastUpdated < Roster.GetLastUpdated(SRTData.GetActiveRoster()) or not incomingData.lastUpdated)
+    if not incomingData.lastUpdated then 
+        return true
+    end
+    -- If the Roster ID is the same, but the lastUpdated is lower, trigger the sync
+    return incomingData.lastUpdated < Roster.GetLastUpdated(SRTData.GetActiveRoster())
 end
 
 function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
