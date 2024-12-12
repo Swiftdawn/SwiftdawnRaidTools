@@ -1197,5 +1197,5 @@ function SRTData.GetSyncedRosterID()
 end
 
 function SRTData.GetSyncedRosterLastUpdated()
-    return SRT_Global().srt_data.syncedRosterLastUpdated
+    return SRT_Global().srt_data.syncedRosterLastUpdated or -1
 end
