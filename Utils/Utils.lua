@@ -360,7 +360,7 @@ end
 
 function Utils:GetFullSenderName(sender)
     local name, realm = strsplit("-", sender)
-    return name .. "-" .. realm or GetRealmName()
+    return name .. "-" .. (realm or GetRealmName())
 end
 
 function Utils:GetFullPlayerName()
