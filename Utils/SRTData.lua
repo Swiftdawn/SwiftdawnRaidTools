@@ -1074,7 +1074,9 @@ end
 
 function SRTData.RemoveRoster(rosterID)
     local data = SRT_Global().srt_data
-    data.rosters[rosterID] = nil
+    if data.rosters[rosterID] then
+        data.rosters[rosterID] = nil
+    end
 end
 
 ---Set spec for player in pool
