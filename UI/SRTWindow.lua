@@ -57,7 +57,7 @@ end
 
 function SRTWindow:SetupContainerFrame()
     self.container:SetSize(self.width, self.height)
-    self.container:SetFrameStrata("MEDIUM")
+    self.container:SetFrameStrata("HIGH")
     self.container:SetBackdrop({
         bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
         tile = true,
