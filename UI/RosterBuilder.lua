@@ -589,7 +589,7 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         rosterFrame:Hide()
     end
     for id, roster in pairs(SRTData.GetRosters()) do
-        -- roster.id = id  --Fix legacy issue
+        roster.id = tostring(id)  --Fix legacy issue
         local rosterFrame = self.availableRosters[id] or FrameBuilder.CreateRosterFrame(self.loadCreate.load.scroll.content, id, roster.name.." - "..Roster.GetLastUpdatedTimestamp(roster), 260, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
         rosterFrame.name = roster.name.." - "..Roster.GetLastUpdatedTimestamp(roster)
         rosterFrame.Update()
