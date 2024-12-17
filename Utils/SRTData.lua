@@ -1,5 +1,413 @@
 local SwiftdawnRaidTools = SwiftdawnRaidTools
 local defaultAssignments = {
+    [1022] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Searing Flames",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 77840,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [1]
+    },
+    [1023] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Systems Failure",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 88853,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [1]
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Heal to full for P2!",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 82848,
+                    ["type"] = "SPELL_CAST",
+                    ["conditions"] = {
+                        {
+                            ["pct_lt"] = 25,
+                            ["type"] = "UNIT_HEALTH",
+                            ["unit"] = "boss1",
+                        }, -- [1]
+                    },
+                }, -- [1]
+            },
+        }, -- [2]
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Phase 2",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 82934,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+                {
+                    ["spell_id"] = 82934,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 10,
+                }, -- [2]
+                {
+                    ["spell_id"] = 82934,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 20,
+                }, -- [3]
+                {
+                    ["spell_id"] = 82934,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 30,
+                }, -- [4]
+                {
+                    ["spell_id"] = 82934,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 40,
+                }, -- [5]
+                {
+                    ["spell_id"] = 82934,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 50,
+                }, -- [6]
+            },
+        }, -- [3]
+    },
+    [1024] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Lava Spew",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 77690,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [1]
+    },
+    [1025] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Acid Nova",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 78225,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [1]
+        {
+            ["assignments"] = {},
+            ["untriggers"] = {
+                {
+                    ["spell_id"] = 77991,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+                {
+                    ["text"] = "blue||r vial into the cauldron!",
+                    ["type"] = "RAID_BOSS_EMOTE",
+                }, -- [2]
+                {
+                    ["text"] = "green||r vial into the cauldron!",
+                    ["type"] = "RAID_BOSS_EMOTE",
+                }, -- [3]
+                {
+                    ["text"] = "dark||r vial into the cauldron!",
+                    ["type"] = "RAID_BOSS_EMOTE",
+                }, -- [4]
+            },
+            ["metadata"] = {
+                ["name"] = "Scorching Blast",
+            },
+            ["triggers"] = {
+                {
+                    ["countdown"] = 3,
+                    ["type"] = "RAID_BOSS_EMOTE",
+                    ["delay"] = 19,
+                    ["text"] = "red||r vial into the cauldron!",
+                }, -- [1]
+                {
+                    ["spell_id"] = 77679,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 7,
+                    ["countdown"] = 3,
+                }, -- [2]
+            },
+        }, -- [2]
+    },
+    [1026] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Electrocute/Crackle",
+            },
+            ["triggers"] = {
+                {
+                    ["countdown"] = 5,
+                    ["type"] = "RAID_BOSS_EMOTE",
+                    ["text"] = "The air crackles with electricity!",
+                }, -- [1]
+            },
+        }, -- [1]
+    },
+    [1027] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Incineration",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 79023,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [1]
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Grip of Death",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 91849,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [2]
+    },
+    [1028] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Aegis Flames",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 82631,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [1]
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Lava Seeds",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 84913,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [2]
+    },
+    [1029] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Empowered Shadows",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 81572,
+                    ["type"] = "SPELL_AURA",
+                }, -- [1]
+            },
+        }, -- [1]
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Phase 2",
+            },
+            ["triggers"] = {
+                {
+                    ["pct_lt"] = 20,
+                    ["type"] = "UNIT_HEALTH",
+                    ["unit"] = "boss1",
+                }, -- [1]
+                {
+                    ["pct_lt"] = 20,
+                    ["type"] = "UNIT_HEALTH",
+                    ["delay"] = 10,
+                    ["unit"] = "boss1",
+                }, -- [2]
+                {
+                    ["pct_lt"] = 20,
+                    ["type"] = "UNIT_HEALTH",
+                    ["delay"] = 20,
+                    ["unit"] = "boss1",
+                }, -- [3]
+                {
+                    ["pct_lt"] = 20,
+                    ["type"] = "UNIT_HEALTH",
+                    ["delay"] = 30,
+                    ["unit"] = "boss1",
+                }, -- [4]
+                {
+                    ["pct_lt"] = 20,
+                    ["type"] = "UNIT_HEALTH",
+                    ["delay"] = 40,
+                    ["unit"] = "boss1",
+                }, -- [5]
+                {
+                    ["pct_lt"] = 20,
+                    ["type"] = "UNIT_HEALTH",
+                    ["delay"] = 50,
+                    ["unit"] = "boss1",
+                }, -- [6]
+            },
+        }, -- [2]
+    },
+    [1030] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Proto Breath",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 83707,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [1]
+    },
+    [1032] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Blackout",
+                ["notification"] = "Blackout > %(dest_name)s",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 86788,
+                    ["type"] = "SPELL_AURA",
+                }, -- [1]
+            },
+        }, -- [1]
+    },
+    [1034] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Acid Rain",
+                ["notification"] = "Acid Rain - %(unit_name)s %(health_pct).0f%",
+            },
+            ["triggers"] = {
+                {
+                    ["pct_lt"] = 80,
+                    ["type"] = "UNIT_HEALTH",
+                    ["unit"] = "boss1",
+                }, -- [1]
+                {
+                    ["pct_lt"] = 70,
+                    ["type"] = "UNIT_HEALTH",
+                    ["unit"] = "boss1",
+                }, -- [2]
+                {
+                    ["pct_lt"] = 60,
+                    ["type"] = "UNIT_HEALTH",
+                    ["unit"] = "boss1",
+                }, -- [3]
+                {
+                    ["pct_lt"] = 50,
+                    ["type"] = "UNIT_HEALTH",
+                    ["unit"] = "boss1",
+                }, -- [4]
+                {
+                    ["pct_lt"] = 40,
+                    ["type"] = "UNIT_HEALTH",
+                    ["unit"] = "boss1",
+                }, -- [5]
+                {
+                    ["pct_lt"] = 30,
+                    ["type"] = "UNIT_HEALTH",
+                    ["unit"] = "boss1",
+                }, -- [6]
+                {
+                    ["pct_lt"] = 20,
+                    ["type"] = "UNIT_HEALTH",
+                    ["unit"] = "boss1",
+                }, -- [7]
+            },
+        }, -- [1]
+    },
+    [1035] = {
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Sleet Storm",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 84644,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [1]
+        {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Storm Shield",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 93059,
+                    ["type"] = "SPELL_CAST",
+                }, -- [1]
+            },
+        }, -- [2]
+    },
+    [1082] = {
+        {
+            ["assignments"] = {},
+            ["untriggers"] = {
+                {
+                    ["spell_id"] = 87299,
+                    ["type"] = "SPELL_AURA",
+                }, -- [1]
+            },
+            ["metadata"] = {
+                ["name"] = "Flame Breath",
+            },
+            ["triggers"] = {
+                {
+                    ["countdown"] = 3,
+                    ["type"] = "ENCOUNTER_START",
+                    ["delay"] = 18,
+                }, -- [1]
+                {
+                    ["countdown"] = 3,
+                    ["type"] = "RAID_BOSS_EMOTE",
+                    ["delay"] = 18,
+                    ["text"] = "Enough! Drawing upon this source will set us back months.",
+                }, -- [2]
+                {
+                    ["spell_id"] = 90125,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 18,
+                    ["countdown"] = 3,
+                }, -- [3]
+            },
+        }, -- [1]
+    },
     [1197] = {
         [1] = {
             ["assignments"] = {},
@@ -30,6 +438,120 @@ local defaultAssignments = {
                             ["unit"] = "boss1",
                         },
                     },
+                },
+            },
+        },
+    },
+    [1200] = {
+        {
+            ["assignments"] = {},
+            ["triggers"] = {
+                {
+                    ["delay"] = 40,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 80,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 120,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 160,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 200,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 240,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 280,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 320,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 360,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 400,
+                    ["type"] = "ENCOUNTER_START",
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Mana Return...",
+            },
+        },
+    },
+    [1203] = {
+        [1] = {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "P1 Traps",
+                ["notification"] = "Trap Explosion Soon...",
+            },
+            ["triggers"] = {
+                {
+                    ["countdown"] = 5,
+                    ["type"] = "ENCOUNTER_START",
+                    ["delay"] = 30,
+                },
+                {
+                    ["countdown"] = 5,
+                    ["type"] = "ENCOUNTER_START",
+                    ["delay"] = 50,
+                },
+            },
+        },
+        [2] = {
+            ["assignments"] = {},
+            ["untriggers"] = {
+                {
+                    ["spell_id"] = 98175,
+                    ["type"] = "SPELL_CAST",
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "P2 Traps",
+                ["notification"] = "Trap Explosion Soon...",
+            },
+            ["triggers"] = {
+                {
+                    ["countdown"] = 5,
+                    ["type"] = "SPELL_CAST",
+                    ["spell_id"] = 100171,
+                    ["conditions"] = {
+                        {
+                            ["type"] = "UNIT_HEALTH",
+                            ["pct_gt"] = 50,
+                            ["unit"] = "boss1",
+                        },
+                    },
+                    ["delay"] = 15,
+                },
+            },
+        },
+        [3] = {
+            ["assignments"] = {},
+            ["metadata"] = {
+                ["name"] = "Seeds",
+                ["notification"] = "Seed Explosion Soon...",
+            },
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 98333,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 7,
+                    ["countdown"] = 3,
                 },
             },
         },
@@ -154,478 +676,6 @@ local defaultAssignments = {
                 },
             },
         },
-    },
-    [1203] = {
-        [1] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "P1 Traps",
-                ["notification"] = "Trap Explosion Soon...",
-            },
-            ["triggers"] = {
-                {
-                    ["countdown"] = 5,
-                    ["type"] = "ENCOUNTER_START",
-                    ["delay"] = 30,
-                },
-                {
-                    ["countdown"] = 5,
-                    ["type"] = "ENCOUNTER_START",
-                    ["delay"] = 50,
-                },
-            },
-        },
-        [2] = {
-            ["assignments"] = {},
-            ["untriggers"] = {
-                {
-                    ["spell_id"] = 98175,
-                    ["type"] = "SPELL_CAST",
-                },
-            },
-            ["metadata"] = {
-                ["name"] = "P2 Traps",
-                ["notification"] = "Trap Explosion Soon...",
-            },
-            ["triggers"] = {
-                {
-                    ["countdown"] = 5,
-                    ["type"] = "SPELL_CAST",
-                    ["spell_id"] = 100171,
-                    ["conditions"] = {
-                        {
-                            ["type"] = "UNIT_HEALTH",
-                            ["pct_gt"] = 50,
-                            ["unit"] = "boss1",
-                        },
-                    },
-                    ["delay"] = 15,
-                },
-            },
-        },
-        [3] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Seeds",
-                ["notification"] = "Seed Explosion Soon...",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 98333,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 7,
-                    ["countdown"] = 3,
-                },
-            },
-        },
-    },
-    [1032] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Blackout",
-                ["notification"] = "Blackout > %(dest_name)s",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 86788,
-                    ["type"] = "SPELL_AURA",
-                }, -- [1]
-            },
-        }, -- [1]
-    },
-    [1025] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Acid Nova",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 78225,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [1]
-        {
-            ["assignments"] = {},
-            ["untriggers"] = {
-                {
-                    ["spell_id"] = 77991,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-                {
-                    ["text"] = "blue||r vial into the cauldron!",
-                    ["type"] = "RAID_BOSS_EMOTE",
-                }, -- [2]
-                {
-                    ["text"] = "green||r vial into the cauldron!",
-                    ["type"] = "RAID_BOSS_EMOTE",
-                }, -- [3]
-                {
-                    ["text"] = "dark||r vial into the cauldron!",
-                    ["type"] = "RAID_BOSS_EMOTE",
-                }, -- [4]
-            },
-            ["metadata"] = {
-                ["name"] = "Scorching Blast",
-            },
-            ["triggers"] = {
-                {
-                    ["countdown"] = 3,
-                    ["type"] = "RAID_BOSS_EMOTE",
-                    ["delay"] = 19,
-                    ["text"] = "red||r vial into the cauldron!",
-                }, -- [1]
-                {
-                    ["spell_id"] = 77679,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 7,
-                    ["countdown"] = 3,
-                }, -- [2]
-            },
-        }, -- [2]
-    },
-    [1029] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Empowered Shadows",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 81572,
-                    ["type"] = "SPELL_AURA",
-                }, -- [1]
-            },
-        }, -- [1]
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Phase 2",
-            },
-            ["triggers"] = {
-                {
-                    ["pct_lt"] = 20,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                }, -- [1]
-                {
-                    ["pct_lt"] = 20,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 10,
-                    ["unit"] = "boss1",
-                }, -- [2]
-                {
-                    ["pct_lt"] = 20,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 20,
-                    ["unit"] = "boss1",
-                }, -- [3]
-                {
-                    ["pct_lt"] = 20,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 30,
-                    ["unit"] = "boss1",
-                }, -- [4]
-                {
-                    ["pct_lt"] = 20,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 40,
-                    ["unit"] = "boss1",
-                }, -- [5]
-                {
-                    ["pct_lt"] = 20,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 50,
-                    ["unit"] = "boss1",
-                }, -- [6]
-            },
-        }, -- [2]
-    },
-    [1023] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Systems Failure",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 88853,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [1]
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Heal to full for P2!",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 82848,
-                    ["type"] = "SPELL_CAST",
-                    ["conditions"] = {
-                        {
-                            ["pct_lt"] = 25,
-                            ["type"] = "UNIT_HEALTH",
-                            ["unit"] = "boss1",
-                        }, -- [1]
-                    },
-                }, -- [1]
-            },
-        }, -- [2]
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Phase 2",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 82934,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-                {
-                    ["spell_id"] = 82934,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 10,
-                }, -- [2]
-                {
-                    ["spell_id"] = 82934,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 20,
-                }, -- [3]
-                {
-                    ["spell_id"] = 82934,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 30,
-                }, -- [4]
-                {
-                    ["spell_id"] = 82934,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 40,
-                }, -- [5]
-                {
-                    ["spell_id"] = 82934,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 50,
-                }, -- [6]
-            },
-        }, -- [3]
-    },
-    [1026] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Electrocute/Crackle",
-            },
-            ["triggers"] = {
-                {
-                    ["countdown"] = 5,
-                    ["type"] = "RAID_BOSS_EMOTE",
-                    ["text"] = "The air crackles with electricity!",
-                }, -- [1]
-            },
-        }, -- [1]
-    },
-    [1030] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Proto Breath",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 83707,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [1]
-    },
-    [1034] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Acid Rain",
-                ["notification"] = "Acid Rain - %(unit_name)s %(health_pct).0f%",
-            },
-            ["triggers"] = {
-                {
-                    ["pct_lt"] = 80,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                }, -- [1]
-                {
-                    ["pct_lt"] = 70,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                }, -- [2]
-                {
-                    ["pct_lt"] = 60,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                }, -- [3]
-                {
-                    ["pct_lt"] = 50,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                }, -- [4]
-                {
-                    ["pct_lt"] = 40,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                }, -- [5]
-                {
-                    ["pct_lt"] = 30,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                }, -- [6]
-                {
-                    ["pct_lt"] = 20,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                }, -- [7]
-            },
-        }, -- [1]
-    },
-    [1027] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Incineration",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 79023,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [1]
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Grip of Death",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 91849,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [2]
-    },
-    [1035] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Sleet Storm",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 84644,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [1]
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Storm Shield",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 93059,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [2]
-    },
-    [1022] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Searing Flames",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 77840,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [1]
-    },
-    [1024] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Lava Spew",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 77690,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [1]
-    },
-    [1028] = {
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Aegis Flames",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 82631,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [1]
-        {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Lava Seeds",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 84913,
-                    ["type"] = "SPELL_CAST",
-                }, -- [1]
-            },
-        }, -- [2]
-    },
-    [1082] = {
-        {
-            ["assignments"] = {},
-            ["untriggers"] = {
-                {
-                    ["spell_id"] = 87299,
-                    ["type"] = "SPELL_AURA",
-                }, -- [1]
-            },
-            ["metadata"] = {
-                ["name"] = "Flame Breath",
-            },
-            ["triggers"] = {
-                {
-                    ["countdown"] = 3,
-                    ["type"] = "ENCOUNTER_START",
-                    ["delay"] = 18,
-                }, -- [1]
-                {
-                    ["countdown"] = 3,
-                    ["type"] = "RAID_BOSS_EMOTE",
-                    ["delay"] = 18,
-                    ["text"] = "Enough! Drawing upon this source will set us back months.",
-                }, -- [2]
-                {
-                    ["spell_id"] = 90125,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 18,
-                    ["countdown"] = 3,
-                }, -- [3]
-            },
-        }, -- [1]
     },
 }
 local testAssignments = {
@@ -850,7 +900,9 @@ function SRTData.Initialize()
         pool = {},
         players = {},
         rosters = {},
-        activeRosterID = nil
+        activeRosterID = nil,
+        syncedRosterID = nil,
+        syncedRosterLastUpdated = -1
     }
     if DevTool then DevTool:AddData(SRT_Global().srt_data, "SRTData") end
     -- Preseed our database with static information
@@ -996,6 +1048,7 @@ function SRTData.GetPlayerFromPool(name)
     return data.players[name]
 end
 
+---@return Roster[]
 function SRTData.GetRosters()
     local data = SRT_Global().srt_data
     return data.rosters
@@ -1011,18 +1064,19 @@ function SRTData.GetClass(className)
 end
 
 ---Create new roster
----@return string, Roster
+---@return Roster
 function SRTData.CreateNewRoster()
     local data = SRT_Global().srt_data
-    local rosterID = Utils:GenerateUUID()
-    local roster = Roster:New()
-    data.rosters[rosterID] = roster
-    return rosterID, roster
+    local roster = Roster:New("Roster", time(), Utils:GetFullPlayerName())
+    data.rosters[roster.id] = roster
+    return roster
 end
 
 function SRTData.RemoveRoster(rosterID)
     local data = SRT_Global().srt_data
-    data.rosters[rosterID] = nil
+    if data.rosters[rosterID] then
+        data.rosters[rosterID] = nil
+    end
 end
 
 ---Set spec for player in pool
@@ -1067,7 +1121,7 @@ function SRTData.GetClassColorBySpellID(spellID)
             end
         end
     end
-    return { r = 0, g = 0, b = 0, colorStr = "ffffffff" }
+    return { r = 0.8, g = 0.8, b = 0.8, colorStr = "ffcccccc" }
 end
 
 ---comment
@@ -1090,17 +1144,12 @@ function SRTData.GetActiveRosterID()
 end
 
 function SRTData.SetActiveRosterID(rosterID)
-    SRT_Global().srt_data.activeRosterID = rosterID
+    local data = SRT_Global().srt_data
+    data.activeRosterID = rosterID
 end
 
 function SRTData.AddRoster(rosterID, roster)
     local data = SRT_Global().srt_data
-
-    -- FIXME: THIS IS ONLY ONE ROSTER FOR THIS VERSION, CLEANING UP TO AVOID BULKING UP!
-    Log.debug("Clearing rosters old...")
-    data.rosters = {}
-    -- FIXME: THIS IS ONLY ONE ROSTER FOR THIS VERSION, CLEANING UP TO AVOID BULKING UP!
-
     Log.debug("Adding new roster with ID: "..rosterID)
     data.rosters[rosterID] = roster
 end
@@ -1137,4 +1186,18 @@ function SRTData.GetActiveEncounters()
         end
     end
     return encountersWithAssignments
+end
+
+function SRTData.UpdateSyncedRosterInfo(rosterID, lastUpdated)
+    local data = SRT_Global().srt_data
+    data.syncedRosterID = rosterID
+    data.syncedRosterLastUpdated = lastUpdated
+end
+
+function SRTData.GetSyncedRosterID()
+    return SRT_Global().srt_data.syncedRosterID or "none-yet"
+end
+
+function SRTData.GetSyncedRosterLastUpdated()
+    return SRT_Global().srt_data.syncedRosterLastUpdated or -1
 end

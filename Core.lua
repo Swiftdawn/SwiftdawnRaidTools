@@ -86,6 +86,42 @@ SwiftdawnRaidTools.DEFAULTS = {
                 backgroundOpacity = 0.4,
                 iconSize = 14
             }
+        },
+        assignmenteditor = {
+            anchorX = GetScreenWidth()/2,
+            anchorY = -(GetScreenHeight()/2),
+            locked = false,
+            show = false,
+            appearance = {
+                scale = 1.0,
+                titleFontType = "Friz Quadrata TT",
+                titleFontSize = 10,
+                headerFontType = "Friz Quadrata TT",
+                headerFontSize = 10,
+                playerFontType = "Friz Quadrata TT",
+                playerFontSize = 10,
+                titleBarOpacity = 0.8,
+                backgroundOpacity = 0.6,
+                iconSize = 14
+            }
+        },
+        rosterbuilder = {
+            anchorX = GetScreenWidth()/2,
+            anchorY = -(GetScreenHeight()/2),
+            locked = false,
+            show = false,
+            appearance = {
+                scale = 1.0,
+                titleFontType = "Friz Quadrata TT",
+                titleFontSize = 10,
+                headerFontType = "Friz Quadrata TT",
+                headerFontSize = 10,
+                playerFontType = "Friz Quadrata TT",
+                playerFontSize = 10,
+                titleBarOpacity = 0.8,
+                backgroundOpacity = 0.6,
+                iconSize = 14
+            }
         }
     },
 }
@@ -106,6 +142,9 @@ function SwiftdawnRaidTools:OnInitialize()
 
     self.debugLog = SRTDebugLog:New(100, 400)
     self.debugLog:Initialize()
+
+    self.rosterBuilder = RosterBuilder:New(600)
+    self.rosterBuilder:Initialize()
 
     self:RegisterComm(self.PREFIX_ANNOUNCE)
     self:RegisterComm(self.PREFIX_SYNC)
@@ -151,12 +190,12 @@ end
 function SwiftdawnRaidTools:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
     if isInitialLogin or isReloadingUi then
         BossInfo.Initialize()
-        BossEncounters:Initialize()
         SyncController:SendStatus()
         if Utils:IsPlayerRaidLeader() then SyncController:ScheduleAssignmentsSync() end
     end
     self.overview:Update()
     self.debugLog:Update()
+    self.rosterBuilder:Update()
 end
 
 function SwiftdawnRaidTools:SendRaidMessage(event, data, prefix, prio, callbackFn)
@@ -169,8 +208,10 @@ function SwiftdawnRaidTools:SendRaidMessage(event, data, prefix, prio, callbackF
         e = event,
         d = data,
     }
-    -- "Send" message directly to self
-    self:HandleMessagePayload(payload)
+    -- "Send" message directly to self if it is not SYNC
+    if payload.e ~= "SYNC" then
+        self:HandleMessagePayload(payload)
+    end
     -- Send to raid
     if IsInRaid() then
         local message = self:Serialize(payload)
@@ -240,7 +281,8 @@ function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
         if AcceptIncomingSyncOrNot(payload.d) then
             Log.debug("Received assignment synchronization from "..tostring(sender), payload)
             SRTData.SetActiveRosterID(payload.d.encountersId)
-            SRTData.AddRoster(payload.d.encountersId, Roster.Parse(payload.d.encounters, "Synced Roster", payload.d.lastUpdated))
+            local parsedRoster = Roster.Parse(payload.d.encounters, "Received Roster", payload.d.lastUpdated, Utils:GetFullSenderName(sender))
+            SRTData.AddRoster(payload.d.encountersId, parsedRoster)
             self.overview:Update()
         elseif payload.d.encountersId == SRTData.GetActiveRosterID() and payload.d.lastUpdated == Roster.GetLastUpdated(SRTData.GetActiveRoster()) then
             Log.debug("Ignoring SYNC from "..tostring(sender)..", already have this version", payload)

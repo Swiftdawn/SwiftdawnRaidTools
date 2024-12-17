@@ -89,5 +89,8 @@ function BossInfo.GetEncounterInfoByID(encounterID)
 end
 
 function BossInfo.GetNameByID(encounterID)
+    if encounterID == 42001 then
+        return "The Test Boss"
+    end
     return BossInfo.Get().GetEncounterInfoByID(encounterID).name
 end

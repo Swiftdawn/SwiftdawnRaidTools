@@ -38,7 +38,7 @@ function SRTOverview:GetAssignmentGroupHeight()
     return (playerFontSize > iconSize and playerFontSize or iconSize) + 7
 end
 
-function SRTOverview:GetPlayerNameFont()
+function SRTOverview:GetPlayerFont()
     return SharedMedia:Fetch("font", self:GetAppearance().playerFontType)
 end
 
@@ -57,7 +57,7 @@ function SRTOverview:UpdateAppearance()
         for _, assignmentGroupFrame in pairs(bossAbilityFrame.groups) do
             assignmentGroupFrame:SetHeight(self:GetAssignmentGroupHeight())
             for _, assignmentFrame in pairs(assignmentGroupFrame.assignments) do
-                assignmentFrame.text:SetFont(self:GetPlayerNameFont(), playerFontSize)
+                assignmentFrame.text:SetFont(self:GetPlayerFont(), playerFontSize)
                 assignmentFrame.iconFrame:SetSize(iconSize, iconSize)
                 assignmentFrame.text:SetPoint("LEFT", assignmentFrame.iconFrame, "CENTER", iconSize/2+4, -1)
             end
@@ -100,7 +100,7 @@ function SRTOverview:UpdateHeaderText()
     if SwiftdawnRaidTools.encountersProgress then
         self.headerText:SetText("Syncing Assignments... |cFFFFFFFF" .. string.format("%.1f", SwiftdawnRaidTools.encountersProgress) .. "%|r")
     elseif #SRTData.GetActiveEncounters() then
-        self.headerText:SetText(BossEncounters:GetNameByID(self:GetProfile().selectedEncounterId))
+        self.headerText:SetText(BossInfo.GetNameByID(self:GetProfile().selectedEncounterId))
     else
         self.headerText:SetText("SRT |cFFFFFFFF" .. tostring(SwiftdawnRaidTools.VERSION) .. "|r")
     end
@@ -122,7 +122,7 @@ function SRTOverview:UpdatePopupMenu()
     end
     table.sort(encounterIndexes)
     for index, encounterId in ipairs(encounterIndexes) do
-        menuItems[index] = { name = BossEncounters:GetNameByID(encounterId), onClick = function() self:SelectEncounter(encounterId) end }
+        menuItems[index] = { name = BossInfo.GetNameByID(encounterId), onClick = function() self:SelectEncounter(encounterId) end }
     end
     if #encounterIndexes > 0 then
         table.insert(menuItems, {})
@@ -143,11 +143,20 @@ function SRTOverview:UpdatePopupMenu()
         end,
         isSetting = true
     })
+    table.insert(menuItems, {})
     table.insert(menuItems, {
         name = "Debug Log",
         onClick = function()
             SRT_Profile().debuglog.show = true
             SwiftdawnRaidTools.debugLog:Update()
+        end,
+        isSetting = true
+    })
+    table.insert(menuItems, {
+        name = "Roster Builder",
+        onClick = function()
+            SRT_Profile().rosterbuilder.show = true
+            SwiftdawnRaidTools.rosterBuilder:Update()
         end,
         isSetting = true
     })
@@ -190,7 +199,7 @@ function SRTOverview:UpdateMain()
             abilityFrame.name:SetPoint("TOPLEFT", abilityFrame, "TOPLEFT", 10, 0)
             abilityFrame.name:SetText(ability.metadata.name)
             abilityFrame.name:SetFont(self:GetHeaderFont(), self:GetAppearance().headerFontSize)
-            abilityFrame.name:SetTextColor(1, 1, 1, 0.8)
+            abilityFrame.name:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
             abilityFrameHeight = abilityFrameHeight + self:GetAppearance().headerFontSize
 
             abilityFrame.groups = abilityFrame.groups or {}
@@ -215,7 +224,7 @@ function SRTOverview:UpdateMain()
                     cd:Hide()
                 end
                 for assignmentIndex, assignment in ipairs(group) do
-                    local assignmentFrame = groupFrame.assignments[assignmentIndex] or FrameBuilder.CreateAssignmentFrame(groupFrame, assignmentIndex, self:GetPlayerNameFont(), self:GetAppearance().playerFontSize, self:GetAppearance().iconSize)
+                    local assignmentFrame = groupFrame.assignments[assignmentIndex] or FrameBuilder.CreateAssignmentFrame(groupFrame, assignmentIndex, self:GetPlayerFont(), self:GetAppearance().playerFontSize, self:GetAppearance().iconSize)
                     FrameBuilder.UpdateAssignmentFrame(assignmentFrame, assignment)
                     
                     assignmentFrame:ClearAllPoints()

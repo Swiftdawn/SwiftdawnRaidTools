@@ -262,6 +262,18 @@ function Utils:GenerateUUID()
     end)
 end
 
+function Utils:ValidateUUID(input)
+    -- UUID pattern (version 4)
+    local uuidPattern = "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$"
+    
+    -- Check if input matches the UUID pattern
+    if input:match(uuidPattern) then
+        return true  -- Valid UUID
+    else
+        return false, "Invalid UUID. Please enter a valid UUID version 4."
+    end
+end
+
 function Utils:IsArray(table)
     local i = 0
     for _ in pairs(table) do
@@ -269,4 +281,89 @@ function Utils:IsArray(table)
         if table[i] == nil then return false end
     end
     return true
+end
+
+local lastUpdatedRaidMembers = 0
+local raidMembers = {}
+function Utils:GetRaidMembers(onlineOnly)
+    if GetTime() - lastUpdatedRaidMembers < 5 then
+        return raidMembers
+    end
+    raidMembers = {}
+    if IsInRaid() then
+        local numMembers = GetNumGroupMembers()
+        for i = 1, numMembers do
+            local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i)
+            if name then
+                if (onlineOnly and online) or not onlineOnly then
+                    table.insert(raidMembers, { name = name, class = class, fileName = fileName })
+                end
+            end
+        end
+    end
+    return raidMembers
+end
+
+local lastUpdatedOnlineGuildMembers = 0
+local guildMembers = {}
+function Utils:GetGuildMembers(onlineOnly)
+    if GetTime() - lastUpdatedOnlineGuildMembers < 5 then
+        return guildMembers
+    end
+    guildMembers = {}
+    local numTotalGuildMembers, numOnlineGuildMembers, numOnlineAndMobileMembers = GetNumGuildMembers()
+    for index = 1, numTotalGuildMembers, 1 do
+        local name, rank, rankIndex, level, class, zone, note, officernote, online, status, fileName, achievementPoints, achievementRank, isMobile, isSoREligible, standingID = GetGuildRosterInfo(index)
+        if level == 85 then
+            if (onlineOnly and online) or not onlineOnly then
+                table.insert(guildMembers, { name = name, class = class, fileName = fileName, online = online, standing = standingID, rankIndex = rankIndex })
+            end
+        end
+    end
+    table.sort(guildMembers, function (a, b)
+        if a.online ~= b.online then
+            return a.online
+        elseif a.standing ~= b.standing then
+            return a.standing > b.standing
+        elseif a.rankIndex ~= b.rankIndex then
+            return a.rankIndex < b.rankIndex
+        else
+            return a.name < b.name
+        end
+    end)
+    return guildMembers
+end
+
+function Utils:CombinedIteratorWithUniqueNames(t1, t2)
+    local i, j = 1, 1
+    local len1, len2 = #t1, #t2
+    local seen_names = {}
+    return function()
+        while i <= len1 do
+            local item = t1[i]
+            i = i + 1
+            if item.name and not seen_names[strsplit("-", item.name)] then
+                seen_names[strsplit("-", item.name)] = true
+                return item
+            end
+        end
+        while j <= len2 do
+            local item = t2[j]
+            j = j + 1
+            if item.name and not seen_names[strsplit("-", item.name)] then
+                seen_names[strsplit("-", item.name)] = true
+                return item
+            end
+        end
+    end
+end
+
+function Utils:GetFullSenderName(sender)
+    local name, realm = strsplit("-", sender)
+    return name .. "-" .. (realm or GetRealmName())
+end
+
+function Utils:GetFullPlayerName()
+    local playerName, playerRealm = UnitName("player")
+    return playerName .. "-" .. (playerRealm or GetRealmName())
 end
