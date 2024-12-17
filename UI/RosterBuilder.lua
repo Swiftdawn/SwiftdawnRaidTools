@@ -8,7 +8,8 @@ local State = {
     ADD_OR_REMOVE_PLAYERS = 2,
     CREATE_ASSIGNMENTS = 3,
     PICK_SPELL = 4,
-    IMPORT_ROSTER = 5
+    IMPORT_ROSTER = 5,
+    EDIT_TRIGGERS = 6
 }
 
 --- Roster Builder window class object
@@ -111,6 +112,7 @@ function RosterBuilder:Initialize()
     self:InitializeAddOrRemovePlayers()
     self:InitializeCreateAssignments()
     self:InitializeImportRoster()
+    -- self:InitializeEditTriggers()
 
     -- Update appearance
     self:UpdateAppearance()
@@ -541,6 +543,18 @@ function RosterBuilder:InitializeCreateAssignments()
         self.state = State.LOAD_OR_CREATE_ROSTER
         self:UpdateAppearance()
     end)
+end
+
+function RosterBuilder:InitializeEditTriggers()
+    self.triggers = {}
+    self.triggers.availableTypes.pane = CreateFrame("Frame", "SRTRoster_AvailableTriggersPane", self.content)
+    self.triggers.availableTypes.pane:SetClipsChildren(false)
+    self:SetToLeftSide(self.triggers.availableTypes.pane, self.content)
+    self.triggers.availableTypes.title = self.triggers.availableTypes.pane:CreateFontString(self.triggers.availableTypes.pane:GetName().."_Title", "OVERLAY", "GameFontNormal")
+    self.triggers.availableTypes.title:SetPoint("TOPLEFT", self.triggers.availableTypes.pane, "TOPLEFT", 5 , -5)
+    self.triggers.availableTypes.title:SetText("Editing 'none'")
+    self.triggers.availableTypes.title:SetFont(self:GetHeaderFont(), 16)
+    self.triggers.availableTypes.title:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
 end
 
 function RosterBuilder:UpdateAppearance()
