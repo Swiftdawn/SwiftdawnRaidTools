@@ -14,5 +14,13 @@ Trigger = {
     StartEncounter = {
         name = "Time",
         creator = EncounterStartTrigger.New
+    },
+    Aura = {
+        name = "Aura",
+        creator = SpellAuraTrigger.New
+    },
+    AuraRemoved = {
+        name = "Aura Removed",
+        creator = SpellAuraRemovedTrigger.New
     }
 }

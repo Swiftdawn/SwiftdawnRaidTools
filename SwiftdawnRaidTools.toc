@@ -61,6 +61,8 @@ Models\Triggers\BossEmoteTrigger.lua
 Models\Triggers\SpellCastTrigger.lua
 Models\Triggers\UnitHealthTrigger.lua
 Models\Triggers\EncounterStartTrigger.lua
+Models\Triggers\SpellAuraTrigger.lua
+Models\Triggers\SpellAuraRemovedTrigger.lua
 Models\Enum\Trigger.lua
 Models\Conditions\CastCountCondition.lua
 Models\Conditions\UnitHealthCondition.lua

@@ -8,6 +8,8 @@ function BossInfo.Initialize()
         return
     end
 
+    DevTool:AddData()
+
     local currTier = EJ_GetCurrentTier()
     local numTiers = EJ_GetNumTiers()
     for tierIndex = 1, numTiers do
@@ -41,6 +43,9 @@ function BossInfo.Initialize()
                         }
                     else
                         break
+                    end
+                    if instanceInfo.encounters[dungeonEncounterID].rootSectionID then
+                        instanceInfo.encounters[dungeonEncounterID].journal = BossInfo.BuildSectionJournal(instanceInfo.encounters[dungeonEncounterID].rootSectionID)
                     end
                     encounter_index = encounter_index + 1
                 end
@@ -93,4 +98,25 @@ function BossInfo.GetNameByID(encounterID)
         return "The Test Boss"
     end
     return BossInfo.Get().GetEncounterInfoByID(encounterID).name
+end
+
+function BossInfo.BuildSectionJournal(rootSectionID)
+    local sectionJournal = {}
+    ---@class EncounterJournalSectionInfo
+    local sectionInfo = C_EncounterJournal.GetSectionInfo(rootSectionID)
+    if not sectionInfo then
+        return nil
+    end
+    while sectionInfo do
+        if sectionInfo.firstChildSectionID then
+            sectionInfo.children = BossInfo.BuildSectionJournal(sectionInfo.firstChildSectionID)
+        end
+        table.insert(sectionJournal, sectionInfo)
+        if sectionInfo.siblingSectionID then
+            sectionInfo = C_EncounterJournal.GetSectionInfo(sectionInfo.siblingSectionID)
+        else
+            break
+        end
+    end
+    return sectionJournal
 end

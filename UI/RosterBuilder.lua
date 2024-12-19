@@ -550,24 +550,8 @@ function RosterBuilder:InitializeCreateAssignments()
         self.state = State.EDIT_TRIGGERS
         self.triggers.bossAbility.bossSelector.selectedName = self.assignments.bossSelector.selectedName
         self.triggers.bossAbility.bossSelector:Update()
-        self.triggers.bossAbility.abilitySelector.items = {}
-        for abilityID, ability in pairs(self.selectedRoster.encounters[self.selectedEncounterID]) do
-            local item = {
-                name = ability.metadata.name,
-                abilityID = abilityID,
-                onClick = function (row)
-                    self.selectedAbilityID = row.item.abilityID
-                    self:UpdateAppearance()
-                end
-            }
-            table.insert(self.triggers.bossAbility.abilitySelector.items, item)
-        end
-        if (#self.triggers.bossAbility.abilitySelector.items > 0) then
-            self.triggers.bossAbility.abilitySelector.selectedName = self.triggers.bossAbility.abilitySelector.items[1].name
-            self.selectedAbilityID = self.triggers.bossAbility.abilitySelector.items[1].abilityID
-        end
-        self.triggers.bossAbility.abilitySelector:Update()
         self.selectedAbilityID = 1
+        self:Update()
         self:UpdateAppearance()
     end)
 end
@@ -695,6 +679,19 @@ function RosterBuilder:UpdateEditTriggers()
     end
     self.triggers.availableTypes.conditionsScroll.content:SetHeight(conditionScrollHeight)
 
+    if self.triggers.bossAbility.triggers then
+        for _, frame in pairs(self.triggers.bossAbility.triggers) do
+            frame:Hide()
+        end
+    end
+    self.triggers.bossAbility.triggers = {}
+    if self.triggers.bossAbility.conditions then
+        for _, frame in pairs(self.triggers.bossAbility.conditions) do
+            frame:Hide()
+        end
+    end
+    self.triggers.bossAbility.conditions = {}
+
     self.selectedAbilityID = self.selectedAbilityID or 1
     if self.selectedRoster.encounters[self.selectedEncounterID] then
         if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] then
@@ -704,19 +701,6 @@ function RosterBuilder:UpdateEditTriggers()
             self.triggers.bossAbility.triggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
             self.triggers.bossAbility.triggersTitle:SetText("Triggers")
             self.triggers.bossAbility.triggersTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.scroll.content, "TOPLEFT", 10, 0)
-
-            if self.triggers.bossAbility.triggers then
-                for _, frame in pairs(self.triggers.bossAbility.triggers) do
-                    frame:Hide()
-                end
-            end
-            self.triggers.bossAbility.triggers = {}
-            if self.triggers.bossAbility.conditions then
-                for _, frame in pairs(self.triggers.bossAbility.conditions) do
-                    frame:Hide()
-                end
-            end
-            self.triggers.bossAbility.conditions = {}
 
             local lastTrigger = nil
             for ti, trigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers) do
@@ -742,7 +726,7 @@ function RosterBuilder:UpdateEditTriggers()
                         local conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, "IF: "..condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                         conditionFrame.condition = conditionFrame.condition or Utils:ParseCondition(condition)
                         if conditionFrame.condition then
-                            conditionFrame.text:SetText(conditionFrame.condition:GetDisplayName())
+                            conditionFrame.text:SetText("IF: "..conditionFrame.condition:GetDisplayName())
                         end
                         if not lastCondition then
                             conditionFrame:SetPoint("TOPLEFT", triggerFrame, "BOTTOMLEFT", 10, -5)
@@ -757,7 +741,8 @@ function RosterBuilder:UpdateEditTriggers()
             end
         else
             -- TODO: Hide stuff
-            self.triggers.bossAbility.triggers = nil
+            self.triggers.bossAbility.triggers = {}
+            self.triggers.bossAbility.conditions = {}
         end
     end
 end
@@ -1417,6 +1402,29 @@ function RosterBuilder:Update()
                 encounterID = encounterID,
                 onClick = function (row)
                     self.selectedEncounterID = row.item.encounterID
+                    for _, r in pairs(self.triggers.bossAbility.abilitySelector.dropdown.rows) do
+                        r:Hide()
+                    end
+                    self.triggers.bossAbility.abilitySelector.items = {}
+                    if not self.selectedRoster.encounters[self.selectedEncounterID] then
+                        self.selectedRoster.encounters[self.selectedEncounterID] = SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
+                    end
+                    for abilityID, ability in pairs(self.selectedRoster.encounters[self.selectedEncounterID]) do
+                        local item = {
+                            name = ability.metadata.name,
+                            abilityID = abilityID,
+                            onClick = function (r)
+                                self.selectedAbilityID = r.item.abilityID
+                                self:UpdateAppearance()
+                            end
+                        }
+                        table.insert(self.triggers.bossAbility.abilitySelector.items, item)
+                    end
+                    if (#self.triggers.bossAbility.abilitySelector.items > 0) then
+                        self.triggers.bossAbility.abilitySelector.selectedName = self.triggers.bossAbility.abilitySelector.items[1].name
+                        self.selectedAbilityID = self.triggers.bossAbility.abilitySelector.items[1].abilityID
+                    end
+                    self.triggers.bossAbility.abilitySelector:Update()
                     self:UpdateAppearance()
                 end
             }

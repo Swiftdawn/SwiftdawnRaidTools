@@ -3,7 +3,7 @@ UnitHealthTrigger = {}
 UnitHealthTrigger.__index = UnitHealthTrigger
 
 ---@return UnitHealthTrigger
-function UnitHealthTrigger:New(name, unitID, operator, value)
+function UnitHealthTrigger:New(name, unitID, operator, value, type)
     ---@class UnitHealthTrigger
     local obj = setmetatable({}, self)
     self.__index = self
@@ -11,10 +11,11 @@ function UnitHealthTrigger:New(name, unitID, operator, value)
     obj.unitID = unitID
     obj.operator = operator
     obj.value = value
+    obj.type = type
     obj.conditions = {}
     return obj
 end
 
 function UnitHealthTrigger:GetDisplayName()
-    return "Unit Health: \"" .. tostring(self.unitID) .. "\" "..self.operator.." "..tostring(self.value)
+    return tostring(self.unitID) .. "'s health "..self.type.." "..self.operator.." "..tostring(self.value)
 end

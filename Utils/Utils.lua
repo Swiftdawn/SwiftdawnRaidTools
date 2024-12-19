@@ -368,7 +368,7 @@ function Utils:GetFullPlayerName()
     return playerName .. "-" .. (playerRealm or GetRealmName())
 end
 
----@return SpellCastTrigger|BossEmoteTrigger|UnitHealthTrigger|EncounterStartTrigger|nil
+---@return SpellCastTrigger|BossEmoteTrigger|UnitHealthTrigger|EncounterStartTrigger|SpellAuraTrigger|SpellAuraRemovedTrigger|nil
 function Utils:ParseTrigger(rawTrigger)
     if not rawTrigger.type then
         Log.info("[ERROR] Trigger's type is missing", rawTrigger)
@@ -376,10 +376,22 @@ function Utils:ParseTrigger(rawTrigger)
     end
     if rawTrigger.type == "SPELL_CAST" then
         return SpellCastTrigger:New(rawTrigger.type, rawTrigger.spell_id)
-    elseif rawTrigger.type == "BOSS_EMOTE" then
-        return BossEmoteTrigger:New(rawTrigger.type, rawTrigger.emoteText)
+    elseif rawTrigger.type == "SPELL_AURA" then
+        return SpellAuraTrigger:New(rawTrigger.type, rawTrigger.spell_id)
+    elseif rawTrigger.type == "SPELL_AURA_REMOVED" then
+        return SpellAuraRemovedTrigger:New(rawTrigger.type, rawTrigger.spell_id)
+    elseif rawTrigger.type == "RAID_BOSS_EMOTE" then
+        return BossEmoteTrigger:New(rawTrigger.type, rawTrigger.text)
     elseif rawTrigger.type == "UNIT_HEALTH" then
-        return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, ">", rawTrigger.pct_gt)
+        if rawTrigger.pct_gt then
+            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, ">", rawTrigger.pct_gt, "percentage")
+        elseif rawTrigger.pct_lt then
+            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.pct_lt, "percentage")
+        elseif rawTrigger.pct_lt then
+            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.gt, "value")
+        elseif rawTrigger.pct_lt then
+            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.lt, "value")
+        end
     elseif rawTrigger.type == "ENCOUNTER_START" then
         return EncounterStartTrigger:New(rawTrigger.type, rawTrigger.delay)
     else
@@ -395,11 +407,26 @@ function Utils:ParseCondition(rawCondition)
         return nil
     end
     if rawCondition.type == "SPELL_CAST_COUNT" then
-        return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, rawCondition.gt)
+        if rawCondition.gt then
+            return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, ">", rawCondition.gt)
+        elseif rawCondition.lt then
+            return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "<", rawCondition.lt)
+        elseif rawCondition.eq then
+            return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "=", rawCondition.eq)
+        end
     elseif rawCondition.type == "UNIT_HEALTH" then
-        return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, ">", rawCondition.pct_gt)
+        if rawCondition.pct_gt then
+            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, ">", rawCondition.pct_gt, "percentage")
+        elseif rawCondition.pct_lt then
+            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, "<", rawCondition.pct_lt, "percentage")
+        elseif rawCondition.gt then
+            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, "<", rawCondition.gt, "value")
+        elseif rawCondition.lt then
+            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, "<", rawCondition.lt, "value")
+        end
     else
         Log.info("[ERROR] Condition's type is not supported", rawCondition)
         return nil
     end
 end
+

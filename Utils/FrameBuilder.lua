@@ -430,6 +430,7 @@ function FrameBuilder.UpdateSelector(selector)
         end
         row.text:SetJustifyH("LEFT")
         selector.dropdown.rows[rowIndex] = row
+        row:Show()
         lastRow = row
     end
 end
