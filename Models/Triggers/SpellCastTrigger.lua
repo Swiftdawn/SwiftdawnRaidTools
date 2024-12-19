@@ -1,19 +1,18 @@
----@class SpellCastTrigger:Trigger
-SpellCastTrigger = setmetatable({}, Trigger)
+---@class SpellCastTrigger
+SpellCastTrigger = {}
 SpellCastTrigger.__index = SpellCastTrigger
 
 ---@return SpellCastTrigger
-function SpellCastTrigger:New(unit, comparison, value)
+function SpellCastTrigger:New(name, spellID)
     ---@class SpellCastTrigger
-    local obj = Trigger.New(self, "UNIT_HEALTH")
+    local obj = setmetatable({}, self)
     self.__index = self
-    self.unit = unit
-    self.comparison = comparison
-    self.value = value
+    obj.name = name
+    obj.spellID = spellID
+    obj.conditions = {}
     return obj
 end
 
-function SpellCastTrigger:CheckTrigger(castSpellID)
-    
-    return false
+function SpellCastTrigger:GetDisplayName()
+    return "Spell Cast: " .. GetSpellInfo(self.spellID)
 end

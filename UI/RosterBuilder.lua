@@ -2,6 +2,7 @@ local SwiftdawnRaidTools = SwiftdawnRaidTools
 local SharedMedia = LibStub("LibSharedMedia-3.0")
 
 local WINDOW_WIDTH = 600
+local WINDOW_HEIGHT = 600
 
 local State = {
     LOAD_OR_CREATE_ROSTER = 1,
@@ -61,8 +62,8 @@ for i = 0, GuildControlGetNumRanks() - 1, 1 do
 end
 
 ---@return RosterBuilder
-function RosterBuilder:New(height)
-    local obj = SRTWindow.New(self, "RosterBuilder", height, WINDOW_WIDTH, nil, nil, WINDOW_WIDTH, WINDOW_WIDTH)
+function RosterBuilder:New()
+    local obj = SRTWindow.New(self, "RosterBuilder", WINDOW_HEIGHT, WINDOW_WIDTH, nil, nil, WINDOW_WIDTH, WINDOW_WIDTH)
     ---@cast obj RosterBuilder
     self.__index = self
     return obj
@@ -112,7 +113,7 @@ function RosterBuilder:Initialize()
     self:InitializeAddOrRemovePlayers()
     self:InitializeCreateAssignments()
     self:InitializeImportRoster()
-    -- self:InitializeEditTriggers()
+    self:InitializeEditTriggers()
 
     -- Update appearance
     self:UpdateAppearance()
@@ -543,18 +544,90 @@ function RosterBuilder:InitializeCreateAssignments()
         self.state = State.LOAD_OR_CREATE_ROSTER
         self:UpdateAppearance()
     end)
+    self.assignments.triggersButton = FrameBuilder.CreateButton(self.assignments.encounter.pane, 70, 25, "Triggers", SRTColor.Green, SRTColor.GreenHighlight)
+    self.assignments.triggersButton:SetPoint("RIGHT", self.assignments.finishButton, "LEFT", -5, 0)
+    self.assignments.triggersButton:SetScript("OnMouseDown", function (button)
+        self.state = State.EDIT_TRIGGERS
+        self.triggers.bossAbility.bossSelector.selectedName = self.assignments.bossSelector.selectedName
+        self.triggers.bossAbility.bossSelector:Update()
+        self.triggers.bossAbility.abilitySelector.items = {}
+        for abilityID, ability in pairs(self.selectedRoster.encounters[self.selectedEncounterID]) do
+            local item = {
+                name = ability.metadata.name,
+                abilityID = abilityID,
+                onClick = function (row)
+                    self.selectedAbilityID = row.item.abilityID
+                    self:UpdateAppearance()
+                end
+            }
+            table.insert(self.triggers.bossAbility.abilitySelector.items, item)
+        end
+        if (#self.triggers.bossAbility.abilitySelector.items > 0) then
+            self.triggers.bossAbility.abilitySelector.selectedName = self.triggers.bossAbility.abilitySelector.items[1].name
+            self.selectedAbilityID = self.triggers.bossAbility.abilitySelector.items[1].abilityID
+        end
+        self.triggers.bossAbility.abilitySelector:Update()
+        self.selectedAbilityID = 1
+        self:UpdateAppearance()
+    end)
 end
+
+local availableTriggerCache = {}
+local availableConditionCache = {}
 
 function RosterBuilder:InitializeEditTriggers()
     self.triggers = {}
+    self.triggers.availableTypes = {}
     self.triggers.availableTypes.pane = CreateFrame("Frame", "SRTRoster_AvailableTriggersPane", self.content)
     self.triggers.availableTypes.pane:SetClipsChildren(false)
     self:SetToLeftSide(self.triggers.availableTypes.pane, self.content)
     self.triggers.availableTypes.title = self.triggers.availableTypes.pane:CreateFontString(self.triggers.availableTypes.pane:GetName().."_Title", "OVERLAY", "GameFontNormal")
-    self.triggers.availableTypes.title:SetPoint("TOPLEFT", self.triggers.availableTypes.pane, "TOPLEFT", 5 , -5)
-    self.triggers.availableTypes.title:SetText("Editing 'none'")
+    self.triggers.availableTypes.title:SetPoint("TOPLEFT", self.triggers.availableTypes.pane, "TOPLEFT", 5, -5)
+    self.triggers.availableTypes.title:SetText("Edit Ability Triggers")
     self.triggers.availableTypes.title:SetFont(self:GetHeaderFont(), 16)
     self.triggers.availableTypes.title:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.triggers.availableTypes.triggersTitle = self.triggers.availableTypes.pane:CreateFontString(self.triggers.availableTypes.pane:GetName().."_TriggersTitle", "OVERLAY", "GameFontNormal")
+    self.triggers.availableTypes.triggersTitle:SetPoint("TOPLEFT", self.triggers.availableTypes.pane, "TOPLEFT", 10, -36)
+    self.triggers.availableTypes.triggersTitle:SetText("Triggers")
+    self.triggers.availableTypes.triggersTitle:SetFont(self:GetHeaderFont(), 14)
+    self.triggers.availableTypes.triggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.triggers.availableTypes.triggersScroll = FrameBuilder.CreateScrollArea(self.triggers.availableTypes.pane, "Triggers")
+    self.triggers.availableTypes.triggersScroll:SetPoint("TOPLEFT", self.triggers.availableTypes.pane, "TOPLEFT", 0, -50)
+    self.triggers.availableTypes.triggersScroll:SetPoint("TOPRIGHT", self.triggers.availableTypes.pane, "TOPRIGHT", 0, -50)
+    self.triggers.availableTypes.triggersScroll:SetPoint("BOTTOMLEFT", self.triggers.availableTypes.pane, "TOPLEFT", 0, -285)
+    self.triggers.availableTypes.triggersScroll:SetPoint("BOTTOMRIGHT", self.triggers.availableTypes.pane, "TOPRIGHT", 0, -285)
+    self.triggers.availableTypes.triggersScroll.content:SetWidth(280)
+    self.triggers.availableTypes.conditionsTitle = self.triggers.availableTypes.pane:CreateFontString(self.triggers.availableTypes.pane:GetName().."_ConditionsTitle", "OVERLAY", "GameFontNormal")
+    self.triggers.availableTypes.conditionsTitle:SetPoint("TOPLEFT", self.triggers.availableTypes.triggersScroll, "BOTTOMLEFT", 10, -5)
+    self.triggers.availableTypes.conditionsTitle:SetText("Conditions")
+    self.triggers.availableTypes.conditionsTitle:SetFont(self:GetHeaderFont(), 14)
+    self.triggers.availableTypes.conditionsTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.triggers.availableTypes.conditionsScroll = FrameBuilder.CreateScrollArea(self.triggers.availableTypes.pane, "Conditions")
+    self.triggers.availableTypes.conditionsScroll:SetPoint("TOPLEFT", self.triggers.availableTypes.pane, "TOPLEFT", 0, -304)
+    self.triggers.availableTypes.conditionsScroll:SetPoint("TOPRIGHT", self.triggers.availableTypes.pane, "TOPRIGHT", 0, -304)
+    self.triggers.availableTypes.conditionsScroll:SetPoint("BOTTOMLEFT", self.triggers.availableTypes.pane, "TOPLEFT", 0, -509)
+    self.triggers.availableTypes.conditionsScroll:SetPoint("BOTTOMRIGHT", self.triggers.availableTypes.pane, "TOPRIGHT", 0, -509)
+    self.triggers.availableTypes.conditionsScroll.content:SetWidth(280)
+    self.triggers.bossAbility = {}
+    self.triggers.bossAbility.pane = CreateFrame("Frame", "SRTRoster_BossAbilityPane", self.content)
+    self.triggers.bossAbility.pane:SetClipsChildren(false)
+    self:SetToRightSide(self.triggers.bossAbility.pane, self.content)
+    self.triggers.bossAbility.bossSelector = FrameBuilder.CreateSelector(self.triggers.bossAbility.pane, {}, 280, self:GetHeaderFontType(), 16, "Select encounter...")
+    self.triggers.bossAbility.bossSelector:SetPoint("TOPLEFT", self.triggers.bossAbility.pane, "TOPLEFT", 0, -4)
+    self.triggers.bossAbility.abilitySelector = FrameBuilder.CreateSelector(self.triggers.bossAbility.pane, {}, 275, self:GetHeaderFontType(), 15, "Select ability...")
+    self.triggers.bossAbility.abilitySelector:SetPoint("TOPLEFT", self.triggers.bossAbility.bossSelector, "BOTTOMLEFT", 5, -12)
+    self.triggers.bossAbility.scroll = FrameBuilder.CreateScrollArea(self.triggers.bossAbility.pane, "BossAbility")
+    self.triggers.bossAbility.scroll:SetPoint("TOPLEFT", 10, -66)
+    self.triggers.bossAbility.scroll:SetPoint("TOPRIGHT", 0, -66)
+    self.triggers.bossAbility.scroll:SetPoint("BOTTOMLEFT", 10, 38)
+    self.triggers.bossAbility.scroll:SetPoint("BOTTOMRIGHT", 0, 38)
+    self.triggers.bossAbility.scroll.content:SetWidth(280)
+    self.triggers.backButton = FrameBuilder.CreateButton(self.triggers.availableTypes.pane, 70, 25, "Back", SRTColor.Red, SRTColor.RedHighlight)
+    self.triggers.backButton:SetPoint("BOTTOMLEFT", self.content, "BOTTOMLEFT", 0, 5)
+    self.triggers.backButton:SetScript("OnMouseDown", function()
+        self.state = State.CREATE_ASSIGNMENTS
+        self:UpdateAppearance()
+    end)
 end
 
 function RosterBuilder:UpdateAppearance()
@@ -564,6 +637,7 @@ function RosterBuilder:UpdateAppearance()
     self:UpdateAddOrRemovePlayers()
     self:UpdateCreateAssignments()
     self:UpdateImportRoster()
+    self:UpdateEditTriggers()
 end
 
 local rosterInfo = {}
@@ -579,6 +653,113 @@ function RosterBuilder:EncounterIDsWithFilledAssignments(encounters)
         end
     end
     return ids
+end
+
+function RosterBuilder:UpdateEditTriggers()
+    if self.state == State.EDIT_TRIGGERS then
+        self.triggers.availableTypes.pane:Show()
+        self.triggers.bossAbility.pane:Show()
+    else
+        self.triggers.availableTypes.pane:Hide()
+        self.triggers.bossAbility.pane:Hide()
+        return
+    end
+
+    -- Populate triggers and conditions
+    local lastTriggerType = nil
+    local triggersScrollHeight = 0
+    for _, triggerType in pairs(Trigger) do
+        availableTriggerCache[triggerType.name] = availableTriggerCache[triggerType.name] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.availableTypes.triggersScroll.content, triggerType.name, 260, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+        if not lastTriggerType then
+            availableTriggerCache[triggerType.name]:SetPoint("TOPLEFT", self.triggers.availableTypes.triggersScroll.content, "TOPLEFT", 10, -10)
+        else
+            availableTriggerCache[triggerType.name]:SetPoint("TOPLEFT", lastTriggerType, "BOTTOMLEFT", 0 , 0)
+        end
+        availableTriggerCache[triggerType.name].creator = triggerType.creator
+        lastTriggerType = availableTriggerCache[triggerType.name]
+        triggersScrollHeight = triggersScrollHeight + 20
+    end
+    self.triggers.availableTypes.triggersScroll.content:SetHeight(triggersScrollHeight)
+    local lastConditionType = nil
+    local conditionScrollHeight = 0
+    for _, conditionType in pairs(Condition) do
+        availableConditionCache[conditionType.name] = availableConditionCache[conditionType.name] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.availableTypes.conditionsScroll.content, conditionType.name, 260, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+        if not lastConditionType then
+            availableConditionCache[conditionType.name]:SetPoint("TOPLEFT", self.triggers.availableTypes.conditionsScroll.content, "TOPLEFT", 10, -10)
+        else
+            availableConditionCache[conditionType.name]:SetPoint("TOPLEFT", lastConditionType, "BOTTOMLEFT", 0 , 0)
+        end
+        availableConditionCache[conditionType.name].creator = conditionType.creator
+        lastConditionType = availableConditionCache[conditionType.name]
+        conditionScrollHeight = conditionScrollHeight + 20
+    end
+    self.triggers.availableTypes.conditionsScroll.content:SetHeight(conditionScrollHeight)
+
+    self.selectedAbilityID = self.selectedAbilityID or 1
+    if self.selectedRoster.encounters[self.selectedEncounterID] then
+        if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] then
+
+            self.triggers.bossAbility.triggersTitle = self.triggers.bossAbility.triggersTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            self.triggers.bossAbility.triggersTitle:SetFont(self:GetHeaderFontType(), 14)
+            self.triggers.bossAbility.triggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+            self.triggers.bossAbility.triggersTitle:SetText("Triggers")
+            self.triggers.bossAbility.triggersTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.scroll.content, "TOPLEFT", 10, 0)
+
+            if self.triggers.bossAbility.triggers then
+                for _, frame in pairs(self.triggers.bossAbility.triggers) do
+                    frame:Hide()
+                end
+            end
+            self.triggers.bossAbility.triggers = {}
+            if self.triggers.bossAbility.conditions then
+                for _, frame in pairs(self.triggers.bossAbility.conditions) do
+                    frame:Hide()
+                end
+            end
+            self.triggers.bossAbility.conditions = {}
+
+            local lastTrigger = nil
+            for ti, trigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers) do
+                local triggerID = string.format("%d_%d_%d", self.selectedEncounterID, self.selectedAbilityID, ti)
+                local triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 260, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                triggerFrame.trigger = triggerFrame.trigger or Utils:ParseTrigger(trigger)
+                if triggerFrame.trigger then
+                    triggerFrame.text:SetText(triggerFrame.trigger:GetDisplayName())
+                end
+                if not lastTrigger then
+                    triggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersTitle, "BOTTOMLEFT", 0, -10)
+                else
+                    triggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, -5)
+                end
+                triggerFrame:Show()
+                self.triggers.bossAbility.triggers[triggerID] = triggerFrame
+                lastTrigger = triggerFrame
+
+                if trigger.conditions then
+                    local lastCondition = nil
+                    for ci, condition in pairs(trigger.conditions) do
+                        local conditionID = string.format("%d_%d_%d_%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
+                        local conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, "IF: "..condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                        conditionFrame.condition = conditionFrame.condition or Utils:ParseCondition(condition)
+                        if conditionFrame.condition then
+                            conditionFrame.text:SetText(conditionFrame.condition:GetDisplayName())
+                        end
+                        if not lastCondition then
+                            conditionFrame:SetPoint("TOPLEFT", triggerFrame, "BOTTOMLEFT", 10, -5)
+                        else
+                            conditionFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", 0, -5)
+                        end
+                        conditionFrame:Show()
+                        self.triggers.bossAbility.conditions[conditionID] = conditionFrame
+                        lastCondition = conditionFrame
+                    end
+                end
+            end
+        else
+            -- TODO: Hide stuff
+            self.triggers.bossAbility.triggers = nil
+        end
+    end
 end
 
 --- Update left side of Load or Create state
@@ -1228,6 +1409,7 @@ end
 function RosterBuilder:Update()
     SRTWindow.Update(self)
     self.assignments.bossSelector.items = {}
+    self.triggers.bossAbility.bossSelector.items = {}
     for _, instanceInfo in Utils:OrderedPairs(BossInfo.instances) do
         for encounterID, encounterInfo in Utils:OrderedPairs(instanceInfo.encounters) do
             local item = {
@@ -1239,10 +1421,13 @@ function RosterBuilder:Update()
                 end
             }
             table.insert(self.assignments.bossSelector.items, item)
+            table.insert(self.triggers.bossAbility.bossSelector.items, item)
         end
     end
     self.assignments.bossSelector.selectedName = self.selectedEncounterID and BossInfo.GetEncounterInfoByID(self.selectedEncounterID).name or "Select encounter..."
+    self.triggers.bossAbility.bossSelector.selectedName = self.selectedEncounterID and BossInfo.GetEncounterInfoByID(self.selectedEncounterID).name or "Select encounter..."
     self.assignments.bossSelector.Update()
+    self.triggers.bossAbility.bossSelector.Update()
 end
 
 ---@return FontFile

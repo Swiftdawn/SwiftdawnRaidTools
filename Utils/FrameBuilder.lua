@@ -60,6 +60,28 @@ function FrameBuilder.CreatePlayerFrame(parentFrame, playerName, classFileName, 
 end
 
 ---@return table|BackdropTemplate|Frame
+function FrameBuilder.CreateDraggeableTextFrame(parentFrame, text, width, height, font, fontSize, iconSize)
+    local frame = CreateFrame("Frame", parentFrame:GetName() .. "_" .. text, parentFrame, "BackdropTemplate")
+    frame:EnableMouse(true)
+    frame:SetSize(width, height)
+    frame:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = height,
+    })
+    frame:SetBackdropColor(0, 0, 0, 0)
+    frame.text = frame.text or frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.text:EnableMouse(false)
+    frame.text:SetPoint("LEFT", frame, "LEFT", 5, 0)
+    frame.text:SetFont(font, fontSize)
+    frame.text:SetText(text)
+    frame.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    frame:SetScript("OnEnter", function () frame:SetBackdropColor(1, 1, 1, 0.4) end)
+    frame:SetScript("OnLeave", function () frame:SetBackdropColor(0, 0, 0, 0) end)
+    return frame
+end
+
+---@return table|BackdropTemplate|Frame
 ---@param parentFrame Frame
 function FrameBuilder.CreateRosterFrame(parentFrame, id, name, width, height, font, fontSize)
     local rosterFrame = CreateFrame("Frame", parentFrame:GetName() .. "_Roster" .. id, parentFrame, "BackdropTemplate")

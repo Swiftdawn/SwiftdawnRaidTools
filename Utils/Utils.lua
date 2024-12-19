@@ -367,3 +367,39 @@ function Utils:GetFullPlayerName()
     local playerName, playerRealm = UnitName("player")
     return playerName .. "-" .. (playerRealm or GetRealmName())
 end
+
+---@return SpellCastTrigger|BossEmoteTrigger|UnitHealthTrigger|EncounterStartTrigger|nil
+function Utils:ParseTrigger(rawTrigger)
+    if not rawTrigger.type then
+        Log.info("[ERROR] Trigger's type is missing", rawTrigger)
+        return nil
+    end
+    if rawTrigger.type == "SPELL_CAST" then
+        return SpellCastTrigger:New(rawTrigger.type, rawTrigger.spell_id)
+    elseif rawTrigger.type == "BOSS_EMOTE" then
+        return BossEmoteTrigger:New(rawTrigger.type, rawTrigger.emoteText)
+    elseif rawTrigger.type == "UNIT_HEALTH" then
+        return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, ">", rawTrigger.pct_gt)
+    elseif rawTrigger.type == "ENCOUNTER_START" then
+        return EncounterStartTrigger:New(rawTrigger.type, rawTrigger.delay)
+    else
+        Log.info("[ERROR] Trigger's type is not supported", rawTrigger)
+        return nil
+    end
+end
+
+---@return CastCountCondition|UnitHealthCondition|nil
+function Utils:ParseCondition(rawCondition)
+    if not rawCondition.type then
+        Log.info("[ERROR] Condition's type is missing", rawCondition)
+        return nil
+    end
+    if rawCondition.type == "SPELL_CAST_COUNT" then
+        return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, rawCondition.gt)
+    elseif rawCondition.type == "UNIT_HEALTH" then
+        return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, ">", rawCondition.pct_gt)
+    else
+        Log.info("[ERROR] Condition's type is not supported", rawCondition)
+        return nil
+    end
+end

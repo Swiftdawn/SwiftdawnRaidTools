@@ -47,9 +47,6 @@ Utils\Utils.lua
 Utils\YAML.lua
 Utils\WAHelper.lua
 Utils\BossInfo.lua
-Models\Conditions\Condition.lua
-Models\Conditions\UnitHealthCondition.lua
-Models\Conditions\SpellCastCountCondition.lua
 Models\Data\BossAbility.lua
 Models\Data\Class.lua
 Models\Data\Encounter.lua
@@ -60,5 +57,11 @@ Models\Data\Spell.lua
 Models\Enum\Comparison.lua
 Models\Enum\SRTColor.lua
 Models\Frame\LogItem.lua
-Models\Triggers\Trigger.lua
+Models\Triggers\BossEmoteTrigger.lua
+Models\Triggers\SpellCastTrigger.lua
 Models\Triggers\UnitHealthTrigger.lua
+Models\Triggers\EncounterStartTrigger.lua
+Models\Enum\Trigger.lua
+Models\Conditions\CastCountCondition.lua
+Models\Conditions\UnitHealthCondition.lua
+Models\Enum\Condition.lua

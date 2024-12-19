@@ -143,7 +143,7 @@ function SwiftdawnRaidTools:OnInitialize()
     self.debugLog = SRTDebugLog:New(100, 400)
     self.debugLog:Initialize()
 
-    self.rosterBuilder = RosterBuilder:New(600)
+    self.rosterBuilder = RosterBuilder:New()
     self.rosterBuilder:Initialize()
 
     self:RegisterComm(self.PREFIX_ANNOUNCE)

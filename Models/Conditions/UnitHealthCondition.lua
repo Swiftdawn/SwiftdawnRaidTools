@@ -1,40 +1,20 @@
----@class UnitHealthCondition:Condition
-UnitHealthCondition = setmetatable({}, Condition)
+---@class UnitHealthCondition
+UnitHealthCondition = {}
 UnitHealthCondition.__index = UnitHealthCondition
 
 ---@return UnitHealthCondition
-function UnitHealthCondition:New(unit, comparison, value)
+function UnitHealthCondition:New(name, unitID, operator, value)
     ---@class UnitHealthCondition
-    local obj = Condition.New(self, "UNIT_HEALTH")
+    local obj = setmetatable({}, self)
     self.__index = self
-    self.unit = unit
-    self.comparison = comparison
-    self.value = value
+    obj.name = name
+    obj.unitID = unitID
+    obj.operator = operator
+    obj.value = value
+    obj.conditions = {}
     return obj
 end
 
-function UnitHealthCondition:Verify()
-    local health = UnitHealth(self.unit)
-    if self.comparison == Comparison.LOWER_THAN then
-        if health < self.value then
-            return true
-        end
-    elseif self.comparison == Comparison.GREATER_THAN then
-        if health > self.value then
-            return true
-        end
-    elseif self.comparison == Comparison.PERCENT_LOWER_THAN then
-        local maxHealth = UnitHealthMax(self.unit)
-        local percent = health / maxHealth * 100
-        if percent < self.value then
-            return true
-        end
-    elseif self.comparison == Comparison.PERCENT_GREATER_THAN then
-        local maxHealth = UnitHealthMax(self.unit)
-        local percent = health / maxHealth * 100
-        if percent > self.value then
-            return true
-        end
-    end
-    return false
+function UnitHealthCondition:GetDisplayName()
+    return tostring(self.unitID) .. "'s health "..self.operator.." "..tostring(self.value).." percent"
 end
