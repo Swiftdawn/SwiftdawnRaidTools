@@ -368,32 +368,34 @@ function Utils:GetFullPlayerName()
     return playerName .. "-" .. (playerRealm or GetRealmName())
 end
 
----@return SpellCastTrigger|BossEmoteTrigger|UnitHealthTrigger|EncounterStartTrigger|SpellAuraTrigger|SpellAuraRemovedTrigger|nil
+---@return SpellCastTrigger|BossEmoteTrigger|UnitHealthTrigger|EncounterStartTrigger|SpellAuraTrigger|SpellAuraRemovedTrigger|NumenTimerTrigger|nil
 function Utils:ParseTrigger(rawTrigger)
     if not rawTrigger.type then
         Log.info("[ERROR] Trigger's type is missing", rawTrigger)
         return nil
     end
     if rawTrigger.type == "SPELL_CAST" then
-        return SpellCastTrigger:New(rawTrigger.type, rawTrigger.spell_id)
+        return SpellCastTrigger:New(rawTrigger.type, rawTrigger.spell_id, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
     elseif rawTrigger.type == "SPELL_AURA" then
-        return SpellAuraTrigger:New(rawTrigger.type, rawTrigger.spell_id)
+        return SpellAuraTrigger:New(rawTrigger.type, rawTrigger.spell_id, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
     elseif rawTrigger.type == "SPELL_AURA_REMOVED" then
-        return SpellAuraRemovedTrigger:New(rawTrigger.type, rawTrigger.spell_id)
+        return SpellAuraRemovedTrigger:New(rawTrigger.type, rawTrigger.spell_id, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
     elseif rawTrigger.type == "RAID_BOSS_EMOTE" then
-        return BossEmoteTrigger:New(rawTrigger.type, rawTrigger.text)
+        return BossEmoteTrigger:New(rawTrigger.type, rawTrigger.text, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
     elseif rawTrigger.type == "UNIT_HEALTH" then
         if rawTrigger.pct_gt then
-            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, ">", rawTrigger.pct_gt, "percentage")
+            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, ">", rawTrigger.pct_gt, "percentage", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
         elseif rawTrigger.pct_lt then
-            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.pct_lt, "percentage")
+            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.pct_lt, "percentage", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
         elseif rawTrigger.pct_lt then
-            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.gt, "value")
+            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.gt, "value", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
         elseif rawTrigger.pct_lt then
-            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.lt, "value")
+            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.lt, "value", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
         end
     elseif rawTrigger.type == "ENCOUNTER_START" then
-        return EncounterStartTrigger:New(rawTrigger.type, rawTrigger.delay)
+        return EncounterStartTrigger:New(rawTrigger.type, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+    elseif rawTrigger.type == "FOJJI_NUMEN_TIMER" then
+        return NumenTimerTrigger:New(rawTrigger.type, rawTrigger.key, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
     else
         Log.info("[ERROR] Trigger's type is not supported", rawTrigger)
         return nil
@@ -428,5 +430,19 @@ function Utils:ParseCondition(rawCondition)
         Log.info("[ERROR] Condition's type is not supported", rawCondition)
         return nil
     end
+end
+
+---@return string
+function Utils:RemoveChatCodes(text)
+    if not text then return "" end
+    -- Remove |cAARRGGBB color codes
+    text = string.gsub(text, "|c%x%x%x%x%x%x%x%x", "")
+    -- Remove |r (reset color code)
+    text = string.gsub(text, "|r", "")
+    -- Remove other WoW formatting codes (e.g., |H, |T for links and textures)
+    text = string.gsub(text, "|H.-|h", "") -- Links
+    text = string.gsub(text, "|T.-|t", "") -- Textures
+    text = string.gsub(text, "|", "") -- Other formatting codes
+    return text
 end
 

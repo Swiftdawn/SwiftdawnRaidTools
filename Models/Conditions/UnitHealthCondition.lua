@@ -12,6 +12,7 @@ function UnitHealthCondition:New(name, unitID, operator, value, type)
     obj.operator = operator
     obj.value = value
     obj.type = type
+    obj.height = 20
     obj.conditions = {}
     return obj
 end

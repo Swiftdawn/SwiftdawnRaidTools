@@ -1,26 +1,30 @@
 Trigger = {
     UnitHealth = {
-        name = "Unit Health",
+        name = "Unit health",
         creator = UnitHealthTrigger.New
     },
     SpellCast = {
-        name = "Spell Cast",
+        name = "Spell cast",
         creator = SpellCastTrigger.New
     },
     BossEmote = {
-        name = "Boss Emote",
+        name = "Boss emote",
         creator = BossEmoteTrigger.New
     },
     StartEncounter = {
-        name = "Time",
+        name = "After X time",
         creator = EncounterStartTrigger.New
     },
     Aura = {
-        name = "Aura",
+        name = "Aura activated",
         creator = SpellAuraTrigger.New
     },
     AuraRemoved = {
-        name = "Aura Removed",
+        name = "Aura removed",
         creator = SpellAuraRemovedTrigger.New
+    },
+    NumenTimer = {
+        name = "Numen timer",
+        creator = NumenTimerTrigger.New
     }
 }

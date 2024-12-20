@@ -3,16 +3,19 @@ EncounterStartTrigger = {}
 EncounterStartTrigger.__index = EncounterStartTrigger
 
 ---@return EncounterStartTrigger
-function EncounterStartTrigger:New(name, value)
+function EncounterStartTrigger:New(name, delay, countdown, throttle)
     ---@class EncounterStartTrigger
     local obj = setmetatable({}, self)
     self.__index = self
     obj.name = name
-    obj.value = value
+    obj.delay = delay
+    obj.countdown = countdown
+    obj.throttle = throttle
+    obj.height = 20
     obj.conditions = {}
     return obj
 end
 
 function EncounterStartTrigger:GetDisplayName()
-    return "Time: " .. tostring(self.value) .. " seconds"
+    return tostring(self.delay) .. " seconds has elapsed"
 end

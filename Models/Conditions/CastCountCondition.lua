@@ -11,6 +11,7 @@ function CastCountCondition:New(name, spellID, operator, count)
     obj.spellID = spellID
     obj.operator = operator
     obj.count = count
+    obj.height = 20
     obj.conditions = {}
     return obj
 end

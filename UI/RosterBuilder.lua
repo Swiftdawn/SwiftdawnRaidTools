@@ -545,7 +545,7 @@ function RosterBuilder:InitializeCreateAssignments()
         self:UpdateAppearance()
     end)
     self.assignments.triggersButton = FrameBuilder.CreateButton(self.assignments.encounter.pane, 70, 25, "Triggers", SRTColor.Green, SRTColor.GreenHighlight)
-    self.assignments.triggersButton:SetPoint("RIGHT", self.assignments.finishButton, "LEFT", -5, 0)
+    self.assignments.triggersButton:SetPoint("RIGHT", self.assignments.finishButton, "LEFT", -10, 0)
     self.assignments.triggersButton:SetScript("OnMouseDown", function (button)
         self.state = State.EDIT_TRIGGERS
         self.triggers.bossAbility.bossSelector.selectedName = self.assignments.bossSelector.selectedName
@@ -596,10 +596,69 @@ function RosterBuilder:InitializeEditTriggers()
     self.triggers.bossAbility.pane = CreateFrame("Frame", "SRTRoster_BossAbilityPane", self.content)
     self.triggers.bossAbility.pane:SetClipsChildren(false)
     self:SetToRightSide(self.triggers.bossAbility.pane, self.content)
-    self.triggers.bossAbility.bossSelector = FrameBuilder.CreateSelector(self.triggers.bossAbility.pane, {}, 280, self:GetHeaderFontType(), 16, "Select encounter...")
+    self.triggers.bossAbility.bossSelector = FrameBuilder.CreateSelector(self.triggers.bossAbility.pane, {}, 281, self:GetHeaderFontType(), 16, "Select encounter...")
     self.triggers.bossAbility.bossSelector:SetPoint("TOPLEFT", self.triggers.bossAbility.pane, "TOPLEFT", 0, -4)
     self.triggers.bossAbility.abilitySelector = FrameBuilder.CreateSelector(self.triggers.bossAbility.pane, {}, 275, self:GetHeaderFontType(), 15, "Select ability...")
     self.triggers.bossAbility.abilitySelector:SetPoint("TOPLEFT", self.triggers.bossAbility.bossSelector, "BOTTOMLEFT", 5, -12)
+    self.triggers.bossAbility.abilityEditBox = CreateFrame("EditBox", self.triggers.bossAbility.pane:GetName().."AbilityEditBox", self.triggers.bossAbility.pane)
+    self.triggers.bossAbility.abilityEditBox:SetSize(260, 16)
+    self.triggers.bossAbility.abilityEditBox:SetPoint("LEFT", self.triggers.bossAbility.abilitySelector.text, "LEFT", 0, 0)
+    self.triggers.bossAbility.abilityEditBox:SetMultiLine(false)
+    self.triggers.bossAbility.abilityEditBox:SetFont(self:GetHeaderFontType(), 16, "")
+    self.triggers.bossAbility.abilityEditBox:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.triggers.bossAbility.abilityEditBox:SetAutoFocus(true)
+    self.triggers.bossAbility.abilityEditBox:SetScript("OnEnterPressed", function()
+        local newName = self.triggers.bossAbility.abilityEditBox:GetText()
+        newName = newName:gsub("%s+", "")
+        if #newName == 0 then
+            newName = "Select ability..."
+        end
+        self.triggers.bossAbility.abilitySelector.selectedName = newName
+        self.triggers.bossAbility.abilityEditBox:ClearFocus()
+        self.triggers.bossAbility.abilityEditBox:Hide()
+        self.triggers.bossAbility.abilitySelector.text:Show()
+        self:UpdateAppearance()
+    end)
+    self.triggers.bossAbility.abilityEditBox:SetScript("OnEscapePressed", function()
+        self.triggers.bossAbility.abilityEditBox:ClearFocus()
+        self.triggers.bossAbility.abilityEditBox:Hide()
+        self.triggers.bossAbility.abilitySelector.text:Show()
+    end)
+    self.triggers.bossAbility.abilityEditBox:Hide()
+    self.triggers.bossAbility.abilitySelector.text:SetScript("OnMouseUp", function ()
+        self.triggers.bossAbility.abilityEditBox:SetText(self.triggers.bossAbility.abilitySelector.selectedName or "Select ability...")
+        self.triggers.bossAbility.abilityEditBox:Show()
+        self.triggers.bossAbility.abilityEditBox:SetFocus()
+        self.triggers.bossAbility.abilitySelector.text:Hide()
+    end)
+    -- Move the edit button to sit just before the dropdown arrow button
+    self.triggers.bossAbility.editButton = CreateFrame("Button", self.triggers.bossAbility.pane:GetName().."_EditAbility", self.triggers.bossAbility.pane, "BackdropTemplate")
+    self.triggers.bossAbility.editButton:SetPoint("RIGHT", self.triggers.bossAbility.abilitySelector.button, "LEFT", -5, 0)
+    self.triggers.bossAbility.editButton:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = 16,
+    })
+    self.triggers.bossAbility.editButton:SetBackdropColor(0, 0, 0, 0)
+    self.triggers.bossAbility.editButton.texture = self.triggers.bossAbility.editButton:CreateTexture(nil, "BACKGROUND")
+    self.triggers.bossAbility.editButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\edit.png")
+    self.triggers.bossAbility.editButton.texture:SetAllPoints()
+    self.triggers.bossAbility.editButton.texture:SetAlpha(0.8)
+    self.triggers.bossAbility.editButton:SetSize(16, 16)
+    self.triggers.bossAbility.editButton:SetScript("OnMouseUp", function ()
+        if self.selectedAbilityID then
+            self.triggers.bossAbility.abilityEditBox:SetText(self.triggers.bossAbility.abilitySelector.text:GetText())
+            self.triggers.bossAbility.abilityEditBox:Show()
+            self.triggers.bossAbility.abilityEditBox:SetFocus()
+            self.triggers.bossAbility.abilitySelector.text:Hide()
+        end
+    end)
+    self.triggers.bossAbility.editButton:SetScript("OnEnter", function ()
+        self.triggers.bossAbility.editButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\edit_hover.png")
+    end)
+    self.triggers.bossAbility.editButton:SetScript("OnLeave", function ()
+        self.triggers.bossAbility.editButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\edit.png")
+    end)
     self.triggers.bossAbility.scroll = FrameBuilder.CreateScrollArea(self.triggers.bossAbility.pane, "BossAbility")
     self.triggers.bossAbility.scroll:SetPoint("TOPLEFT", 10, -66)
     self.triggers.bossAbility.scroll:SetPoint("TOPRIGHT", 0, -66)
@@ -703,39 +762,94 @@ function RosterBuilder:UpdateEditTriggers()
             self.triggers.bossAbility.triggersTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.scroll.content, "TOPLEFT", 10, 0)
 
             local lastTrigger = nil
+            local lastCondition = nil
             for ti, trigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers) do
-                local triggerID = string.format("%d_%d_%d", self.selectedEncounterID, self.selectedAbilityID, ti)
-                local triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 260, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                local triggerID = string.format("%d_%d_trigger%d", self.selectedEncounterID, self.selectedAbilityID, ti)
+                local triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                 triggerFrame.trigger = triggerFrame.trigger or Utils:ParseTrigger(trigger)
                 if triggerFrame.trigger then
-                    triggerFrame.text:SetText(triggerFrame.trigger:GetDisplayName())
+                    triggerFrame.text:SetText("|cFFFFD200WHEN:|r "..triggerFrame.trigger:GetDisplayName())
+                    triggerFrame:Update()
                 end
                 if not lastTrigger then
                     triggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersTitle, "BOTTOMLEFT", 0, -10)
                 else
-                    triggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, -5)
+                    triggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, 0)
                 end
                 triggerFrame:Show()
                 self.triggers.bossAbility.triggers[triggerID] = triggerFrame
                 lastTrigger = triggerFrame
-
+                
                 if trigger.conditions then
-                    local lastCondition = nil
+                    lastCondition = nil
                     for ci, condition in pairs(trigger.conditions) do
-                        local conditionID = string.format("%d_%d_%d_%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
+                        local conditionID = string.format("%d_%d_trigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
                         local conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, "IF: "..condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                         conditionFrame.condition = conditionFrame.condition or Utils:ParseCondition(condition)
                         if conditionFrame.condition then
-                            conditionFrame.text:SetText("IF: "..conditionFrame.condition:GetDisplayName())
+                            conditionFrame.text:SetText("|cFFFFD200IF:|r "..conditionFrame.condition:GetDisplayName())
+                            conditionFrame:Update()
                         end
                         if not lastCondition then
-                            conditionFrame:SetPoint("TOPLEFT", triggerFrame, "BOTTOMLEFT", 10, -5)
+                            conditionFrame:SetPoint("TOPLEFT", triggerFrame, "BOTTOMLEFT", 10, 0)
                         else
-                            conditionFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", 0, -5)
+                            conditionFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", 0, 0)
                         end
                         conditionFrame:Show()
                         self.triggers.bossAbility.conditions[conditionID] = conditionFrame
                         lastCondition = conditionFrame
+                    end
+                end
+            end
+
+            self.triggers.bossAbility.untriggersTitle = self.triggers.bossAbility.untriggersTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            self.triggers.bossAbility.untriggersTitle:SetFont(self:GetHeaderFontType(), 14)
+            self.triggers.bossAbility.untriggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+            self.triggers.bossAbility.untriggersTitle:SetText("Untriggers")
+            if lastCondition then
+                self.triggers.bossAbility.untriggersTitle:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, -10)
+            else
+                self.triggers.bossAbility.untriggersTitle:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, -10)
+            end
+
+            if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers then
+                local lastUntrigger = nil
+                for ti, untrigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers) do
+                    local untriggerID = string.format("%d_%d_untrigger%d", self.selectedEncounterID, self.selectedAbilityID, ti)
+                    local untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, untrigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                    untriggerFrame.trigger = untriggerFrame.trigger or Utils:ParseTrigger(untrigger)
+                    if untriggerFrame.trigger then
+                        untriggerFrame.text:SetText("|cFFFFD200UNLESS:|r "..untriggerFrame.trigger:GetDisplayName())
+                        untriggerFrame:Update()
+                    end
+                    if not lastUntrigger then
+                        untriggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersTitle, "BOTTOMLEFT", 0, -10)
+                    else
+                        untriggerFrame:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, 0)
+                    end
+                    untriggerFrame:Show()
+                    self.triggers.bossAbility.triggers[untriggerID] = untriggerFrame
+                    lastUntrigger = untriggerFrame
+
+                    if untrigger.conditions then
+                        lastCondition = nil
+                        for ci, condition in pairs(untrigger.conditions) do
+                            local conditionID = string.format("%d_%d_untrigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
+                            local conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, "IF: "..condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                            conditionFrame.condition = conditionFrame.condition or Utils:ParseCondition(condition)
+                            if conditionFrame.condition then
+                                conditionFrame.text:SetText("|cFFFFD200IF:|r "..conditionFrame.condition:GetDisplayName())
+                                conditionFrame:Update()
+                            end
+                            if not lastCondition then
+                                conditionFrame:SetPoint("TOPLEFT", untriggerFrame, "BOTTOMLEFT", 10, 0)
+                            else
+                                conditionFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", 0, 0)
+                            end
+                            conditionFrame:Show()
+                            self.triggers.bossAbility.conditions[conditionID] = conditionFrame
+                            lastCondition = conditionFrame
+                        end
                     end
                 end
             end
@@ -1409,22 +1523,24 @@ function RosterBuilder:Update()
                     if not self.selectedRoster.encounters[self.selectedEncounterID] then
                         self.selectedRoster.encounters[self.selectedEncounterID] = SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
                     end
-                    for abilityID, ability in pairs(self.selectedRoster.encounters[self.selectedEncounterID]) do
-                        local item = {
-                            name = ability.metadata.name,
-                            abilityID = abilityID,
-                            onClick = function (r)
-                                self.selectedAbilityID = r.item.abilityID
-                                self:UpdateAppearance()
-                            end
-                        }
-                        table.insert(self.triggers.bossAbility.abilitySelector.items, item)
+                    if self.selectedEncounterID then
+                        for abilityID, ability in pairs(self.selectedRoster.encounters[self.selectedEncounterID]) do
+                            local item = {
+                                name = ability.metadata.name,
+                                abilityID = abilityID,
+                                onClick = function (r)
+                                    self.selectedAbilityID = r.item.abilityID
+                                    self:UpdateAppearance()
+                                end
+                            }
+                            table.insert(self.triggers.bossAbility.abilitySelector.items, item)
+                        end
+                        if (#self.triggers.bossAbility.abilitySelector.items > 0) then
+                            self.triggers.bossAbility.abilitySelector.selectedName = self.triggers.bossAbility.abilitySelector.items[1].name
+                            self.selectedAbilityID = self.triggers.bossAbility.abilitySelector.items[1].abilityID
+                        end
+                        self.triggers.bossAbility.abilitySelector:Update()
                     end
-                    if (#self.triggers.bossAbility.abilitySelector.items > 0) then
-                        self.triggers.bossAbility.abilitySelector.selectedName = self.triggers.bossAbility.abilitySelector.items[1].name
-                        self.selectedAbilityID = self.triggers.bossAbility.abilitySelector.items[1].abilityID
-                    end
-                    self.triggers.bossAbility.abilitySelector:Update()
                     self:UpdateAppearance()
                 end
             }

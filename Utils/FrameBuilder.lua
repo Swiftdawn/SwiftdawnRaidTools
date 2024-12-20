@@ -76,9 +76,27 @@ function FrameBuilder.CreateDraggeableTextFrame(parentFrame, text, width, height
     frame.text:SetFont(font, fontSize)
     frame.text:SetText(text)
     frame.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    frame.text:SetJustifyH("LEFT")
+    frame.text:SetWordWrap(true)
+    frame.text:SetSpacing(3)
+    frame.text:SetIndentedWordWrap(true)
+    frame.text:SetWidth(width - 6)
     frame:SetScript("OnEnter", function () frame:SetBackdropColor(1, 1, 1, 0.4) end)
     frame:SetScript("OnLeave", function () frame:SetBackdropColor(0, 0, 0, 0) end)
+    frame.Update = function ()
+        FrameBuilder.UpdateDraggeableTextFrame(frame)
+    end
     return frame
+end
+
+function FrameBuilder.UpdateDraggeableTextFrame(frame)
+    frame:SetHeight(frame.text:GetHeight() + 8)
+    frame:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = frame:GetHeight(),
+    })
+    frame:SetBackdropColor(0, 0, 0, 0)
 end
 
 ---@return table|BackdropTemplate|Frame
@@ -338,9 +356,9 @@ function FrameBuilder.CreateSelector(parentFrame, items, width, font, fontSize, 
     selector.button = CreateFrame("Button", "SRT_DropdownButton", selector)
     selector.button:SetSize(selector.fontSize*1.4, selector.fontSize*1.4)
     selector.button:SetPoint("RIGHT", selector, "RIGHT", -3, 0)
-    selector.button:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-    selector.button:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
-    selector.button:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIcon-ScrollDown-Up")
+    selector.button:SetNormalTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\dropdown.png")
+    selector.button:SetHighlightTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\dropdown_hover.png")
+    selector.button:SetPushedTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\dropdown_hover.png")
     selector.button:SetAlpha(0.8)
     selector.button:SetScript("OnEnter", function(b) b:SetAlpha(1) end)
     selector.button:SetScript("OnLeave", function(b) b:SetAlpha(0.8) end)
