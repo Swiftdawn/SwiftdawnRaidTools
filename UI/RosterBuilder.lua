@@ -712,7 +712,7 @@ function RosterBuilder:UpdateEditTriggers()
     local lastTriggerType = nil
     local triggersScrollHeight = 0
     for _, triggerType in pairs(Trigger) do
-        availableTriggerCache[triggerType.name] = availableTriggerCache[triggerType.name] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.availableTypes.triggersScroll.content, triggerType.name, 260, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+        availableTriggerCache[triggerType.name] = availableTriggerCache[triggerType.name] or FrameBuilder.CreateTextFrame(self.triggers.availableTypes.triggersScroll.content, triggerType.name, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
         if not lastTriggerType then
             availableTriggerCache[triggerType.name]:SetPoint("TOPLEFT", self.triggers.availableTypes.triggersScroll.content, "TOPLEFT", 10, -10)
         else
@@ -726,7 +726,7 @@ function RosterBuilder:UpdateEditTriggers()
     local lastConditionType = nil
     local conditionScrollHeight = 0
     for _, conditionType in pairs(Condition) do
-        availableConditionCache[conditionType.name] = availableConditionCache[conditionType.name] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.availableTypes.conditionsScroll.content, conditionType.name, 260, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+        availableConditionCache[conditionType.name] = availableConditionCache[conditionType.name] or FrameBuilder.CreateTextFrame(self.triggers.availableTypes.conditionsScroll.content, conditionType.name, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
         if not lastConditionType then
             availableConditionCache[conditionType.name]:SetPoint("TOPLEFT", self.triggers.availableTypes.conditionsScroll.content, "TOPLEFT", 10, -10)
         else
@@ -765,7 +765,7 @@ function RosterBuilder:UpdateEditTriggers()
             local lastCondition = nil
             for ti, trigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers) do
                 local triggerID = string.format("%d_%d_trigger%d", self.selectedEncounterID, self.selectedAbilityID, ti)
-                local triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                local triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                 triggerFrame.trigger = triggerFrame.trigger or Utils:ParseTrigger(trigger)
                 if triggerFrame.trigger then
                     triggerFrame.text:SetText("|cFFFFD200WHEN:|r "..triggerFrame.trigger:GetDisplayName())
@@ -784,7 +784,7 @@ function RosterBuilder:UpdateEditTriggers()
                     lastCondition = nil
                     for ci, condition in pairs(trigger.conditions) do
                         local conditionID = string.format("%d_%d_trigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
-                        local conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, "IF: "..condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                        local conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, "IF: "..condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                         conditionFrame.condition = conditionFrame.condition or Utils:ParseCondition(condition)
                         if conditionFrame.condition then
                             conditionFrame.text:SetText("|cFFFFD200IF:|r "..conditionFrame.condition:GetDisplayName())
@@ -812,11 +812,11 @@ function RosterBuilder:UpdateEditTriggers()
                 self.triggers.bossAbility.untriggersTitle:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, -10)
             end
 
+            local lastUntrigger = nil
             if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers then
-                local lastUntrigger = nil
                 for ti, untrigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers) do
                     local untriggerID = string.format("%d_%d_untrigger%d", self.selectedEncounterID, self.selectedAbilityID, ti)
-                    local untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, untrigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                    local untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, untrigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                     untriggerFrame.trigger = untriggerFrame.trigger or Utils:ParseTrigger(untrigger)
                     if untriggerFrame.trigger then
                         untriggerFrame.text:SetText("|cFFFFD200UNLESS:|r "..untriggerFrame.trigger:GetDisplayName())
@@ -831,11 +831,11 @@ function RosterBuilder:UpdateEditTriggers()
                     self.triggers.bossAbility.triggers[untriggerID] = untriggerFrame
                     lastUntrigger = untriggerFrame
 
+                    lastCondition = nil
                     if untrigger.conditions then
-                        lastCondition = nil
                         for ci, condition in pairs(untrigger.conditions) do
                             local conditionID = string.format("%d_%d_untrigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
-                            local conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateDraggeableTextFrame(self.triggers.bossAbility.scroll.content, "IF: "..condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                            local conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, "IF: "..condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                             conditionFrame.condition = conditionFrame.condition or Utils:ParseCondition(condition)
                             if conditionFrame.condition then
                                 conditionFrame.text:SetText("|cFFFFD200IF:|r "..conditionFrame.condition:GetDisplayName())
@@ -852,6 +852,32 @@ function RosterBuilder:UpdateEditTriggers()
                         end
                     end
                 end
+            end
+
+            self.triggers.bossAbility.notificationTitle = self.triggers.bossAbility.notificationTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            self.triggers.bossAbility.notificationTitle:SetFont(self:GetHeaderFontType(), 14)
+            self.triggers.bossAbility.notificationTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+            self.triggers.bossAbility.notificationTitle:SetJustifyH("LEFT")
+            self.triggers.bossAbility.notificationTitle:SetWidth(260)
+            if lastUntrigger and lastCondition then
+                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, -10)
+            elseif lastUntrigger then
+                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, -10)
+            else
+                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersTitle, "BOTTOMLEFT", 0, -10)
+            end
+            self.triggers.bossAbility.notificationTitle:SetText("Notification message")
+
+            self.triggers.bossAbility.notificationFrame = self.triggers.bossAbility.notificationFrame or FrameBuilder.CreateEditableTextFrame(self.triggers.bossAbility.scroll.content, "No custom message set...", 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+            self.triggers.bossAbility.notificationFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.notificationTitle, "BOTTOMLEFT", 0, -10)
+            self.triggers.bossAbility.notificationFrame:Show()
+
+            if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification then
+                self.triggers.bossAbility.notificationFrame.text:SetText(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification)
+                self.triggers.bossAbility.notificationFrame:Update()
+            else
+                self.triggers.bossAbility.notificationFrame.text:SetText("No custom message set...")
+                self.triggers.bossAbility.notificationFrame:Update()
             end
         else
             -- TODO: Hide stuff
@@ -1523,7 +1549,7 @@ function RosterBuilder:Update()
                     if not self.selectedRoster.encounters[self.selectedEncounterID] then
                         self.selectedRoster.encounters[self.selectedEncounterID] = SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
                     end
-                    if self.selectedEncounterID then
+                    if self.selectedEncounterID and self.selectedRoster.encounters[self.selectedEncounterID] then
                         for abilityID, ability in pairs(self.selectedRoster.encounters[self.selectedEncounterID]) do
                             local item = {
                                 name = ability.metadata.name,
@@ -1538,6 +1564,8 @@ function RosterBuilder:Update()
                         if (#self.triggers.bossAbility.abilitySelector.items > 0) then
                             self.triggers.bossAbility.abilitySelector.selectedName = self.triggers.bossAbility.abilitySelector.items[1].name
                             self.selectedAbilityID = self.triggers.bossAbility.abilitySelector.items[1].abilityID
+                        else
+                            self.triggers.bossAbility.abilitySelector.selectedName = "No abilities yet..."
                         end
                         self.triggers.bossAbility.abilitySelector:Update()
                     end

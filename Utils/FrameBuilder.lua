@@ -60,7 +60,7 @@ function FrameBuilder.CreatePlayerFrame(parentFrame, playerName, classFileName, 
 end
 
 ---@return table|BackdropTemplate|Frame
-function FrameBuilder.CreateDraggeableTextFrame(parentFrame, text, width, height, font, fontSize, iconSize)
+function FrameBuilder.CreateTextFrame(parentFrame, text, width, height, font, fontSize, iconSize)
     local frame = CreateFrame("Frame", parentFrame:GetName() .. "_" .. text, parentFrame, "BackdropTemplate")
     frame:EnableMouse(true)
     frame:SetSize(width, height)
@@ -84,12 +84,13 @@ function FrameBuilder.CreateDraggeableTextFrame(parentFrame, text, width, height
     frame:SetScript("OnEnter", function () frame:SetBackdropColor(1, 1, 1, 0.4) end)
     frame:SetScript("OnLeave", function () frame:SetBackdropColor(0, 0, 0, 0) end)
     frame.Update = function ()
-        FrameBuilder.UpdateDraggeableTextFrame(frame)
+        FrameBuilder.UpdateTextFrame(frame)
     end
+    frame.Update()
     return frame
 end
 
-function FrameBuilder.UpdateDraggeableTextFrame(frame)
+function FrameBuilder.UpdateTextFrame(frame)
     frame:SetHeight(frame.text:GetHeight() + 8)
     frame:SetBackdrop({
         bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
@@ -97,6 +98,46 @@ function FrameBuilder.UpdateDraggeableTextFrame(frame)
         tileSize = frame:GetHeight(),
     })
     frame:SetBackdropColor(0, 0, 0, 0)
+end
+
+---@return table|BackdropTemplate|Frame
+function FrameBuilder.CreateEditableTextFrame(parentFrame, text, width, height, font, fontSize)
+    local frame = FrameBuilder.CreateTextFrame(parentFrame, text, width, height, font, fontSize)
+    frame.editBox = CreateFrame("EditBox", frame:GetName().."Edit", frame)
+    frame.editBox:SetSize(width - 10, height)
+    frame.editBox:SetPoint("LEFT", frame, "LEFT", 5, 0)
+    frame.editBox:SetFont(font, fontSize, "")
+    frame.editBox:Hide()
+    frame:SetScript("OnMouseDown", function()
+        frame.text:Hide()
+        frame.editBox:SetText(frame.text:GetText())
+        frame.editBox:Show()
+        frame.editBox:SetFocus()
+    end)
+    frame.editBox:SetScript("OnEscapePressed", function()
+        frame.editBox:Hide()
+        frame.text:Show()
+    end)
+    frame.editBox:SetScript("OnEnterPressed", function()
+        frame.text:SetText(frame.editBox:GetText())
+        frame.editBox:Hide()
+        frame.text:Show()
+    end)
+    frame:SetScript("OnEnter", function ()
+        frame:SetBackdropColor(1, 1, 1, 0.4)
+        frame.hoverIcon:Show()
+    end)
+    frame:SetScript("OnLeave", function ()
+        frame:SetBackdropColor(0, 0, 0, 0)
+        frame.hoverIcon:Hide()
+    end)
+
+    frame.hoverIcon = frame:CreateTexture(nil, "OVERLAY")
+    frame.hoverIcon:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\edit.png")
+    frame.hoverIcon:SetSize(fontSize, fontSize)
+    frame.hoverIcon:SetPoint("RIGHT", frame, "RIGHT", -5, 0)
+    frame.hoverIcon:Hide()
+    return frame
 end
 
 ---@return table|BackdropTemplate|Frame
