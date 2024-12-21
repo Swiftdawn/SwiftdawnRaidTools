@@ -17,6 +17,7 @@ end
 
 function SRTOverview:Initialize()
     SRTWindow.Initialize(self)
+    self.container:SetFrameStrata("MEDIUM")
     self.menuButton:SetScript("OnClick", function()
         if not SRT_IsTesting() and (InCombatLockdown() or AssignmentsController:IsInEncounter()) then
             return
