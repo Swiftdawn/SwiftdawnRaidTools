@@ -18,5 +18,14 @@ function UnitHealthCondition:New(name, unitID, operator, value, type)
 end
 
 function UnitHealthCondition:GetDisplayName()
-    return tostring(self.unitID) .. "'s health "..self.type.." "..self.operator.." "..tostring(self.value)
+    return self:GetUnitName() .. "'s health "..self.type.." "..self.operator.." "..tostring(self.value)
+end
+
+function UnitHealthCondition:GetUnitName()
+    if self.unitID == "player" then
+        return "Player"
+    elseif self.unitID == "boss1" then
+        return "Boss"
+    end
+    return tostring(self.unitID)
 end

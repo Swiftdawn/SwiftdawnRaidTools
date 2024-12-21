@@ -21,5 +21,14 @@ function UnitHealthTrigger:New(name, unitID, operator, value, type, delay, count
 end
 
 function UnitHealthTrigger:GetDisplayName()
-    return tostring(self.unitID) .. "'s health "..self.type.." "..self.operator.." "..tostring(self.value).. (self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
+    return self:GetUnitName() .. "'s health "..self.type.." "..self.operator.." "..tostring(self.value).. (self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
+end
+
+function UnitHealthTrigger:GetUnitName()
+    if self.unitID == "player" then
+        return "Player"
+    elseif self.unitID == "boss1" then
+        return "Boss"
+    end
+    return tostring(self.unitID)
 end
