@@ -422,7 +422,7 @@ function Utils:ParseCondition(rawCondition)
         elseif rawCondition.pct_lt then
             return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, "<", rawCondition.pct_lt, "percentage")
         elseif rawCondition.gt then
-            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, "<", rawCondition.gt, "value")
+            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, ">", rawCondition.gt, "value")
         elseif rawCondition.lt then
             return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, "<", rawCondition.lt, "value")
         end
