@@ -143,6 +143,10 @@ function RosterBuilder:InitializeLoadOrCreateRoster()
     -- Create buttons
     self.loadCreate.deleteButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Delete", SRTColor.Gray, SRTColor.Gray)
     self.loadCreate.deleteButton:SetPoint("BOTTOMLEFT", self.loadCreate.load.pane, "BOTTOMLEFT", 0, 5)
+    
+    self.loadCreate.copyButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Copy", SRTColor.Gray, SRTColor.Gray)
+    self.loadCreate.copyButton:SetPoint("LEFT", self.loadCreate.deleteButton, "RIGHT", 10, 0)
+    self.loadCreate.copyButton:Hide()
 
     self.loadCreate.activateButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Activate", SRTColor.Gray, SRTColor.Gray)
     self.loadCreate.activateButton:SetPoint("BOTTOMRIGHT", self.loadCreate.load.pane, "BOTTOMRIGHT", 0, 5)
@@ -965,25 +969,34 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
             self.selectedRoster = nil
             self:UpdateAppearance()
         end)
-        self.loadCreate.editButton.color = SRTColor.Green
-        self.loadCreate.editButton.colorHighlight = SRTColor.GreenHighlight
+
         if self.selectedRoster.owner == Utils:GetFullPlayerName() then
-            self.loadCreate.editButton.displayText = "Edit"
+            self.loadCreate.editButton.color = SRTColor.Green
+            self.loadCreate.editButton.colorHighlight = SRTColor.GreenHighlight
+            FrameBuilder.UpdateButton(self.loadCreate.editButton)
             self.loadCreate.editButton:SetScript("OnMouseDown", function (button)
                 self.state = State.ADD_OR_REMOVE_PLAYERS
                 self:UpdateAppearance()
             end)
         else
-            self.loadCreate.editButton.displayText = "Copy"
-            self.loadCreate.editButton:SetScript("OnMouseDown", function (button)
-                local copy = Roster.Copy(self.selectedRoster)
-                SRTData.AddRoster(copy.id, copy)
-                self.selectedRoster = copy
-                self:UpdateAppearance()
-            end)
+            self.loadCreate.editButton.color = SRTColor.Gray
+            self.loadCreate.editButton.colorHighlight = SRTColor.Gray
+            FrameBuilder.UpdateButton(self.loadCreate.editButton)
+            self.loadCreate.editButton:SetScript("OnMouseDown", nil)
         end
-        FrameBuilder.UpdateButton(self.loadCreate.editButton)
         self.loadCreate.editButton:Show()
+
+        self.loadCreate.copyButton.color = SRTColor.Green
+        self.loadCreate.copyButton.colorHighlight = SRTColor.GreenHighlight
+        FrameBuilder.UpdateButton(self.loadCreate.copyButton)
+        self.loadCreate.copyButton:SetScript("OnMouseDown", function (button)
+            local copy = Roster.Copy(self.selectedRoster)
+            SRTData.AddRoster(copy.id, copy)
+            self.selectedRoster = copy
+            self:UpdateAppearance()
+        end)
+        self.loadCreate.copyButton:Show()
+
         if Utils:IsPlayerRaidLeader() and not IsEncounterInProgress() then
             self.loadCreate.activateButton.color = SRTColor.Blue
             self.loadCreate.activateButton.colorHighlight = SRTColor.BlueHighlight
@@ -1053,6 +1066,8 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         self.loadCreate.deleteButton:SetScript("OnMouseDown", nil)
         self.loadCreate.editButton:Hide()
         self.loadCreate.editButton:SetScript("OnMouseDown", nil)
+        self.loadCreate.copyButton:Hide()
+        self.loadCreate.copyButton:SetScript("OnMouseDown", nil)
         self.loadCreate.activateButton.color = SRTColor.Gray
         self.loadCreate.activateButton.colorHighlight = SRTColor.Gray
         FrameBuilder.UpdateButton(self.loadCreate.activateButton)
