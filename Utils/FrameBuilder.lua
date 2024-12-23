@@ -232,6 +232,85 @@ function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, heigh
     return frame
 end
 
+function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges)
+    local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
+    frame.trigger = trigger
+    frame.text:SetText(trigger:GetDisplayName())
+    frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+    frame.hiddenFrames:SetAllPoints()
+    frame.hiddenFrames:Hide()
+    frame.hiddenFrames.delayTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.delayTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.delayTitle:SetPoint("TOPLEFT", frame.hiddenFrames, "TOPLEFT", 5, -5)
+    frame.hiddenFrames.delayTitle:SetText("Delay:")
+    frame.hiddenFrames.delayTitle:SetWidth(frame.hiddenFrames.delayTitle:GetStringWidth())
+    frame.hiddenFrames.delayEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.delayEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.delayEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.delayEditBox:SetPoint("LEFT", frame.hiddenFrames.delayTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.delayEditBox:SetAutoFocus(false)
+    frame.hiddenFrames.throttleTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.throttleTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.throttleTitle:SetPoint("TOPLEFT", frame.hiddenFrames.delayTitle, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.throttleTitle:SetText("Throttle:")
+    frame.hiddenFrames.throttleTitle:SetWidth(frame.hiddenFrames.throttleTitle:GetStringWidth())
+    frame.hiddenFrames.throttleEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.throttleEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.throttleEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.throttleEditBox:SetPoint("LEFT", frame.hiddenFrames.throttleTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.throttleEditBox:SetAutoFocus(false)
+    frame.hiddenFrames.countdownTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.countdownTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.countdownTitle:SetPoint("TOPLEFT", frame.hiddenFrames.throttleTitle, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.countdownTitle:SetText("Countdown:")
+    frame.hiddenFrames.countdownTitle:SetWidth(frame.hiddenFrames.countdownTitle:GetStringWidth())
+    frame.hiddenFrames.countdownEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.countdownEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.countdownEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.countdownEditBox:SetPoint("LEFT", frame.hiddenFrames.countdownTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.countdownEditBox:SetAutoFocus(false)
+    local function cancelEditing()
+        frame.hiddenFrames:Hide()
+        frame:Update()
+        frame.text:Show()
+    end
+    local function acceptChanges()
+        onChanges()
+        frame.hiddenFrames:Hide()
+        frame:Update()
+        frame.text:Show()
+    end
+    frame:SetScript("OnMouseUp", function()
+        frame.text:Hide()
+        frame.hiddenFrames.delayEditBox:SetText(frame.trigger.delay or "0")
+        frame.hiddenFrames.throttleEditBox:SetText(frame.trigger.throttle or "0")
+        frame.hiddenFrames.countdownEditBox:SetText(frame.trigger.countdown or "0")
+        frame.hiddenFrames:Show()
+        frame:SetSize(width, 50) -- Adjust the frame size to fit the hidden frames
+        frame.hiddenFrames:SetSize(width, 50)
+        frame:SetBackdrop({
+            bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+            tile = true,
+            tileSize = frame:GetHeight(),
+        })
+        frame.hiddenFrames:SetBackdrop({
+            bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+            tile = true,
+            tileSize = frame:GetHeight(),
+        })
+        frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
+        frame.hiddenFrames.emoteEditBox:SetFocus()
+    end)
+    frame.hiddenFrames.delayEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.throttleEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.countdownEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.delayEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.throttleEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.countdownEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame:Update()
+    return frame
+end
+
 function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger

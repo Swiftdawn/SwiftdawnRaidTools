@@ -783,7 +783,7 @@ function RosterBuilder:UpdateEditTriggers()
                 elseif parsedTrigger.name == "UNIT_HEALTH" then
                     triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateUnitHealthTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                 elseif parsedTrigger.name == "ENCOUNTER_START" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTimeTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                 elseif parsedTrigger.name == "FOJJI_NUMEN_TIMER" then
                     triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
                 end
