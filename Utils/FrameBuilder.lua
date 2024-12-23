@@ -299,7 +299,7 @@ function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, width, height
             tileSize = frame:GetHeight(),
         })
         frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
-        frame.hiddenFrames.emoteEditBox:SetFocus()
+        frame.hiddenFrames.delayEditBox:SetFocus()
     end)
     frame.hiddenFrames.delayEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.throttleEditBox:SetScript("OnEscapePressed", cancelEditing)
