@@ -146,7 +146,6 @@ function RosterBuilder:InitializeLoadOrCreateRoster()
     
     self.loadCreate.copyButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Copy", SRTColor.Gray, SRTColor.Gray)
     self.loadCreate.copyButton:SetPoint("LEFT", self.loadCreate.deleteButton, "RIGHT", 10, 0)
-    self.loadCreate.copyButton:Hide()
 
     self.loadCreate.activateButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Activate", SRTColor.Gray, SRTColor.Gray)
     self.loadCreate.activateButton:SetPoint("BOTTOMRIGHT", self.loadCreate.load.pane, "BOTTOMRIGHT", 0, 5)
@@ -183,7 +182,6 @@ function RosterBuilder:InitializeLoadOrCreateRoster()
     end)
     self.loadCreate.editButton = FrameBuilder.CreateButton(self.loadCreate.info.pane, 70, 25, "Edit", SRTColor.Gray, SRTColor.Gray)
     self.loadCreate.editButton:SetPoint("RIGHT", self.loadCreate.createButton, "LEFT", -10, 0)
-    self.loadCreate.editButton:Hide()
 end
 
 function RosterBuilder:InitializeImportRoster()
@@ -1063,10 +1061,14 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         self.loadCreate.deleteButton.color = SRTColor.Gray
         self.loadCreate.deleteButton.colorHighlight = SRTColor.Gray
         FrameBuilder.UpdateButton(self.loadCreate.deleteButton)
-        self.loadCreate.deleteButton:SetScript("OnMouseDown", nil)
-        self.loadCreate.editButton:Hide()
         self.loadCreate.editButton:SetScript("OnMouseDown", nil)
-        self.loadCreate.copyButton:Hide()
+        self.loadCreate.editButton.color = SRTColor.Gray
+        self.loadCreate.editButton.colorHighlight = SRTColor.Gray
+        FrameBuilder.UpdateButton(self.loadCreate.editButton)
+        self.loadCreate.editButton:SetScript("OnMouseDown", nil)
+        self.loadCreate.copyButton.color = SRTColor.Gray
+        self.loadCreate.copyButton.colorHighlight = SRTColor.Gray
+        FrameBuilder.UpdateButton(self.loadCreate.copyButton)
         self.loadCreate.copyButton:SetScript("OnMouseDown", nil)
         self.loadCreate.activateButton.color = SRTColor.Gray
         self.loadCreate.activateButton.colorHighlight = SRTColor.Gray
