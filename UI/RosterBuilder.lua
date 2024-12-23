@@ -143,10 +143,8 @@ function RosterBuilder:InitializeLoadOrCreateRoster()
     -- Create buttons
     self.loadCreate.deleteButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Delete", SRTColor.Gray, SRTColor.Gray)
     self.loadCreate.deleteButton:SetPoint("BOTTOMLEFT", self.loadCreate.load.pane, "BOTTOMLEFT", 0, 5)
-    
     self.loadCreate.copyButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Copy", SRTColor.Gray, SRTColor.Gray)
     self.loadCreate.copyButton:SetPoint("LEFT", self.loadCreate.deleteButton, "RIGHT", 10, 0)
-
     self.loadCreate.activateButton = FrameBuilder.CreateButton(self.loadCreate.load.pane, 70, 25, "Activate", SRTColor.Gray, SRTColor.Gray)
     self.loadCreate.activateButton:SetPoint("BOTTOMRIGHT", self.loadCreate.load.pane, "BOTTOMRIGHT", 0, 5)
     self.loadCreate.activateButton:SetScript("OnMouseDown", nil)
@@ -767,12 +765,32 @@ function RosterBuilder:UpdateEditTriggers()
             local lastCondition = nil
             for ti, trigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers) do
                 local triggerID = string.format("%d_%d_trigger%d", self.selectedEncounterID, self.selectedAbilityID, ti)
-                local triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
-                triggerFrame.trigger = triggerFrame.trigger or Utils:ParseTrigger(trigger)
-                if triggerFrame.trigger then
-                    triggerFrame.text:SetText("|cFFFFD200WHEN:|r "..triggerFrame.trigger:GetDisplayName())
-                    triggerFrame:Update()
+                local parsedTrigger = Utils:ParseTrigger(trigger)
+
+                if not parsedTrigger then
+                    print("Failed to parse trigger")
+                    return
                 end
+                local triggerFrame
+                if parsedTrigger.name == "SPELL_CAST" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                elseif parsedTrigger.name == "SPELL_AURA" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                elseif parsedTrigger.name == "SPELL_AURA_REMOVED" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                elseif parsedTrigger.name == "RAID_BOSS_EMOTE" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateEmoteTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                elseif parsedTrigger.name == "UNIT_HEALTH" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateUnitHealthTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                elseif parsedTrigger.name == "ENCOUNTER_START" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                elseif parsedTrigger.name == "FOJJI_NUMEN_TIMER" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTextFrame(self.triggers.bossAbility.scroll.content, trigger.type, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                end
+
+                triggerFrame.trigger = triggerFrame.trigger or parsedTrigger
+                triggerFrame.text:SetText("|cFFFFD200WHEN:|r "..triggerFrame.trigger:GetDisplayName())
+                triggerFrame:Update()
                 if not lastTrigger then
                     triggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersTitle, "BOTTOMLEFT", 0, -10)
                 else
