@@ -677,6 +677,160 @@ local defaultAssignments = {
             },
         },
     },
+    [42001] = {
+        {
+            ["assignments"] = {
+            },
+            ["untriggers"] = {
+                {
+                    ["delay"] = 18,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["text"] = "Test emote by the boss",
+                    ["type"] = "RAID_BOSS_EMOTE",
+                },
+                {
+                    ["spell_id"] = 90125,
+                    ["type"] = "SPELL_CAST",
+                },
+                {
+                    ["spell_id"] = 90125,
+                    ["type"] = "SPELL_AURA",
+                },
+                {
+                    ["spell_id"] = 90125,
+                    ["type"] = "SPELL_AURA_REMOVED",
+                },
+                {
+                    ["unit"] = "boss1",
+                    ["pct_lt"] = 50,
+                    ["type"] = "UNIT_HEALTH",
+                },
+                {
+                    ["key"] = "numen.key",
+                    ["type"] = "FOJJI_NUMEN_TIMER",
+                },
+                {
+                    ["delay"] = 18,
+                    ["type"] = "ENCOUNTER_START",
+                    ["conditions"] = {
+                        {
+                            ["type"] = "UNIT_HEALTH",
+                            ["lt"] = 50,
+                            ["unit"] = "boss1",
+                        },
+                    },
+                },
+                {
+                    ["text"] = "Test emote by the boss",
+                    ["type"] = "RAID_BOSS_EMOTE",
+                    ["conditions"] = {
+                        {
+                            ["type"] = "SPELL_CAST_COUNT",
+                            ["gt"] = 1,
+                            ["spell_id"] = 90125,
+                        },
+                    },
+                }
+            },
+            ["metadata"] = {
+                ["name"] = "Test Ability",
+            },
+            ["triggers"] = {
+                {
+                    ["delay"] = 18,
+                    ["type"] = "ENCOUNTER_START",
+                    ["countdown"] = 0,
+                    ["throttle"] = 0
+                },
+                {
+                    ["text"] = "Other test emote by the boss",
+                    ["type"] = "RAID_BOSS_EMOTE",
+                    ["delay"] = 0,
+                    ["countdown"] = 0,
+                    ["throttle"] = 0
+                },
+                {
+                    ["spell_id"] = 90125,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 0,
+                    ["countdown"] = 0,
+                    ["throttle"] = 0
+                },
+                {
+                    ["spell_id"] = 90125,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 0,
+                    ["countdown"] = 0,
+                    ["throttle"] = 0
+                },
+                {
+                    ["spell_id"] = 90125,
+                    ["type"] = "SPELL_AURA_REMOVED",
+                    ["delay"] = 0,
+                    ["countdown"] = 0,
+                    ["throttle"] = 0
+                },
+                {
+                    ["unit"] = "boss1",
+                    ["pct_lt"] = 50,
+                    ["type"] = "UNIT_HEALTH",
+                    ["delay"] = 0,
+                    ["countdown"] = 0,
+                    ["throttle"] = 0
+                },
+                {
+                    ["key"] = "numen.key",
+                    ["type"] = "FOJJI_NUMEN_TIMER",
+                    ["delay"] = 0,
+                    ["countdown"] = 0,
+                    ["throttle"] = 0
+                },
+                {
+                    ["delay"] = 18,
+                    ["type"] = "ENCOUNTER_START",
+                    ["countdown"] = 0,
+                    ["throttle"] = 0,
+                    ["conditions"] = {
+                        {
+                            ["type"] = "UNIT_HEALTH",
+                            ["pct_lt"] = 50,
+                            ["unit"] = "boss1",
+                        },
+                    },
+                },
+                {
+                    ["text"] = "Yet another test emote by the boss",
+                    ["type"] = "RAID_BOSS_EMOTE",
+                    ["delay"] = 0,
+                    ["countdown"] = 0,
+                    ["throttle"] = 0,
+                    ["conditions"] = {
+                        {
+                            ["type"] = "UNIT_HEALTH",
+                            ["lt"] = 50,
+                            ["unit"] = "boss1",
+                        },
+                    },
+                },
+                {
+                    ["spell_id"] = 90125,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 0,
+                    ["countdown"] = 0,
+                    ["throttle"] = 0,
+                    ["conditions"] = {
+                        {
+                            ["type"] = "SPELL_CAST_COUNT",
+                            ["gt"] = 1,
+                            ["spell_id"] = 90125,
+                        },
+                    },
+                }
+            },
+        },
+    },
 }
 local testAssignments = {
     [42001] = {
