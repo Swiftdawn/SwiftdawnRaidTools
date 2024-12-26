@@ -143,7 +143,7 @@ end
 function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText(trigger:GetDisplayName())
+    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -195,7 +195,14 @@ function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, heigh
         frame.text:Show()
     end
     local function acceptChanges()
-        onChanges()
+        frame.trigger.emoteText = frame.hiddenFrames.emoteEditBox:GetText()
+        if isTrigger then
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
+            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+        end
+        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
@@ -204,9 +211,9 @@ function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, heigh
         frame.text:Hide()
         frame.hiddenFrames.emoteEditBox:SetText(frame.trigger.emoteText or "")
         if isTrigger then
-            frame.hiddenFrames.delayEditBox:SetText(frame.trigger.delay or "0")
-            frame.hiddenFrames.throttleEditBox:SetText(frame.trigger.throttle or "0")
-            frame.hiddenFrames.countdownEditBox:SetText(frame.trigger.countdown or "0")
+            frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
+            frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
+            frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
         frame:SetSize(width, isTrigger and 80 or 35) -- Adjust the frame size to fit the hidden frames
@@ -241,7 +248,7 @@ end
 function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText(trigger:GetDisplayName())
+    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -293,18 +300,25 @@ function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, width, 
         frame.text:Show()
     end
     local function acceptChanges()
-        onChanges()
+        frame.trigger.key = frame.hiddenFrames.numenKeyEditBox:GetText()
+        if isTrigger then
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
+            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+        end
+        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
-        frame.hiddenFrames.numenKeyEditBox:SetText(frame.trigger.emoteText or "")   
+        frame.hiddenFrames.numenKeyEditBox:SetText(frame.trigger.key or "")
         if isTrigger then
-            frame.hiddenFrames.delayEditBox:SetText(frame.trigger.delay or "0")
-            frame.hiddenFrames.throttleEditBox:SetText(frame.trigger.throttle or "0")
-            frame.hiddenFrames.countdownEditBox:SetText(frame.trigger.countdown or "0")
+            frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
+            frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
+            frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
         frame:SetSize(width, isTrigger and 80 or 35) -- Adjust the frame size to fit the hidden frames
@@ -339,7 +353,7 @@ end
 function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText(trigger:GetDisplayName())
+    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -381,17 +395,23 @@ function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, width, height
         frame.text:Show()
     end
     local function acceptChanges()
-        onChanges()
+        frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
+        if isTrigger then
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+        end
+        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
-        frame.hiddenFrames.delayEditBox:SetText(frame.trigger.delay or "0")
+        frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
         if isTrigger then
-            frame.hiddenFrames.throttleEditBox:SetText(frame.trigger.throttle or "0")
-            frame.hiddenFrames.countdownEditBox:SetText(frame.trigger.countdown or "0")
+            frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
+            frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
         frame:SetSize(width, isTrigger and 50 or 20) -- Adjust the frame size to fit the hidden frames
@@ -424,7 +444,7 @@ end
 function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText(trigger:GetDisplayName())
+    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -496,7 +516,16 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, 
         frame.text:Show()
     end
     local function acceptChanges()
-        onChanges()
+        frame.trigger.unitID = frame.hiddenFrames.unitEditBox:GetText()
+        frame.trigger.operator = frame.hiddenFrames.operatorEditBox:GetText()
+        frame.trigger.value = tonumber(frame.hiddenFrames.valueEditBox:GetText())
+        if isTrigger then
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
+            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+        end
+        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
@@ -505,11 +534,11 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, 
         frame.text:Hide()
         frame.hiddenFrames.unitEditBox:SetText(frame.trigger.unitID or "")
         frame.hiddenFrames.operatorEditBox:SetText(frame.trigger.operator or "")
-        frame.hiddenFrames.valueEditBox:SetText(frame.trigger.value or "0")
+        frame.hiddenFrames.valueEditBox:SetText(tostring(frame.trigger.value) or "0")
         if isTrigger then
-            frame.hiddenFrames.delayEditBox:SetText(frame.trigger.delay or "0")
-            frame.hiddenFrames.throttleEditBox:SetText(frame.trigger.throttle or "0")
-            frame.hiddenFrames.countdownEditBox:SetText(frame.trigger.countdown or "0")
+            frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
+            frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
+            frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
         frame:SetSize(width, isTrigger and 95 or 50) -- Adjust the frame size to fit the hidden frames
@@ -548,7 +577,7 @@ end
 function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText(trigger:GetDisplayName())
+    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -566,7 +595,7 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, h
     frame.hiddenFrames.spellName:SetFont(font, fontSize, "")
     frame.hiddenFrames.spellName:SetPoint("TOPLEFT", frame.hiddenFrames.spellTitle, "BOTTOMLEFT", 0, -5)
     frame.hiddenFrames.spellName:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
-    frame.hiddenFrames.spellName:SetText("Spell Name: "..GetSpellInfo(frame.trigger.spellID))
+    frame.hiddenFrames.spellName:SetText("Spell Name: "..(GetSpellInfo(frame.trigger.spellID) or "Spell not found!"))
     if isTrigger then
         frame.hiddenFrames.delayTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         frame.hiddenFrames.delayTitle:SetFont(font, fontSize, "")
@@ -605,18 +634,25 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, h
         frame.text:Show()
     end
     local function acceptChanges()
-        onChanges()
+        frame.trigger.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText())
+        if isTrigger then
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
+            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+        end
+        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
-        frame.hiddenFrames.spellEditBox:SetText(frame.trigger.spellID or "")
+        frame.hiddenFrames.spellEditBox:SetText(tostring(frame.trigger.spellID) or "")
         if isTrigger then
-            frame.hiddenFrames.delayEditBox:SetText(frame.trigger.delay or "0")
-            frame.hiddenFrames.throttleEditBox:SetText(frame.trigger.throttle or "0")
-            frame.hiddenFrames.countdownEditBox:SetText(frame.trigger.countdown or "0")
+            frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
+            frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
+            frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
         frame:SetSize(width, isTrigger and 80 or 35) -- Adjust the frame size to fit the hidden frames
@@ -635,7 +671,7 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, h
         frame.hiddenFrames.spellEditBox:SetFocus()
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnUpdate", function (editBox)
-        frame.hiddenFrames.spellName:SetText("|cFFFFD200Spell Name:|r "..(GetSpellInfo(tonumber(editBox:GetText())) or "Spell not found!"))
+        frame.hiddenFrames.spellName:SetText("|cFFFFD200Spell Name:|r "..(GetSpellInfo(editBox:GetText()) or "Spell not found!"))
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.spellEditBox:SetScript("OnEnterPressed", acceptChanges)
@@ -654,7 +690,7 @@ end
 function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, width, height, font, fontSize, onChanges)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.condition = condition
-    frame.text:SetText(condition:GetDisplayName())
+    frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -672,7 +708,7 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
     frame.hiddenFrames.spellName:SetFont(font, fontSize, "")
     frame.hiddenFrames.spellName:SetPoint("TOPLEFT", frame.hiddenFrames.spellTitle, "BOTTOMLEFT", 0, -5)
     frame.hiddenFrames.spellName:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
-    frame.hiddenFrames.spellName:SetText("Spell Name: "..GetSpellInfo(frame.condition.spellID))
+    frame.hiddenFrames.spellName:SetText("Spell Name: "..(GetSpellInfo(frame.condition.spellID) or "Spell not found!"))
     frame.hiddenFrames.operatorTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.hiddenFrames.operatorTitle:SetFont(font, fontSize, "")
     frame.hiddenFrames.operatorTitle:SetPoint("TOPLEFT", frame.hiddenFrames.spellName, "BOTTOMLEFT", 0, -5)
@@ -699,16 +735,20 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
         frame.text:Show()
     end
     local function acceptChanges()
-        onChanges()
+        frame.condition.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText())
+        frame.condition.operator = frame.hiddenFrames.operatorEditBox:GetText()
+        frame.condition.count = tonumber(frame.hiddenFrames.countEditBox:GetText())
+        frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
+        onChanges(frame.condition)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
-        frame.hiddenFrames.spellEditBox:SetText(frame.condition.spellID or "")
+        frame.hiddenFrames.spellEditBox:SetText(tostring(frame.condition.spellID) or "")
         frame.hiddenFrames.operatorEditBox:SetText(frame.condition.operator or ">")
-        frame.hiddenFrames.countEditBox:SetText(frame.condition.count or "0")
+        frame.hiddenFrames.countEditBox:SetText(tostring(frame.condition.count) or "0")
         frame.hiddenFrames:Show()
         frame:SetSize(width, 65) -- Adjust the frame size to fit the hidden frames
         frame.hiddenFrames:SetSize(width, 65)
@@ -726,7 +766,7 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
         frame.hiddenFrames.spellEditBox:SetFocus()
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnUpdate", function (editBox)
-        frame.hiddenFrames.spellName:SetText("|cFFFFD200Spell Name:|r "..(GetSpellInfo(tonumber(editBox:GetText())) or "Spell not found!"))
+        frame.hiddenFrames.spellName:SetText("|cFFFFD200Spell Name:|r "..(GetSpellInfo(editBox:GetText()) or "Spell not found!"))
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.spellEditBox:SetScript("OnEnterPressed", acceptChanges)
@@ -741,7 +781,7 @@ end
 function FrameBuilder.CreateUnitHealthConditionFrame(parentFrame, condition, width, height, font, fontSize, onChanges)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.condition = condition
-    frame.text:SetText(condition:GetDisplayName())
+    frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -759,7 +799,7 @@ function FrameBuilder.CreateUnitHealthConditionFrame(parentFrame, condition, wid
     frame.hiddenFrames.typeTitle:SetFont(font, fontSize, "")
     frame.hiddenFrames.typeTitle:SetPoint("TOPLEFT", frame.hiddenFrames.unitIDTitle, "BOTTOMLEFT", 0, -5)
     frame.hiddenFrames.typeTitle:SetText("Comparison Type:")
-    frame.hiddenFrames.typeTitle:SetWidth(frame.hiddenFrames.operatorTitle:GetStringWidth())
+    frame.hiddenFrames.typeTitle:SetWidth(frame.hiddenFrames.typeTitle:GetStringWidth())
     frame.hiddenFrames.typeEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
     frame.hiddenFrames.typeEditBox:SetFont(font, fontSize, "")
     frame.hiddenFrames.typeEditBox:SetSize(width - 10, height)
@@ -791,17 +831,22 @@ function FrameBuilder.CreateUnitHealthConditionFrame(parentFrame, condition, wid
         frame.text:Show()
     end
     local function acceptChanges()
-        onChanges()
+        frame.condition.unitID = frame.hiddenFrames.unitIDEditBox:GetText()
+        frame.condition.type = frame.hiddenFrames.typeEditBox:GetText()
+        frame.condition.operator = frame.hiddenFrames.operatorEditBox:GetText()
+        frame.condition.value = tonumber(frame.hiddenFrames.valueEditBox:GetText())
+        frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
+        onChanges(frame.condition)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
-        frame.hiddenFrames.unitIDEditBox:SetText(frame.condition.spellID or "")
+        frame.hiddenFrames.unitIDEditBox:SetText(tostring(frame.condition.unitID) or "")
         frame.hiddenFrames.typeEditBox:SetText(frame.condition.type or "percentage")
         frame.hiddenFrames.operatorEditBox:SetText(frame.condition.operator or "<")
-        frame.hiddenFrames.valueEditBox:SetText(frame.condition.value or "0")
+        frame.hiddenFrames.valueEditBox:SetText(tostring(frame.condition.value) or "0")
         frame.hiddenFrames:Show()
         frame:SetSize(width, 65) -- Adjust the frame size to fit the hidden frames
         frame.hiddenFrames:SetSize(width, 65)
