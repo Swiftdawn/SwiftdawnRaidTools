@@ -773,7 +773,9 @@ function RosterBuilder:UpdateEditTriggers()
                 end
                 local triggerFrame
                 local updateTrigger = function (tr)
+                    local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions
                     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti] = tr:Serialize()
+                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions = conditions
                 end
                 if parsedTrigger.name == "SPELL_CAST" then
                     triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
@@ -858,7 +860,9 @@ function RosterBuilder:UpdateEditTriggers()
                     
                     local untriggerFrame
                     local updateUntrigger = function (tr)
+                        local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions
                         self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti] = tr:Serialize(true)
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions = conditions
                     end
                     if parsedTrigger.name == "SPELL_CAST" then
                         untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
