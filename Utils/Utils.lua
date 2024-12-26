@@ -375,27 +375,19 @@ function Utils:ParseTrigger(rawTrigger)
         return nil
     end
     if rawTrigger.type == "SPELL_CAST" then
-        return SpellCastTrigger:New(rawTrigger.type, rawTrigger.spell_id, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+        return SpellCastTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "SPELL_AURA" then
-        return SpellAuraTrigger:New(rawTrigger.type, rawTrigger.spell_id, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+        return SpellAuraTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "SPELL_AURA_REMOVED" then
-        return SpellAuraRemovedTrigger:New(rawTrigger.type, rawTrigger.spell_id, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+        return SpellAuraRemovedTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "RAID_BOSS_EMOTE" then
-        return BossEmoteTrigger:New(rawTrigger.type, rawTrigger.text, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+        return BossEmoteTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "UNIT_HEALTH" then
-        if rawTrigger.pct_gt then
-            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, ">", rawTrigger.pct_gt, "percentage", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
-        elseif rawTrigger.pct_lt then
-            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.pct_lt, "percentage", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
-        elseif rawTrigger.pct_lt then
-            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.gt, "value", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
-        elseif rawTrigger.pct_lt then
-            return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.lt, "value", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
-        end
+        return UnitHealthTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "ENCOUNTER_START" then
-        return EncounterStartTrigger:New(rawTrigger.type, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+        return EncounterStartTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "FOJJI_NUMEN_TIMER" then
-        return NumenTimerTrigger:New(rawTrigger.type, rawTrigger.key, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+        return NumenTimerTrigger:Deserialize(rawTrigger)
     else
         Log.info("[ERROR] Trigger's type is not supported", rawTrigger)
         return nil
@@ -409,23 +401,9 @@ function Utils:ParseCondition(rawCondition)
         return nil
     end
     if rawCondition.type == "SPELL_CAST_COUNT" then
-        if rawCondition.gt then
-            return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, ">", rawCondition.gt)
-        elseif rawCondition.lt then
-            return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "<", rawCondition.lt)
-        elseif rawCondition.eq then
-            return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "=", rawCondition.eq)
-        end
+        return CastCountCondition:Deserialize(rawCondition)
     elseif rawCondition.type == "UNIT_HEALTH" then
-        if rawCondition.pct_gt then
-            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, ">", rawCondition.pct_gt, "percentage")
-        elseif rawCondition.pct_lt then
-            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, "<", rawCondition.pct_lt, "percentage")
-        elseif rawCondition.gt then
-            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, ">", rawCondition.gt, "value")
-        elseif rawCondition.lt then
-            return UnitHealthCondition:New(rawCondition.type, rawCondition.unit, "<", rawCondition.lt, "value")
-        end
+        return UnitHealthCondition:Deserialize(rawCondition)
     else
         Log.info("[ERROR] Condition's type is not supported", rawCondition)
         return nil

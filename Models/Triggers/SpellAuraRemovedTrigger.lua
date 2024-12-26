@@ -20,3 +20,27 @@ end
 function SpellAuraRemovedTrigger:GetDisplayName()
     return "\'"..GetSpellInfo(self.spellID) .. "' is removed".. (self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
 end
+
+---Serializes the SpellAuraRemovedTrigger object into a format suitable for storage or transmission.
+---@return table
+function SpellAuraRemovedTrigger:Serialize(isUntrigger)
+    local serialized = {
+        type = "SPELL_AURA_REMOVED",
+        spell_id = self.spellID,
+        delay = self.delay,
+        countdown = self.countdown,
+        throttle = self.throttle
+    }
+    if not isUntrigger then
+        serialized.delay = self.delay
+        serialized.countdown = self.countdown
+        serialized.throttle = self.throttle
+    end
+    return serialized
+end
+
+---@param rawTrigger table
+---@return SpellAuraRemovedTrigger
+function SpellAuraRemovedTrigger:Deserialize(rawTrigger)
+    return SpellAuraRemovedTrigger:New(rawTrigger.type, rawTrigger.spell_id, rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+end

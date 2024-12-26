@@ -17,5 +17,37 @@ function CastCountCondition:New(name, spellID, operator, count)
 end
 
 function CastCountCondition:GetDisplayName()
-    return GetSpellInfo(self.spellID) .. " cast "..self.operator.." " .. self.count .. " times"
+    return "\'"..GetSpellInfo(self.spellID) .. "\' is cast "..self.operator.." " .. self.count .. " times"
+end
+
+---Serializes the CastCountCondition object into a format suitable for storage or transmission.
+---@return table
+function CastCountCondition:Serialize()
+    local serialized = {
+        type = "SPELL_CAST_COUNT",
+        spell_id = self.spellID
+    }
+    if self.operator == "==" then
+        serialized.eq = self.count
+    elseif self.operator == "<" then
+        serialized.lt = self.count
+    elseif self.operator == ">" then
+        serialized.gt = self.count
+    end
+    return serialized
+end
+
+---@param rawCondition table
+---@return CastCountCondition
+function CastCountCondition:Deserialize(rawCondition)
+    if rawCondition.gt then
+        return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, ">", rawCondition.gt)
+    elseif rawCondition.lt then
+        return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "<", rawCondition.lt)
+    elseif rawCondition.eq then
+        return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "=", rawCondition.eq)
+    else
+        Log.info("[ERROR] Cannot deserialize! Condition's type is not supported", rawCondition)
+        return nil
+    end
 end
