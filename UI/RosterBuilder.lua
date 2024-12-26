@@ -772,29 +772,33 @@ function RosterBuilder:UpdateEditTriggers()
                     return
                 end
                 local triggerFrame
-                if parsedTrigger.name == "SPELL_CAST" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, true)
-                elseif parsedTrigger.name == "SPELL_AURA" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, true)
-                elseif parsedTrigger.name == "SPELL_AURA_REMOVED" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, true)
-                elseif parsedTrigger.name == "RAID_BOSS_EMOTE" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateEmoteTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, true)
-                elseif parsedTrigger.name == "UNIT_HEALTH" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateUnitHealthTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, true)
-                elseif parsedTrigger.name == "ENCOUNTER_START" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTimeTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, true)
-                elseif parsedTrigger.name == "FOJJI_NUMEN_TIMER" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateNumenTimerTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, true)
+                local updateTrigger = function (tr)
+                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti] = tr:Serialize()
                 end
-
-                triggerFrame.trigger = triggerFrame.trigger or parsedTrigger
-                triggerFrame.text:SetText("|cFFFFD200WHEN:|r "..triggerFrame.trigger:GetDisplayName())
+                if parsedTrigger.name == "SPELL_CAST" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
+                elseif parsedTrigger.name == "SPELL_AURA" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
+                elseif parsedTrigger.name == "SPELL_AURA_REMOVED" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
+                elseif parsedTrigger.name == "RAID_BOSS_EMOTE" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateEmoteTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
+                elseif parsedTrigger.name == "UNIT_HEALTH" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateUnitHealthTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
+                elseif parsedTrigger.name == "ENCOUNTER_START" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTimeTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
+                elseif parsedTrigger.name == "FOJJI_NUMEN_TIMER" then
+                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateNumenTimerTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
+                end
                 triggerFrame:Update()
                 if not lastTrigger then
                     triggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersTitle, "BOTTOMLEFT", 0, -10)
                 else
-                    triggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, 0)
+                    if not lastCondition then
+                        triggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, 0)
+                    else
+                        triggerFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, 0)
+                    end
                 end
                 triggerFrame:Show()
                 self.triggers.bossAbility.triggers[triggerID] = triggerFrame
@@ -811,14 +815,14 @@ function RosterBuilder:UpdateEditTriggers()
                             return
                         end
                         local conditionFrame
-                        if parsedCondition.name == "SPELL_CAST_COUNT" then
-                            conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateCastCountConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
-                        elseif parsedCondition.name == "UNIT_HEALTH" then
-                            conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateUnitHealthConditionFrame(self.triggers.bossAbility.scroll.content, condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                        local updateCondition = function (cnd)
+                            self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions[ci] = cnd:Serialize()
                         end
-                        conditionFrame.condition = conditionFrame.condition or parsedCondition
-                        conditionFrame.text:SetText("|cFFFFD200IF:|r "..conditionFrame.condition:GetDisplayName())
-                        conditionFrame:Update()
+                        if parsedCondition.name == "SPELL_CAST_COUNT" then
+                            conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateCastCountConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
+                        elseif parsedCondition.name == "UNIT_HEALTH" then
+                            conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateUnitHealthConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
+                        end
                         if not lastCondition then
                             conditionFrame:SetPoint("TOPLEFT", triggerFrame, "BOTTOMLEFT", 10, 0)
                         else
@@ -853,31 +857,32 @@ function RosterBuilder:UpdateEditTriggers()
                     end
                     
                     local untriggerFrame
-                    if parsedTrigger.name == "SPELL_CAST" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, false)
-                    elseif parsedTrigger.name == "SPELL_AURA" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, false)
-                    elseif parsedTrigger.name == "SPELL_AURA_REMOVED" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, false)
-                    elseif parsedTrigger.name == "RAID_BOSS_EMOTE" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateEmoteTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, false)
-                    elseif parsedTrigger.name == "UNIT_HEALTH" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateUnitHealthTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, false)
-                    elseif parsedTrigger.name == "ENCOUNTER_START" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateTimeTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, false)
-                    elseif parsedTrigger.name == "FOJJI_NUMEN_TIMER" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateNumenTimerTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, nil, false)
+                    local updateUntrigger = function (tr)
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti] = tr:Serialize(true)
                     end
-
-                    untriggerFrame.trigger = untriggerFrame.trigger or parsedTrigger
-                    if untriggerFrame.trigger then
-                        untriggerFrame.text:SetText("|cFFFFD200UNLESS:|r "..untriggerFrame.trigger:GetDisplayName())
-                        untriggerFrame:Update()
+                    if parsedTrigger.name == "SPELL_CAST" then
+                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
+                    elseif parsedTrigger.name == "SPELL_AURA" then
+                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
+                    elseif parsedTrigger.name == "SPELL_AURA_REMOVED" then
+                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
+                    elseif parsedTrigger.name == "RAID_BOSS_EMOTE" then
+                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateEmoteTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
+                    elseif parsedTrigger.name == "UNIT_HEALTH" then
+                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateUnitHealthTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
+                    elseif parsedTrigger.name == "ENCOUNTER_START" then
+                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateTimeTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
+                    elseif parsedTrigger.name == "FOJJI_NUMEN_TIMER" then
+                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateNumenTimerTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
                     end
                     if not lastUntrigger then
                         untriggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersTitle, "BOTTOMLEFT", 0, -10)
                     else
-                        untriggerFrame:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, 0)
+                        if not lastCondition then
+                            untriggerFrame:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, 0)
+                        else
+                            untriggerFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, 0)
+                        end
                     end
                     untriggerFrame:Show()
                     self.triggers.bossAbility.triggers[untriggerID] = untriggerFrame
@@ -894,10 +899,13 @@ function RosterBuilder:UpdateEditTriggers()
                                 return
                             end
                             local conditionFrame
+                            local updateCondition = function (cnd)
+                                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions[ci] = cnd:Serialize()
+                            end
                             if parsedCondition.name == "SPELL_CAST_COUNT" then
-                                conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateCastCountConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                                conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateCastCountConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
                             elseif parsedCondition.name == "UNIT_HEALTH" then
-                                conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateUnitHealthConditionFrame(self.triggers.bossAbility.scroll.content, condition.type, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+                                conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateUnitHealthConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
                             end
                             conditionFrame.condition = conditionFrame.condition or parsedCondition
                             conditionFrame.text:SetText("|cFFFFD200IF:|r "..conditionFrame.condition:GetDisplayName())
