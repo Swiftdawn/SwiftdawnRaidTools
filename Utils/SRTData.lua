@@ -408,274 +408,20 @@ local defaultAssignments = {
             },
         }, -- [1]
     },
-    [1197] = {
-        [1] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Smoldering Devastation",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 99052,
-                    ["type"] = "SPELL_CAST",
-                    ["throttle"] = 7,
-                },
-            },
-        },
-        [2] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Ember Flare",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 99859,
-                    ["type"] = "SPELL_CAST",
-                    ["conditions"] = {
-                        {
-                            ["pct_lt"] = 55,
-                            ["type"] = "UNIT_HEALTH",
-                            ["unit"] = "boss1",
-                        },
-                    },
-                },
-            },
-        },
-    },
-    [1200] = {
+    [1205] = {
         {
             ["assignments"] = {},
-            ["triggers"] = {
-                {
-                    ["delay"] = 40,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 80,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 120,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 160,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 200,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 240,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 280,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 320,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 360,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["delay"] = 400,
-                    ["type"] = "ENCOUNTER_START",
-                },
-            },
             ["metadata"] = {
-                ["name"] = "Mana Return...",
-            },
-        },
-    },
-    [1203] = {
-        [1] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "P1 Traps",
-                ["notification"] = "Trap Explosion Soon...",
+                ["name"] = "Is This Shannox?",
+                ["notification"] = "It is %(unit_name)!",
             },
             ["triggers"] = {
                 {
-                    ["countdown"] = 5,
-                    ["type"] = "ENCOUNTER_START",
-                    ["delay"] = 30,
-                },
-                {
-                    ["countdown"] = 5,
-                    ["type"] = "ENCOUNTER_START",
-                    ["delay"] = 50,
-                },
-            },
-        },
-        [2] = {
-            ["assignments"] = {},
-            ["untriggers"] = {
-                {
-                    ["spell_id"] = 98175,
-                    ["type"] = "SPELL_CAST",
-                },
-            },
-            ["metadata"] = {
-                ["name"] = "P2 Traps",
-                ["notification"] = "Trap Explosion Soon...",
-            },
-            ["triggers"] = {
-                {
-                    ["countdown"] = 5,
-                    ["type"] = "SPELL_CAST",
-                    ["spell_id"] = 100171,
-                    ["conditions"] = {
-                        {
-                            ["type"] = "UNIT_HEALTH",
-                            ["pct_gt"] = 50,
-                            ["unit"] = "boss1",
-                        },
-                    },
-                    ["delay"] = 15,
-                },
-            },
-        },
-        [3] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Seeds",
-                ["notification"] = "Seed Explosion Soon...",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 98333,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 7,
-                    ["countdown"] = 3,
-                },
-            },
-        },
-    },
-    [1204] = {
-        [1] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Concussive Stomp",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 102306,
-                    ["type"] = "SPELL_CAST",
-                    ["throttle"] = 7,
-                },
-            },
-        },
-        [2] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Phase 2",
-            },
-            ["triggers"] = {
-                {
-                    ["pct_lt"] = 25,
-                    ["type"] = "UNIT_HEALTH",
-                    ["unit"] = "boss1",
-                },
-                {
-                    ["pct_lt"] = 25,
-                    ["type"] = "UNIT_HEALTH",
                     ["delay"] = 10,
-                    ["unit"] = "boss1",
-                },
-                {
-                    ["pct_lt"] = 25,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 20,
-                    ["unit"] = "boss1",
-                },
-                {
-                    ["pct_lt"] = 25,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 30,
-                    ["unit"] = "boss1",
-                },
-                {
-                    ["pct_lt"] = 25,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 40,
-                    ["unit"] = "boss1",
-                },
-                {
-                    ["pct_lt"] = 25,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 50,
-                    ["unit"] = "boss1",
-                },
+                    ["type"] = "ENCOUNTER_START",
+                }
             },
-        },
-    },
-    [1205] = {
-        [1] = {
-            ["assignments"] = {},
-            ["metadata"] = {
-                ["name"] = "Ignited",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 99922,
-                    ["type"] = "SPELL_CAST",
-                },
-                {
-                    ["spell_id"] = 99922,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 10,
-                },
-                {
-                    ["spell_id"] = 99922,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 20,
-                },
-                {
-                    ["spell_id"] = 99922,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 30,
-                },
-                {
-                    ["spell_id"] = 99922,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 40,
-                },
-                {
-                    ["spell_id"] = 99922,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 50,
-                },
-            },
-        },
-        [2] = {
-            ["assignments"] = {
-                {
-                    {
-                        ["spell_id"] = 51052,
-                        ["type"] = "SPELL",
-                        ["player"] = "Oldmanbush",
-                    },
-                },
-            },
-            ["metadata"] = {
-                ["name"] = "Knockback",
-            },
-            ["triggers"] = {
-                {
-                    ["spell_id"] = 99757,
-                    ["type"] = "SPELL_CAST",
-                },
-                {
-                    ["spell_id"] = 99756,
-                    ["type"] = "SPELL_CAST",
-                },
-            },
-        },
+        }
     },
     [42001] = {
         {
@@ -828,6 +574,289 @@ local defaultAssignments = {
                         },
                     },
                 }
+            },
+        },
+    },
+    [1206] = {
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1206,
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 99432,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 32,
+                },
+                {
+                    ["spell_id"] = 99432,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 42,
+                },
+                {
+                    ["spell_id"] = 99432,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 52,
+                },
+                {
+                    ["spell_id"] = 99432,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 62,
+                },
+                {
+                    ["spell_id"] = 99432,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 72,
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Ignited",
+            },
+        },
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1206,
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 99757,
+                    ["type"] = "SPELL_CAST",
+                },
+                {
+                    ["spell_id"] = 99756,
+                    ["type"] = "SPELL_CAST",
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Knockback",
+            },
+        },
+    },
+    [1203] = {
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1203,
+            ["triggers"] = {
+                {
+                    ["countdown"] = 5,
+                    ["type"] = "ENCOUNTER_START",
+                    ["delay"] = 52,
+                },
+                {
+                    ["countdown"] = 5,
+                    ["type"] = "ENCOUNTER_START",
+                    ["delay"] = 105,
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "P1 Traps",
+                ["notification"] = "Trap Explosion Soon...",
+            },
+        },
+        {
+            ["assignments"] = {},
+            ["untriggers"] = {
+                {
+                    ["spell_id"] = 98175,
+                    ["type"] = "SPELL_CAST",
+                },
+            },
+            ["encounter"] = 1203,
+            ["triggers"] = {
+                {
+                    ["countdown"] = 5,
+                    ["type"] = "SPELL_CAST",
+                    ["spell_id"] = 100171,
+                    ["conditions"] = {
+                        {
+                            ["type"] = "UNIT_HEALTH",
+                            ["pct_gt"] = 50,
+                            ["unit"] = "boss1",
+                        },
+                    },
+                    ["delay"] = 15,
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "P2 Traps",
+                ["notification"] = "Trap Explosion Soon...",
+            },
+        },
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1203,
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 98333,
+                    ["type"] = "SPELL_CAST",
+                    ["delay"] = 7,
+                    ["countdown"] = 3,
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Seeds",
+                ["notification"] = "Seed Explosion Soon...",
+            },
+        },
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1203,
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 98333,
+                    ["type"] = "SPELL_CAST",
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Seeds",
+                ["notification"] = "RUN!",
+            },
+        },
+    },
+    [1200] = {
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1200,
+            ["triggers"] = {
+                {
+                    ["delay"] = 40,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 80,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 120,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 160,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 200,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 240,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 280,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 320,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 360,
+                    ["type"] = "ENCOUNTER_START",
+                },
+                {
+                    ["delay"] = 400,
+                    ["type"] = "ENCOUNTER_START",
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Mana Return...",
+            },
+        },
+    },
+    [1204] = {
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1204,
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 97282,
+                    ["type"] = "SPELL_CAST",
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Concussive Stomp",
+            },
+        },
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1204,
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 99846,
+                    ["type"] = "SPELL_AURA",
+                },
+                {
+                    ["spell_id"] = 99846,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 10,
+                },
+                {
+                    ["spell_id"] = 99846,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 20,
+                },
+                {
+                    ["spell_id"] = 99846,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 30,
+                },
+                {
+                    ["spell_id"] = 99846,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 40,
+                },
+                {
+                    ["spell_id"] = 99846,
+                    ["type"] = "SPELL_AURA",
+                    ["delay"] = 50,
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Phase 2",
+            },
+        },
+    },
+    [1197] = {
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1197,
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 99052,
+                    ["type"] = "SPELL_CAST",
+                    ["throttle"] = 7,
+                    ["conditions"] = {
+                        {
+                            ["spell_id"] = 99052,
+                            ["type"] = "SPELL_CAST_COUNT",
+                            ["gt"] = 1,
+                        },
+                    },
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Smoldering Devastation",
+            },
+        },
+        {
+            ["assignments"] = {},
+            ["encounter"] = 1197,
+            ["triggers"] = {
+                {
+                    ["countdown"] = 3,
+                    ["type"] = "SPELL_CAST",
+                    ["spell_id"] = 99859,
+                    ["conditions"] = {
+                        {
+                            ["spell_id"] = 100522,
+                            ["type"] = "SPELL_CAST_COUNT",
+                            ["gt"] = 9,
+                        },
+                    },
+                    ["delay"] = 2,
+                },
+            },
+            ["metadata"] = {
+                ["name"] = "Ember Flare",
             },
         },
     },
