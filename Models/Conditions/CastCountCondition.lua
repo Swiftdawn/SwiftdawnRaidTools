@@ -27,7 +27,7 @@ function CastCountCondition:Serialize()
         type = "SPELL_CAST_COUNT",
         spell_id = self.spellID
     }
-    if self.operator == "==" then
+    if self.operator == "==" or self.operator == "=" then
         serialized.eq = self.count
     elseif self.operator == "<" then
         serialized.lt = self.count
@@ -45,9 +45,8 @@ function CastCountCondition:Deserialize(rawCondition)
     elseif rawCondition.lt then
         return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "<", rawCondition.lt)
     elseif rawCondition.eq then
-        return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "=", rawCondition.eq)
+        return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, "==", rawCondition.eq)
     else
-        Log.info("[ERROR] Cannot deserialize! Condition's type is not supported", rawCondition)
-        return nil
+        return CastCountCondition:New(rawCondition.type, rawCondition.spell_id, ">", 0)
     end
 end
