@@ -756,6 +756,7 @@ function RosterBuilder:UpdateEditTriggers()
     if self.selectedRoster.encounters[self.selectedEncounterID] then
         if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] then
             self.triggers.bossAbility.abilityEditBox:SetScript("OnEnterPressed", function()
+                local oldName = self.triggers.bossAbility.abilitySelector.selectedName
                 local newName = self.triggers.bossAbility.abilityEditBox:GetText()
                 if #newName == 0 then
                     newName = "Select ability..."
@@ -767,6 +768,10 @@ function RosterBuilder:UpdateEditTriggers()
                 self.triggers.bossAbility.abilityEditBox:Hide()
                 self.triggers.bossAbility.abilitySelector.text:Show()
                 self:UpdateAppearance()
+                Roster.MarkUpdated(self.selectedRoster, { abilityName = {
+                    old = oldName,
+                    new = newName
+                }})
             end)
 
             self.triggers.bossAbility.triggersTitle = self.triggers.bossAbility.triggersTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -790,6 +795,11 @@ function RosterBuilder:UpdateEditTriggers()
                     local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions
                     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti] = tr:Serialize()
                     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions = conditions
+                    Roster.MarkUpdated(self.selectedRoster, { trigger = {
+                        encounter = self.selectedEncounterID,
+                        ability = self.selectedAbilityID,
+                        id = ti
+                    }})
                 end
                 if parsedTrigger.name == "SPELL_CAST" then
                     triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
@@ -833,6 +843,13 @@ function RosterBuilder:UpdateEditTriggers()
                         local conditionFrame
                         local updateCondition = function (cnd)
                             self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions[ci] = cnd:Serialize()
+                            Roster.MarkUpdated(self.selectedRoster, { condition = {
+                                encounter = self.selectedEncounterID,
+                                ability = self.selectedAbilityID,
+                                type = "trigger",
+                                id = ti,
+                                condition = ci
+                            }})
                         end
                         if parsedCondition.name == "SPELL_CAST_COUNT" then
                             conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateCastCountConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
@@ -877,6 +894,11 @@ function RosterBuilder:UpdateEditTriggers()
                         local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions
                         self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti] = tr:Serialize(true)
                         self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions = conditions
+                        Roster.MarkUpdated(self.selectedRoster, { untrigger = {
+                            encounter = self.selectedEncounterID,
+                            ability = self.selectedAbilityID,
+                            id = ti
+                        }})
                     end
                     if parsedTrigger.name == "SPELL_CAST" then
                         untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
@@ -919,6 +941,13 @@ function RosterBuilder:UpdateEditTriggers()
                             local conditionFrame
                             local updateCondition = function (cnd)
                                 self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions[ci] = cnd:Serialize()
+                                Roster.MarkUpdated(self.selectedRoster, { condition = {
+                                    encounter = self.selectedEncounterID,
+                                    ability = self.selectedAbilityID,
+                                    type = "untrigger",
+                                    id = ti,
+                                    condition = ci
+                                }})
                             end
                             if parsedCondition.name == "SPELL_CAST_COUNT" then
                                 conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateCastCountConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
@@ -956,7 +985,12 @@ function RosterBuilder:UpdateEditTriggers()
             self.triggers.bossAbility.notificationTitle:SetText("Notification message")
 
             self.triggers.bossAbility.notificationFrame = self.triggers.bossAbility.notificationFrame or FrameBuilder.CreateEditableTextFrame(self.triggers.bossAbility.scroll.content, "No custom message set...", 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (text)
+                local oldName = self.triggers.bossAbility.abilitySelector.selectedName
                 self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = #text and text or nil
+                Roster.MarkUpdated(self.selectedRoster, { notification = {
+                    old = oldName,
+                    new = text
+                }})
             end)
             self.triggers.bossAbility.notificationFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.notificationTitle, "BOTTOMLEFT", 0, -10)
             self.triggers.bossAbility.notificationFrame:Show()
