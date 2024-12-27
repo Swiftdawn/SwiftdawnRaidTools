@@ -837,7 +837,7 @@ function RosterBuilder:UpdateEditTriggers()
                         local parsedCondition = Utils:ParseCondition(condition)
 
                         if not parsedCondition then
-                            print("Failed to parse condition")
+                            print("Failed to parse condition", Utils:TableToString(condition))
                             return
                         end
                         local conditionFrame
@@ -935,7 +935,7 @@ function RosterBuilder:UpdateEditTriggers()
                             local parsedCondition = Utils:ParseCondition(condition)
 
                             if not parsedCondition then
-                                print("Failed to parse condition")
+                                print("Failed to parse condition", Utils:TableToString(condition))
                                 return
                             end
                             local conditionFrame
