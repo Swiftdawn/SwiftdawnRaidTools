@@ -752,8 +752,22 @@ function RosterBuilder:UpdateEditTriggers()
     self.triggers.bossAbility.conditions = {}
 
     self.selectedAbilityID = self.selectedAbilityID or 1
+
     if self.selectedRoster.encounters[self.selectedEncounterID] then
         if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] then
+            self.triggers.bossAbility.abilityEditBox:SetScript("OnEnterPressed", function()
+                local newName = self.triggers.bossAbility.abilityEditBox:GetText()
+                if #newName == 0 then
+                    newName = "Select ability..."
+                end
+                self.triggers.bossAbility.abilitySelector.selectedName = newName
+                self.triggers.bossAbility.abilitySelector:Update()
+                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.name = newName
+                self.triggers.bossAbility.abilityEditBox:ClearFocus()
+                self.triggers.bossAbility.abilityEditBox:Hide()
+                self.triggers.bossAbility.abilitySelector.text:Show()
+                self:UpdateAppearance()
+            end)
 
             self.triggers.bossAbility.triggersTitle = self.triggers.bossAbility.triggersTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
             self.triggers.bossAbility.triggersTitle:SetFont(self:GetHeaderFontType(), 14)
