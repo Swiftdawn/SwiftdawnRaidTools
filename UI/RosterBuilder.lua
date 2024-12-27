@@ -955,7 +955,9 @@ function RosterBuilder:UpdateEditTriggers()
             end
             self.triggers.bossAbility.notificationTitle:SetText("Notification message")
 
-            self.triggers.bossAbility.notificationFrame = self.triggers.bossAbility.notificationFrame or FrameBuilder.CreateEditableTextFrame(self.triggers.bossAbility.scroll.content, "No custom message set...", 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+            self.triggers.bossAbility.notificationFrame = self.triggers.bossAbility.notificationFrame or FrameBuilder.CreateEditableTextFrame(self.triggers.bossAbility.scroll.content, "No custom message set...", 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (text)
+                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = #text and text or nil
+            end)
             self.triggers.bossAbility.notificationFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.notificationTitle, "BOTTOMLEFT", 0, -10)
             self.triggers.bossAbility.notificationFrame:Show()
 

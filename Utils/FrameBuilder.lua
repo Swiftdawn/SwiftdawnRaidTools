@@ -101,7 +101,7 @@ function FrameBuilder.UpdateTextFrame(frame)
 end
 
 ---@return table|BackdropTemplate|Frame
-function FrameBuilder.CreateEditableTextFrame(parentFrame, text, width, height, font, fontSize)
+function FrameBuilder.CreateEditableTextFrame(parentFrame, text, width, height, font, fontSize, onChanged)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, text, width, height, font, fontSize)
     frame.editBox = CreateFrame("EditBox", frame:GetName().."Edit", frame)
     frame.editBox:SetSize(width - 10, height)
@@ -119,6 +119,7 @@ function FrameBuilder.CreateEditableTextFrame(parentFrame, text, width, height, 
         frame.text:Show()
     end)
     frame.editBox:SetScript("OnEnterPressed", function()
+        onChanged(frame.editBox:GetText())
         frame.text:SetText(frame.editBox:GetText())
         frame.editBox:Hide()
         frame.text:Show()
