@@ -23,7 +23,7 @@ end
 function UnitHealthTrigger:GetDisplayName()
     if self.type == "percentage" then
         return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value).." percent"..(self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
-    elseif self.type == "value" then
+    elseif self.type == "absolute" then
         return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value)..(self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
     end
 end
@@ -48,7 +48,7 @@ function UnitHealthTrigger:Serialize(isUntrigger)
         elseif self.operator == "<" then
             serialized.pct_lt = self.value
         end
-    elseif self.type == "value" then
+    elseif self.type == "absolute" then
         if self.operator == ">" then
             serialized.gt = self.value
         elseif self.operator == "<" then
@@ -68,9 +68,9 @@ function UnitHealthTrigger:Deserialize(rawTrigger)
         return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, ">", rawTrigger.pct_gt, "percentage", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
     elseif rawTrigger.pct_lt then
         return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.pct_lt, "percentage", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
-    elseif rawTrigger.pct_lt then
-        return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.gt, "value", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
-    elseif rawTrigger.pct_lt then
-        return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.lt, "value", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+    elseif rawTrigger.gt then
+        return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, ">", rawTrigger.gt, "absolute", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
+    elseif rawTrigger.lt then
+        return UnitHealthTrigger:New(rawTrigger.type, rawTrigger.unit, "<", rawTrigger.lt, "absolute", rawTrigger.delay, rawTrigger.countdown, rawTrigger.throttle)
     end
 end
