@@ -61,7 +61,7 @@ end
 
 ---@return table|BackdropTemplate|Frame
 function FrameBuilder.CreateTextFrame(parentFrame, text, width, height, font, fontSize, iconSize)
-    local frame = CreateFrame("Frame", parentFrame:GetName() .. "_" .. text, parentFrame, "BackdropTemplate")
+    local frame = CreateFrame("Frame", parentFrame:GetName() .. "_" .. text:gsub(" ", "_"), parentFrame, "BackdropTemplate")
     frame:EnableMouse(true)
     frame:SetSize(width, height)
     frame:SetBackdrop({
