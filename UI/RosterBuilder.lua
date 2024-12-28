@@ -1035,19 +1035,22 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         roster.id = tostring(id)  --Fix legacy issue
         local rosterFrame = self.availableRosters[id] or FrameBuilder.CreateRosterFrame(self.loadCreate.load.scroll.content, id, roster.name.." - "..Roster.GetLastUpdatedTimestamp(roster), 260, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize)
         rosterFrame.name = roster.name.." - "..Roster.GetLastUpdatedTimestamp(roster)
-        rosterFrame.Update()
+        if roster.id == SRTData.GetSyncedRosterID() then
+            rosterFrame.active = true
+        else
+            rosterFrame.active = false
+        end
+        if Roster.GetLastUpdated(roster) == SRTData.GetSyncedRosterLastUpdated() then
+            rosterFrame.synced = true
+        else
+            rosterFrame.synced = false
+        end
+        rosterFrame:Update()
 
-        -- Make sure rosters are colored properly
         if self.selectedRoster and roster.id == self.selectedRoster.id then
             -- Yellow for selected
             rosterFrame.text:SetTextColor(SRTColor.GameYellow.r, SRTColor.GameYellow.g, SRTColor.GameYellow.b, SRTColor.GameYellow.a)
-        elseif roster.id == SRTData.GetSyncedRosterID() and Roster.GetLastUpdated(roster) == SRTData.GetSyncedRosterLastUpdated() then
-            -- Blue for synced and up-to-date roster
-            rosterFrame.text:SetTextColor(SRTColor.BlueHighlight.r, SRTColor.BlueHighlight.g, SRTColor.BlueHighlight.b, SRTColor.BlueHighlight.a)
-        elseif roster.id == SRTData.GetSyncedRosterID() and Roster.GetLastUpdated(roster) > SRTData.GetSyncedRosterLastUpdated() then
-            -- Green for synced and altered roster (does this ever happen?)
-            rosterFrame.text:SetTextColor(SRTColor.Purple.r, SRTColor.Purple.g, SRTColor.Purple.b, SRTColor.Purple.a)
-        else
+       else
             -- Light gray for the rest
             rosterFrame.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
         end

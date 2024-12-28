@@ -862,6 +862,15 @@ function FrameBuilder.CreateRosterFrame(parentFrame, id, name, width, height, fo
     rosterFrame.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     rosterFrame:SetScript("OnEnter", function () rosterFrame:SetBackdropColor(1, 1, 1, 0.4) end)
     rosterFrame:SetScript("OnLeave", function () rosterFrame:SetBackdropColor(0, 0, 0, 0) end)
+    rosterFrame.active = false
+    rosterFrame.synced = false
+    rosterFrame.icon = CreateFrame("Frame", nil, rosterFrame, "BackdropTemplate")
+    rosterFrame.icon:SetSize(16, 16)
+    rosterFrame.icon:SetPoint("RIGHT", rosterFrame, "RIGHT", -5, 0)
+    rosterFrame.icon.texture = rosterFrame.icon:CreateTexture(nil, "ARTWORK")
+    rosterFrame.icon.texture:SetAllPoints()
+    rosterFrame.icon.texture:SetAlpha(0.8)
+    rosterFrame.icon:Hide()
     rosterFrame.Update = function ()
         FrameBuilder.UpdateRosterFrame(rosterFrame)
     end
@@ -878,6 +887,15 @@ function FrameBuilder.UpdateRosterFrame(rosterFrame)
     })
     rosterFrame:SetBackdropColor(0, 0, 0, 0)
     rosterFrame.text:SetText(rosterFrame.name)
+    if rosterFrame.active and rosterFrame.synced then
+        rosterFrame.icon:Show()
+        rosterFrame.icon.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\check-mark.png")
+    elseif rosterFrame.active then
+        rosterFrame.icon:Show()
+        rosterFrame.icon.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\alert.png")
+    else
+        rosterFrame.icon:Hide()
+    end
 end
 
 ---@return table|BackdropTemplate|Frame
