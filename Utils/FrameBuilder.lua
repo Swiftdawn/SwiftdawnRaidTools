@@ -677,7 +677,7 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
             frame.hiddenFrames.operatorSelector:Update()
         end }
     }
-    frame.hiddenFrames.operatorSelector = FrameBuilder.CreateSelector(frame.hiddenFrames, operatorItems, width - 10 - frame.hiddenFrames.operatorTitle:GetWidth(), font, fontSize, "=")
+    frame.hiddenFrames.operatorSelector = FrameBuilder.CreateSelector(frame.hiddenFrames, operatorItems, width - 10 - frame.hiddenFrames.operatorTitle:GetWidth(), font, fontSize, "==")
     frame.hiddenFrames.operatorSelector:SetPoint("LEFT", frame.hiddenFrames.operatorTitle, "RIGHT", 5, 0)
     frame.hiddenFrames.countTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.hiddenFrames.countTitle:SetFont(font, fontSize, "")
