@@ -912,8 +912,31 @@ function FrameBuilder.CreateAssignmentGroupFrame(parentFrame, height)
     })
     groupFrame:SetBackdropColor(0, 0, 0, 0)
     groupFrame.assignments = {}
+    groupFrame.highlightTop = groupFrame:CreateTexture(nil, "OVERLAY")
+    groupFrame.highlightTop:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\highlight-white.png")
+    groupFrame.highlightTop:SetBlendMode("ADD")
+    groupFrame.highlightTop:SetPoint("TOPLEFT", groupFrame, "TOPLEFT", 0, 5)
+    groupFrame.highlightTop:SetPoint("TOPRIGHT", groupFrame, "TOPRIGHT", 0, 5)
+    groupFrame.highlightTop:SetHeight(10)
+    groupFrame.highlightTop:Hide()
+    groupFrame.highlightBottom = groupFrame:CreateTexture(nil, "OVERLAY")
+    groupFrame.highlightBottom:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\highlight-white.png")
+    groupFrame.highlightBottom:SetBlendMode("ADD")
+    groupFrame.highlightBottom:SetPoint("BOTTOMLEFT", groupFrame, "BOTTOMLEFT", 0, -5)
+    groupFrame.highlightBottom:SetPoint("BOTTOMRIGHT", groupFrame, "BOTTOMRIGHT", 0, -5)
+    groupFrame.highlightBottom:SetHeight(10)
+    groupFrame.highlightBottom:Hide()
     groupFrame.IsMouseOverFrame = function ()
         return FrameBuilder.IsMouseOverFrame(groupFrame)
+    end
+    groupFrame.IsMouseOverTop = function ()
+        return FrameBuilder.IsMouseOverTop(groupFrame)
+    end
+    groupFrame.IsMouseOverMid = function ()
+        return FrameBuilder.IsMouseOverMid(groupFrame)
+    end
+    groupFrame.IsMouseOverBottom = function ()
+        return FrameBuilder.IsMouseOverBottom(groupFrame)
     end
     return groupFrame
 end
@@ -944,7 +967,7 @@ end
 ---@param iconSize integer
 function FrameBuilder.CreateAssignmentFrame(parentFrame, index, font, fontSize, iconSize)
     local assignmentFrame = CreateFrame("Frame", nil, parentFrame, "BackdropTemplate")
-    assignmentFrame:SetClipsChildren(true)
+    assignmentFrame:SetClipsChildren(false)
     assignmentFrame.index = index
     assignmentFrame.iconFrame = CreateFrame("Frame", nil, assignmentFrame, "BackdropTemplate")
     assignmentFrame:SetBackdrop({
@@ -956,6 +979,13 @@ function FrameBuilder.CreateAssignmentFrame(parentFrame, index, font, fontSize, 
     assignmentFrame:SetScript("OnEnter", function() assignmentFrame:SetBackdropColor(1, 1, 1, 0.4) end)
     assignmentFrame:SetScript("OnLeave", function() assignmentFrame:SetBackdropColor(0, 0, 0, 0) end)
     assignmentFrame:SetMouseClickEnabled(true)
+    assignmentFrame.highlight = assignmentFrame:CreateTexture(nil, "OVERLAY")
+    assignmentFrame.highlight:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\highlight-white.png")
+    assignmentFrame.highlight:SetBlendMode("ADD")
+    assignmentFrame.highlight:SetPoint("TOPLEFT", assignmentFrame, "TOPLEFT", 0, 5)
+    assignmentFrame.highlight:SetPoint("TOPRIGHT", assignmentFrame, "TOPRIGHT", 0, 5)
+    assignmentFrame.highlight:SetHeight(10)
+    assignmentFrame.highlight:Hide()
     assignmentFrame.iconFrame:SetSize(iconSize, iconSize)
     assignmentFrame.iconFrame:SetPoint("LEFT", 5, 0)
     assignmentFrame.cooldownFrame = CreateFrame("Cooldown", nil, assignmentFrame.iconFrame, "CooldownFrameTemplate")
@@ -1456,18 +1486,72 @@ end
 ---@param frame table|BackdropTemplate|Frame
 ---@return boolean
 function FrameBuilder.IsMouseOverFrame(frame)
-    return frame:IsMouseOver()
-    -- local x, y = GetCursorPosition()
-    -- local scale = UIParent:GetScale()
-    -- local left = frame:GetLeft() * scale
-    -- local right = frame:GetRight() * scale
-    -- local top = frame:GetTop() * scale
-    -- local bottom = frame:GetBottom() * scale
-    -- if left < x and right > x and top > y and bottom < y then
-    --     return true
-    -- else
-    --     return false
-    -- end
+    -- return frame:IsMouseOver()
+    local x, y = GetCursorPosition()
+    local scale = UIParent:GetScale()
+    local left = frame:GetLeft() * scale
+    local right = frame:GetRight() * scale
+    local top = frame:GetTop() * scale
+    local bottom = frame:GetBottom() * scale
+    if left < x and right > x and top > y and bottom < y then
+        return true
+    else
+        return false
+    end
+end
+
+---@param frame table|BackdropTemplate|Frame
+---@return boolean
+function FrameBuilder.IsMouseOverTop(frame)
+    -- return frame:IsMouseOver()
+    local x, y = GetCursorPosition()
+    local scale = UIParent:GetScale()
+    local left = frame:GetLeft() * scale
+    local right = frame:GetRight() * scale
+    local top = frame:GetTop() * scale
+    local bottom = frame:GetBottom() * scale
+    local height = top - bottom
+    if left < x and right > x and top > y and (top - height * 0.25) < y then
+        return true
+    else
+        return false
+    end
+end
+
+---@param frame table|BackdropTemplate|Frame
+---@return boolean
+function FrameBuilder.IsMouseOverMid(frame)
+    -- return frame:IsMouseOver()
+    local x, y = GetCursorPosition()
+    local scale = UIParent:GetScale()
+    local left = frame:GetLeft() * scale
+    local right = frame:GetRight() * scale
+    local top = frame:GetTop() * scale
+    local bottom = frame:GetBottom() * scale
+    local height = top - bottom
+    if left < x and right > x and (top - height * 0.25) > y and (bottom + height * 0.25) < y then
+        return true
+    else
+        return false
+    end
+end
+
+---@param frame table|BackdropTemplate|Frame
+---@return boolean
+function FrameBuilder.IsMouseOverBottom(frame)
+    -- return frame:IsMouseOver()
+    local x, y = GetCursorPosition()
+    local scale = UIParent:GetScale()
+    local left = frame:GetLeft() * scale
+    local right = frame:GetRight() * scale
+    local top = frame:GetTop() * scale
+    local bottom = frame:GetBottom() * scale
+    local height = top - bottom
+    if left < x and right > x and bottom < y and (bottom + height * 0.25) > y then
+        return true
+    else
+        return false
+    end
 end
 
 ---@return table|Frame|BackdropTemplate
@@ -1489,9 +1573,25 @@ function FrameBuilder.CreateBossAbilityAssignmentsFrame(parentFrame, name, abili
     frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.title:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     frame.title:SetPoint("TOPLEFT", 5, -3)
+    frame.highlight = frame:CreateTexture(nil, "OVERLAY")
+    frame.highlight:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\highlight-white.png")
+    frame.highlight:SetBlendMode("ADD")
+    frame.highlight:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 0, 10)
+    frame.highlight:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, 10)
+    frame.highlight:SetHeight(10)
+    frame.highlight:Hide()
     frame.groups = {}
     frame.IsMouseOverFrame = function ()
         return FrameBuilder.IsMouseOverFrame(frame)
+    end
+    frame.IsMouseOverTop = function ()
+        return FrameBuilder.IsMouseOverTop(frame)
+    end
+    frame.IsMouseOverMid = function ()
+        return FrameBuilder.IsMouseOverMid(frame)
+    end
+    frame.IsMouseOverBottom = function ()
+        return FrameBuilder.IsMouseOverBottom(frame)
     end
     frame.Update = function ()
         FrameBuilder.UpdateBossAbilityAssignmentsFrame(frame)

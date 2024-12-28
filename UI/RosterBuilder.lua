@@ -294,7 +294,7 @@ function RosterBuilder:InitializeImportRoster()
     self.import.info.titleEditBox:SetPoint("TOPLEFT", self.import.info.pane, "TOPLEFT", 5 , -5)
     self.import.info.titleEditBox:SetMultiLine(false)
     self.import.info.titleEditBox:SetFont(self:GetHeaderFont(), 16, "")
-    self.import.info.titleEditBox:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.import.info.titleEditBox:SetTextColor(1, 1, 1, 1)
     self.import.info.titleEditBox:SetAutoFocus(true)
     self.import.info.titleEditBox:SetScript("OnEnterPressed", function()
         local newName = self.import.info.titleEditBox:GetText()
@@ -382,7 +382,7 @@ function RosterBuilder:InitializeAddOrRemovePlayers()
     self.addRemove.roster.titleEditBox:SetPoint("TOPLEFT", self.addRemove.roster.pane, "TOPLEFT", 5 , -5)
     self.addRemove.roster.titleEditBox:SetMultiLine(false)
     self.addRemove.roster.titleEditBox:SetFont(self:GetHeaderFont(), 16, "")
-    self.addRemove.roster.titleEditBox:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.addRemove.roster.titleEditBox:SetTextColor(1, 1, 1, 1)
     self.addRemove.roster.titleEditBox:SetAutoFocus(true)
     self.addRemove.roster.titleEditBox:SetScript("OnEnterPressed", function()
         self.selectedRoster.name = self.addRemove.roster.titleEditBox:GetText()
@@ -604,8 +604,8 @@ function RosterBuilder:InitializeEditTriggers()
     self.triggers.bossAbility.abilityEditBox:SetSize(260, 16)
     self.triggers.bossAbility.abilityEditBox:SetPoint("LEFT", self.triggers.bossAbility.abilitySelector.text, "LEFT", 0, 0)
     self.triggers.bossAbility.abilityEditBox:SetMultiLine(false)
-    self.triggers.bossAbility.abilityEditBox:SetFont(self:GetHeaderFontType(), 16, "")
-    self.triggers.bossAbility.abilityEditBox:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.triggers.bossAbility.abilityEditBox:SetFont(self:GetHeaderFontType(), 15, "")
+    self.triggers.bossAbility.abilityEditBox:SetTextColor(1, 1, 1, 1)
     self.triggers.bossAbility.abilityEditBox:SetAutoFocus(true)
     self.triggers.bossAbility.abilityEditBox:SetScript("OnEnterPressed", function()
         local newName = self.triggers.bossAbility.abilityEditBox:GetText()
@@ -1132,19 +1132,35 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         end
         self.loadCreate.info.title:SetText(self.selectedRoster.name)
 
-        rosterInfo.timestamp = rosterInfo.timestamp or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        rosterInfo.timestamp:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
-        rosterInfo.timestamp:SetText("Last updated: "..Roster.GetLastUpdatedTimestamp(self.selectedRoster))
-        rosterInfo.timestamp:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
-        rosterInfo.timestamp:SetPoint("TOPLEFT", 10, -5)
-        rosterInfo.timestamp:Show()
+        rosterInfo.lastUpdated = rosterInfo.lastUpdated or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        rosterInfo.lastUpdated:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+        rosterInfo.lastUpdated:SetText("|cFFFFD200Last updated:|r "..Roster.GetLastUpdatedTimestamp(self.selectedRoster))
+        rosterInfo.lastUpdated:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+        rosterInfo.lastUpdated:SetPoint("TOPLEFT", 10, -5)
+        rosterInfo.lastUpdated:Show()
 
         rosterInfo.owner = rosterInfo.owner or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         rosterInfo.owner:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
-        rosterInfo.owner:SetText("Owned by: "..string.gsub(tostring(self.selectedRoster.owner), "-", ", ", 1))
+        rosterInfo.owner:SetText("|cFFFFD200Owned by:|r "..string.gsub(tostring(self.selectedRoster.owner), "-", ", ", 1))
         rosterInfo.owner:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
-        rosterInfo.owner:SetPoint("TOPLEFT", rosterInfo.timestamp, "BOTTOMLEFT", 0, -18)
+        rosterInfo.owner:SetPoint("TOPLEFT", rosterInfo.lastUpdated, "BOTTOMLEFT", 0, -18)
         rosterInfo.owner:Show()
+
+        if SRTData.GetSyncedRosterID() == self.selectedRoster.id then
+            rosterInfo.lastSynced = rosterInfo.lastSynced or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            rosterInfo.lastSynced:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
+            local lastSyncedDate = date("%d-%m-%Y %H:%M:%S", SRTData.GetSyncedRosterLastUpdated())
+            rosterInfo.lastSynced:SetText("|cFFFFD200Last synced:|r " .. lastSyncedDate)
+            rosterInfo.lastSynced:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+            rosterInfo.lastSynced:SetPoint("TOPLEFT", rosterInfo.lastUpdated, "BOTTOMLEFT", 0, -18)
+            rosterInfo.lastSynced:Show()
+            rosterInfo.owner:SetPoint("TOPLEFT", rosterInfo.lastSynced, "BOTTOMLEFT", 0, -18)
+        else
+            if rosterInfo.lastSynced then
+                rosterInfo.lastSynced:Hide()
+            end
+            rosterInfo.owner:SetPoint("TOPLEFT", rosterInfo.lastUpdated, "BOTTOMLEFT", 0, -18)
+        end
 
         rosterInfo.players = rosterInfo.players or self.loadCreate.info.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         rosterInfo.players:SetFont(self:GetPlayerFont(), self:GetAppearance().playerFontSize)
@@ -1153,7 +1169,7 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
             if playerNames then
                 playerNames = string.format("%s, %s", playerNames, strsplit("-", player.name))
             else
-                playerNames = string.format("\nPlayers: \n\n%s", strsplit("-", player.name))
+                playerNames = string.format("\n|cFFFFD200Players:|r \n\n%s", strsplit("-", player.name))
             end
         end
         rosterInfo.players:SetText(playerNames)
@@ -1171,7 +1187,7 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
             if encounters then
                 encounters = string.format("%s, %s", encounters, BossInfo.GetNameByID(encounterID))
             else
-                encounters = string.format("\nEncounters: \n\n%s", BossInfo.GetNameByID(encounterID))
+                encounters = string.format("\n|cFFFFD200Encounters:|r \n\n%s", BossInfo.GetNameByID(encounterID))
             end
         end
         rosterInfo.encounters:SetText(encounters)
@@ -1198,7 +1214,8 @@ function RosterBuilder:UpdateLoadOrCreateRoster()
         self.loadCreate.activateButton.colorHighlight = SRTColor.Gray
         FrameBuilder.UpdateButton(self.loadCreate.activateButton)
         self.loadCreate.activateButton:SetScript("OnMouseDown", nil)
-        if rosterInfo.timestamp then rosterInfo.timestamp:Hide() end
+        if rosterInfo.lastUpdated then rosterInfo.lastUpdated:Hide() end
+        if rosterInfo.lastSynced then rosterInfo.lastSynced:Hide() end
         if rosterInfo.owner then rosterInfo.owner:Hide() end
         if rosterInfo.players then rosterInfo.players:Hide() end
         if rosterInfo.encounters then rosterInfo.encounters:Hide() end
@@ -1383,18 +1400,26 @@ function RosterBuilder:UpdateCreateAssignments()
                 self.assignments.players.scroll.DisconnectItem(name, playerFrame, self.content)
                 playerFrame:SetScript("OnUpdate", function ()
                     local mouseOverFound = false
-                    for _, assignmentFrame in pairs(self.assignments.encounter.scroll.items) do
-                        assignmentFrame:SetBackdropColor(0, 0, 0, 0)
-                        if assignmentFrame:IsShown() and assignmentFrame.IsMouseOverFrame() then
-                            for _, groupFrame in pairs(assignmentFrame.groups) do
+                    for _, bossAbilityFrame in pairs(self.assignments.encounter.scroll.items) do
+                        bossAbilityFrame.highlight:Hide()
+                        if bossAbilityFrame:IsShown() and bossAbilityFrame.IsMouseOverFrame() then
+                            for _, groupFrame in pairs(bossAbilityFrame.groups) do
                                 groupFrame:SetBackdropColor(0, 0, 0, 0)
-                                if groupFrame:IsShown() and groupFrame.IsMouseOverFrame() then
+                                groupFrame.highlightTop:Hide()
+                                groupFrame.highlightBottom:Hide()
+                                if groupFrame:IsShown() and groupFrame.IsMouseOverTop() then
+                                    groupFrame.highlightTop:Show()
+                                    mouseOverFound = true
+                                elseif groupFrame:IsShown() and groupFrame.IsMouseOverMid() then
                                     groupFrame:SetBackdropColor(1, 1, 1, 0.4)
+                                    mouseOverFound = true
+                                elseif groupFrame:IsShown() and groupFrame.IsMouseOverBottom() then
+                                    groupFrame.highlightBottom:Show()
                                     mouseOverFound = true
                                 end
                             end
                             if mouseOverFound == false then
-                                assignmentFrame:SetBackdropColor(1, 1, 1, 0.4)
+                                bossAbilityFrame.highlight:Show()
                             end
                         end
                     end
@@ -1405,35 +1430,60 @@ function RosterBuilder:UpdateCreateAssignments()
                 playerFrame:StopMovingOrSizing()
                 self.assignments.players.scroll.ConnectItem(name, playerFrame)
                 playerFrame:SetScript("OnUpdate", nil)
-                for _, assignmentFrame in pairs(self.assignments.encounter.scroll.items) do
-                    if assignmentFrame:IsShown() and assignmentFrame.IsMouseOverFrame() then
-                        assignmentFrame:SetBackdropColor(0, 0, 0, 0)
+                for _, bossAbilityFrame in pairs(self.assignments.encounter.scroll.items) do
+                    bossAbilityFrame.highlight:Hide()
+                    if bossAbilityFrame:IsShown() and bossAbilityFrame.IsMouseOverFrame() then
+                        self.pickedPlayer = { name = player.name, fileName = player.class.fileName }
+                        self.state = State.PICK_SPELL
+                        -- Dropped on ability frame; Make sure assignments table is initialized
                         self.selectedRoster.encounters = self.selectedRoster.encounters or {}
                         self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
-                        self.selectedRoster.encounters[self.selectedEncounterID][assignmentFrame.abilityIndex] = self.selectedRoster.encounters[self.selectedEncounterID][assignmentFrame.abilityIndex] or {}
-                        self.selectedRoster.encounters[self.selectedEncounterID][assignmentFrame.abilityIndex].assignments = self.selectedRoster.encounters[self.selectedEncounterID][assignmentFrame.abilityIndex].assignments or {}
-                        for _, groupFrame in pairs(assignmentFrame.groups) do
-                            if groupFrame:IsShown() and groupFrame.IsMouseOverFrame() then
-                                groupFrame:SetBackdropColor(0, 0, 0, 0)
-                                self.pickedPlayer = { name = player.name, fileName = player.class.fileName }
+                        self.selectedRoster.encounters[self.selectedEncounterID][bossAbilityFrame.abilityIndex] = self.selectedRoster.encounters[self.selectedEncounterID][bossAbilityFrame.abilityIndex] or {}
+                        self.selectedRoster.encounters[self.selectedEncounterID][bossAbilityFrame.abilityIndex].assignments = self.selectedRoster.encounters[self.selectedEncounterID][bossAbilityFrame.abilityIndex].assignments or {}
+                        for _, groupFrame in pairs(bossAbilityFrame.groups) do
+                            -- Hide all the highlights
+                            groupFrame:SetBackdropColor(0, 0, 0, 0)
+                            groupFrame.highlightTop:Hide()
+                            groupFrame.highlightBottom:Hide()
+                            if groupFrame:IsShown() and groupFrame.IsMouseOverTop() then
+                                -- Attach assignment above current group
                                 self.pickedAssignment = {
                                     encounterID = self.selectedEncounterID,
-                                    abilityIndex = assignmentFrame.abilityIndex,
-                                    groupIndex = groupFrame.index
+                                    abilityIndex = bossAbilityFrame.abilityIndex,
+                                    groupIndex = groupFrame.index,
+                                    attach = "above"
                                 }
-                                self.state = State.PICK_SPELL
+                                self:UpdateCreateAssignments()
+                                return
+                            elseif groupFrame:IsShown() and groupFrame.IsMouseOverMid() then
+                                -- Add to current group, or create new group below this
+                                self.pickedAssignment = {
+                                    encounterID = self.selectedEncounterID,
+                                    abilityIndex = bossAbilityFrame.abilityIndex,
+                                    groupIndex = groupFrame.index,
+                                    attach = "addOrBelow"
+                                }
+                                self:UpdateCreateAssignments()
+                                return
+                            elseif groupFrame:IsShown() and groupFrame.IsMouseOverBottom() then
+                                -- Attach assignment below current group
+                                self.pickedAssignment = {
+                                    encounterID = self.selectedEncounterID,
+                                    abilityIndex = bossAbilityFrame.abilityIndex,
+                                    groupIndex = groupFrame.index,
+                                    attach = "below"
+                                }
                                 self:UpdateCreateAssignments()
                                 return
                             end
                         end
-
-                        self.pickedPlayer = { name = player.name, fileName = player.class.fileName }
+                        -- Create new group at bottom
                         self.pickedAssignment = {
                             encounterID = self.selectedEncounterID,
-                            abilityIndex = assignmentFrame.abilityIndex,
-                            groupIndex = #self.selectedRoster.encounters[self.selectedEncounterID][assignmentFrame.abilityIndex].assignments + 1,
+                            abilityIndex = bossAbilityFrame.abilityIndex,
+                            groupIndex = #self.selectedRoster.encounters[self.selectedEncounterID][bossAbilityFrame.abilityIndex].assignments + 1,
+                            attach = "newAtBottom"
                         }
-                        self.state = State.PICK_SPELL
                         self:UpdateCreateAssignments()
                         return
                     end
@@ -1592,9 +1642,14 @@ function RosterBuilder:UpdateCreateAssignments()
             spellFrame:SetScript("OnLeave", function () spellFrame:SetBackdropColor(0, 0, 0, 0) end)
             spellFrame:SetScript("OnMouseDown", function (sf, button)
                 if button == "LeftButton" then
+                    -- above
+                    -- addOrBelow
+                    -- below
+                    -- newAtBottom
                     local encounterID = self.pickedAssignment.encounterID
                     local abilityIndex = self.pickedAssignment.abilityIndex
                     local groupIndex = self.pickedAssignment.groupIndex
+                    local attach = self.pickedAssignment.attach
 
                     self.selectedRoster.encounters = self.selectedRoster.encounters or {}
                     self.selectedRoster.encounters[encounterID] = self.selectedRoster.encounters[encounterID] or SRTData.GetAssignmentDefaults()[encounterID]
@@ -1603,39 +1658,79 @@ function RosterBuilder:UpdateCreateAssignments()
 
                     local numberOfGroups = #self.selectedRoster.encounters[encounterID][abilityIndex].assignments
 
-                    if self.pickedAssignment.assignmentIndex then
-                        local assignmentIndex = self.pickedAssignment.assignmentIndex
-                        self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][assignmentIndex] = {
+                    if attach == "above" then
+                        table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments, groupIndex, {[1] = {
                             ["spell_id"] = sf.spellID,
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
-                        }
-                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][assignmentIndex] })
-                    elseif groupIndex == 0 then
-                        self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1] = {}
-                        table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1], {
+                        }})
+                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][1] })
+                    elseif attach == "addOrBelow" then
+                        local numberOfAssignments = #self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex]
+                        if numberOfAssignments == 1 then
+                            table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex], {
+                                ["spell_id"] = sf.spellID,
+                                ["type"] = "SPELL",
+                                ["player"] = self.pickedPlayer.name,
+                            })
+                            Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][2] })
+                        elseif numberOfAssignments == 2 then
+                            table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments, groupIndex + 1, {[1] = {
+                                ["spell_id"] = sf.spellID,
+                                ["type"] = "SPELL",
+                                ["player"] = self.pickedPlayer.name,
+                            }})
+                            Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex + 1][1] })
+                        end
+                    elseif attach == "below" then
+                        table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments, groupIndex + 1, {[1] = {
                             ["spell_id"] = sf.spellID,
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
-                        })
-                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1][1] })
-                    elseif not self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] or #self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] < 2 then
-                        self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] or {}
-                        table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex], {
+                        }})
+                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex + 1][1] })
+                    elseif attach == "newAtBottom" then
+                        table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments, {[1] = {
                             ["spell_id"] = sf.spellID,
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
-                        })
-                        Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][#self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex]] })
-                    elseif #self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] >= 2 then
-                        self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1] = {}
-                        table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1], {
-                            ["spell_id"] = sf.spellID,
-                            ["type"] = "SPELL",
-                            ["player"] = self.pickedPlayer.name,
-                        })
+                        }})
                         Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1][1] })
                     end
+
+                    -- if self.pickedAssignment.assignmentIndex then
+                    --     local assignmentIndex = self.pickedAssignment.assignmentIndex
+                    --     self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][assignmentIndex] = {
+                    --         ["spell_id"] = sf.spellID,
+                    --         ["type"] = "SPELL",
+                    --         ["player"] = self.pickedPlayer.name,
+                    --     }
+                    --     Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][assignmentIndex] })
+                    -- elseif groupIndex == 0 then
+                    --     self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1] = {}
+                    --     table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1], {
+                    --         ["spell_id"] = sf.spellID,
+                    --         ["type"] = "SPELL",
+                    --         ["player"] = self.pickedPlayer.name,
+                    --     })
+                    --     Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1][1] })
+                    -- elseif not self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] or #self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] < 2 then
+                    --     self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] or {}
+                    --     table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex], {
+                    --         ["spell_id"] = sf.spellID,
+                    --         ["type"] = "SPELL",
+                    --         ["player"] = self.pickedPlayer.name,
+                    --     })
+                    --     Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][#self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex]] })
+                    -- elseif #self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex] >= 2 then
+                    --     self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1] = {}
+                    --     table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1], {
+                    --         ["spell_id"] = sf.spellID,
+                    --         ["type"] = "SPELL",
+                    --         ["player"] = self.pickedPlayer.name,
+                    --     })
+                    --     Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1][1] })
+                    -- end
                     self.state = State.CREATE_ASSIGNMENTS
                     self:UpdateCreateAssignments()
                 end
