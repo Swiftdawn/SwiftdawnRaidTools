@@ -149,6 +149,7 @@ local function AddHiddenCountdownEditbox(frame, font, fontSize, width, height)
     frame.hiddenFrames.countdownEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
     frame.hiddenFrames.countdownEditBox:SetFont(font, fontSize, "")
     frame.hiddenFrames.countdownEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.countdownEditBox:SetNumericFullRange(true)
     frame.hiddenFrames.countdownEditBox:SetPoint("LEFT", frame.hiddenFrames.countdownTitle, "RIGHT", 5, 0)
     frame.hiddenFrames.countdownEditBox:SetAutoFocus(false)
 end
