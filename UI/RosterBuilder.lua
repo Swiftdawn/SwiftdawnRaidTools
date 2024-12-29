@@ -1468,21 +1468,22 @@ function RosterBuilder:UpdateEditTriggers()
             availableTrigger:SetScript("OnDragStop", function(_)
                 availableTrigger:SetParent(self.triggers.availableTypes.triggersScroll.content)
                 availableTrigger:StopMovingOrSizing()
-                if self.triggers.bossAbility.scroll.IsMouseOverArea() then
-                    self.selectedRoster.encounters = self.selectedRoster.encounters or {}
-                    self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
-                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] or {}
-                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers or {}
-                    table.insert(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers, triggerType:creator())
-                    Roster.MarkUpdated(self.selectedRoster, { trigger = {
-                        encounter = self.selectedEncounterID,
-                        ability = self.selectedAbilityID,
-                        id = #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers
-                    }})
-                    self:UpdateEditTriggers()
-                else
-                    self.triggers.availableTypes.triggersScroll.ConnectItem(triggerType.name, availableTrigger)
-                end
+                self.triggers.availableTypes.triggersScroll.ConnectItem(triggerType.name, availableTrigger)
+                -- if self.triggers.bossAbility.scroll.IsMouseOverArea() then
+                --     self.selectedRoster.encounters = self.selectedRoster.encounters or {}
+                --     self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
+                --     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] or {}
+                --     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers or {}
+                --     table.insert(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers, triggerType:creator())
+                --     Roster.MarkUpdated(self.selectedRoster, { trigger = {
+                --         encounter = self.selectedEncounterID,
+                --         ability = self.selectedAbilityID,
+                --         id = #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers
+                --     }})
+                --     self:UpdateEditTriggers()
+                -- else
+                --     self.triggers.availableTypes.triggersScroll.ConnectItem(triggerType.name, availableTrigger)
+                -- end
             end)
         end
     end
@@ -1512,21 +1513,22 @@ function RosterBuilder:UpdateEditTriggers()
             availableCondition:SetScript("OnDragStop", function(_)
                 availableCondition:SetParent(self.triggers.availableTypes.conditionsScroll.content)
                 availableCondition:StopMovingOrSizing()
-                if self.triggers.bossAbility.scroll.IsMouseOverArea() then
-                    self.selectedRoster.encounters = self.selectedRoster.encounters or {}
-                    self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
-                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] or {}
-                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].conditions or {}
-                    table.insert(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].conditions, conditionType:creator())
-                    Roster.MarkUpdated(self.selectedRoster, { condition = {
-                        encounter = self.selectedEncounterID,
-                        ability = self.selectedAbilityID,
-                        id = #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].conditions
-                    }})
-                    self:UpdateEditTriggers()
-                else
-                    self.triggers.availableTypes.conditionsScroll.ConnectItem(conditionType.name, availableCondition)
-                end
+                self.triggers.availableTypes.conditionsScroll.ConnectItem(conditionType.name, availableCondition)
+                -- if self.triggers.bossAbility.scroll.IsMouseOverArea() then
+                --     self.selectedRoster.encounters = self.selectedRoster.encounters or {}
+                --     self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
+                --     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] or {}
+                --     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].conditions or {}
+                --     table.insert(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].conditions, conditionType:creator())
+                --     Roster.MarkUpdated(self.selectedRoster, { condition = {
+                --         encounter = self.selectedEncounterID,
+                --         ability = self.selectedAbilityID,
+                --         id = #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].conditions
+                --     }})
+                --     self:UpdateEditTriggers()
+                -- else
+                    -- self.triggers.availableTypes.conditionsScroll.ConnectItem(conditionType.name, availableCondition)
+                -- end
             end)
         end
     end
