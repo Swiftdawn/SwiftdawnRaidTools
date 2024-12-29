@@ -1454,7 +1454,7 @@ function FrameBuilder.CreateScrollArea(parentFrame, areaName)
         -- Attach first item to our bottom
         local firstItem = scrollFrame.FindFirstItem()
         if firstItem and firstItem:GetName() ~= item:GetName() then
-            firstItem:SetPoint("TOPLEFT", item, "BOTTOMLEFT", 0, -3)
+            firstItem:SetPoint("TOPLEFT", item, "BOTTOMLEFT", 0, 0)
         end
         -- Attach item to top
         item:SetPoint("TOPLEFT", scrollFrame.content, "TOPLEFT", 10, 0)
@@ -1471,7 +1471,7 @@ function FrameBuilder.CreateScrollArea(parentFrame, areaName)
             if previousItem:GetName() == scrollFrame.content:GetName() then
                 nextItem:SetPoint("TOPLEFT", previousItem, "TOPLEFT", 10, 0)
             else
-                nextItem:SetPoint("TOPLEFT", previousItem, "BOTTOMLEFT", 0, -3)
+                nextItem:SetPoint("TOPLEFT", previousItem, "BOTTOMLEFT", 0, 0)
             end
         end
         -- Disconnect
