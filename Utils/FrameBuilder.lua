@@ -141,6 +141,33 @@ function FrameBuilder.CreateEditableTextFrame(parentFrame, text, width, height, 
     return frame
 end
 
+function FrameBuilder.CreateTriggersFrame(parentFrame, title, font, fontSize)
+    local frame = CreateFrame("Frame", "SRT_EditTriggers_Available"..title, UIParent, "BackdropTemplate")
+    frame:SetWidth(280)
+    frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.title:SetFont(font, fontSize, "")
+    frame.title:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    frame.title:SetText(title)
+    frame.items = {}
+    frame.AddTrigger = function (triggerFrame)
+        table.insert(frame.items, triggerFrame)
+        frame:Update()
+    end
+    frame.Update = function ()
+
+        -- The triggers should have their conditions in the trigger object
+        -- This function can build and update the trigger frames based on the trigger object
+        -- The built trigger frames should be updated as they may change after dragging and dropping
+
+        local height = frame.title:GetHeight() + 5
+        local previousFrame = frame.title
+        for _, item in pairs(frame.items) do
+            item:SetPoint("TOPLEFT", previousFrame, "BOTTOMLEFT", 0, 0)
+            previousFrame = item
+        end
+    end
+end
+
 local function AddHiddenCountdownEditbox(frame, font, fontSize, width, height)
     frame.hiddenFrames.countdownTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.hiddenFrames.countdownTitle:SetFont(font, fontSize, "")
