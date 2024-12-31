@@ -135,6 +135,13 @@ function FrameBuilder.CreateTriggerFrame(parentFrame, trigger, type, width, heig
         table.insert(frame.items, conditionFrame)
         frame:Update()
     end
+    frame.RemoveCondition = function (cid)
+        if frame.items[cid] then
+            frame.items[cid]:Hide()
+            frame.items[cid] = nil
+        end
+        frame:Update()
+    end
     frame.GetCurrentHeight = function ()
         local h = frame.triggerFrame:GetHeight()
         for _, item in pairs(frame.items) do
