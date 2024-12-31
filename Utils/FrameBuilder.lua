@@ -235,11 +235,11 @@ function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, type, width,
         parentFrame.Update()
     end
     local function acceptChanges()
-        frame.trigger.emoteText = frame.hiddenFrames.emoteEditBox:GetText()
+        frame.trigger.emoteText = frame.hiddenFrames.emoteEditBox:GetText() or ""
         if type == "trigger" then
-            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
-            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
-            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText()) or 0
+            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText()) or 0
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText()) or 0
         end
         frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
@@ -319,11 +319,11 @@ function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, type, w
         parentFrame.Update()
     end
     local function acceptChanges()
-        frame.trigger.key = frame.hiddenFrames.numenKeyEditBox:GetText()
+        frame.trigger.key = frame.hiddenFrames.numenKeyEditBox:GetText() or ""
         if type == "trigger" then
-            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
-            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
-            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText()) or 0
+            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText()) or 0
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText()) or 0
         end
         frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
@@ -393,10 +393,10 @@ function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, type, width, 
         parentFrame.Update()
     end
     local function acceptChanges()
-        frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
+        frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText()) or 0
         if type == "trigger" then
-            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
-            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText()) or 0
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText()) or 0
         end
         frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
@@ -518,14 +518,14 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, type, w
         parentFrame.Update()
     end
     local function acceptChanges()
-        frame.trigger.unitID = frame.hiddenFrames.unitEditBox:GetText()
-        frame.trigger.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue()
-        frame.trigger.type = frame.hiddenFrames.typeSelector:GetSelectedValue()
-        frame.trigger.value = tonumber(frame.hiddenFrames.valueEditBox:GetText())
+        frame.trigger.unitID = frame.hiddenFrames.unitEditBox:GetText() or ""
+        frame.trigger.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue() or "<"
+        frame.trigger.type = frame.hiddenFrames.typeSelector:GetSelectedValue() or "percentage"
+        frame.trigger.value = tonumber(frame.hiddenFrames.valueEditBox:GetText()) or 0
         if type == "trigger" then
-            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
-            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
-            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText()) or 0
+            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText()) or 0
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText()) or 0
         end
         frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
@@ -538,7 +538,7 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, type, w
         frame.text:Hide()
         frame.hiddenFrames.unitEditBox:SetText(frame.trigger.unitID or "")
         frame.hiddenFrames.operatorSelector:SetSelectedValue(frame.trigger.operator or "<")
-        frame.hiddenFrames.typeSelector:SetSelectedValue(frame.trigger.type or "Percentage")
+        frame.hiddenFrames.typeSelector:SetSelectedValue(frame.trigger.type or "percentage")
         frame.hiddenFrames.valueEditBox:SetText(tostring(frame.trigger.value) or "0")
         if type == "trigger" then
             frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
@@ -618,11 +618,11 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, type, wi
         parentFrame.Update()
     end
     local function acceptChanges()
-        frame.trigger.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText())
+        frame.trigger.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText()) or 0
         if type == "trigger" then
-            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
-            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
-            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
+            frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText()) or 0
+            frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText()) or 0
+            frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText()) or 0
         end
         frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
@@ -633,7 +633,7 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, type, wi
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
-        frame.hiddenFrames.spellEditBox:SetText(tostring(frame.trigger.spellID) or "")
+        frame.hiddenFrames.spellEditBox:SetText(tostring(frame.trigger.spellID) or "0")
         if type == "trigger" then
             frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
             frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
@@ -740,9 +740,9 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
         parentFrame.Update()
     end
     local function acceptChanges()
-        frame.condition.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText())
-        frame.condition.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue()
-        frame.condition.count = tonumber(frame.hiddenFrames.countEditBox:GetText())
+        frame.condition.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText()) or 0
+        frame.condition.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue() or "=="
+        frame.condition.count = tonumber(frame.hiddenFrames.countEditBox:GetText()) or 0
         frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
         onChanges(frame.condition)
         frame.hiddenFrames:Hide()
@@ -752,7 +752,7 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
-        frame.hiddenFrames.spellEditBox:SetText(tostring(frame.condition.spellID) or "")
+        frame.hiddenFrames.spellEditBox:SetText(tostring(frame.condition.spellID) or "0")
         frame.hiddenFrames.operatorSelector:SetSelectedValue(frame.condition.operator or "==")
         frame.hiddenFrames.countEditBox:SetText(tostring(frame.condition.count) or "0")
         frame.hiddenFrames:Show()
@@ -849,10 +849,10 @@ function FrameBuilder.CreateUnitHealthConditionFrame(parentFrame, condition, wid
         parentFrame.Update()
     end
     local function acceptChanges()
-        frame.condition.unitID = frame.hiddenFrames.unitIDEditBox:GetText()
-        frame.condition.type = frame.hiddenFrames.typeSelector:GetSelectedValue()
-        frame.condition.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue()
-        frame.condition.value = tonumber(frame.hiddenFrames.valueEditBox:GetText())
+        frame.condition.unitID = frame.hiddenFrames.unitIDEditBox:GetText() or ""
+        frame.condition.type = frame.hiddenFrames.typeSelector:GetSelectedValue() or "percentage"
+        frame.condition.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue() or "<"
+        frame.condition.value = tonumber(frame.hiddenFrames.valueEditBox:GetText()) or 0
         frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
         onChanges(frame.condition)
         frame.hiddenFrames:Hide()
