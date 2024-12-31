@@ -1,30 +1,44 @@
 Trigger = {
     UnitHealth = {
         name = "Unit health",
-        creator = UnitHealthTrigger.New
+        creator = function ()
+            return UnitHealthTrigger:New()
+        end
     },
     SpellCast = {
         name = "Spell cast",
-        creator = SpellCastTrigger.New
+        creator = function ()
+            return SpellCastTrigger:New()
+        end
     },
     BossEmote = {
         name = "Boss emote",
-        creator = BossEmoteTrigger.New
+        creator = function ()
+            return BossEmoteTrigger:New()
+        end
     },
     StartEncounter = {
         name = "After X time",
-        creator = EncounterStartTrigger.New
+        creator = function ()
+            return EncounterStartTrigger:New()
+        end
     },
     Aura = {
         name = "Aura activated",
-        creator = SpellAuraTrigger.New
+        creator = function ()
+            return SpellAuraTrigger:New()
+        end
     },
     AuraRemoved = {
         name = "Aura removed",
-        creator = SpellAuraRemovedTrigger.New
+        creator = function ()
+            return SpellAuraRemovedTrigger:New()
+        end
     },
     NumenTimer = {
         name = "Numen timer",
-        creator = NumenTimerTrigger.New
+        creator = function ()
+            return NumenTimerTrigger:New()
+        end
     }
 }

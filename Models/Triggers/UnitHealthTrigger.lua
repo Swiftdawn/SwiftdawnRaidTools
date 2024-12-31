@@ -7,14 +7,14 @@ function UnitHealthTrigger:New(name, unitID, operator, value, type, delay, count
     ---@class UnitHealthTrigger
     local obj = setmetatable({}, self)
     self.__index = self
-    obj.name = name
-    obj.unitID = unitID
-    obj.operator = operator
-    obj.value = value
-    obj.type = type
-    obj.delay = delay
-    obj.countdown = countdown
-    obj.throttle = throttle
+    obj.name = name or "UNIT_HEALTH"
+    obj.unitID = unitID or 0
+    obj.operator = operator or "<"
+    obj.value = value or 0
+    obj.type = type or "percentage"
+    obj.delay = delay or 0
+    obj.countdown = countdown or 0
+    obj.throttle = throttle or 0
     obj.height = 20
     obj.conditions = {}
     return obj
@@ -22,9 +22,9 @@ end
 
 function UnitHealthTrigger:GetDisplayName()
     if self.type == "percentage" then
-        return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value).." percent"..(self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+        return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value).." percent"..(self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
     elseif self.type == "absolute" then
-        return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value)..(self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+        return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value)..(self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
     end
 end
 

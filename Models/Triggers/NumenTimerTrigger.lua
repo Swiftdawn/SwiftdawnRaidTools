@@ -7,18 +7,18 @@ function NumenTimerTrigger:New(name, key, delay, countdown, throttle)
     ---@class NumenTimerTrigger
     local obj = setmetatable({}, self)
     self.__index = self
-    obj.name = name
-    obj.key = key
-    obj.delay = delay
-    obj.countdown = countdown
-    obj.throttle = throttle
+    obj.name = name or "FOJJI_NUMEN_TIMER"
+    obj.key = key or "change.me"
+    obj.delay = delay or 0
+    obj.countdown = countdown or 0
+    obj.throttle = throttle or 0
     obj.height = 20
     obj.conditions = {}
     return obj
 end
 
 function NumenTimerTrigger:GetDisplayName()
-    return "Numen timer \'" .. self.key .. "\' is at 5 seconds".. (self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+    return "Numen timer \'" .. self.key .. "\' is at 5 seconds".. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
 end
 
 function NumenTimerTrigger:Serialize(isUntrigger)

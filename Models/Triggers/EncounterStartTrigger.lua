@@ -7,10 +7,10 @@ function EncounterStartTrigger:New(name, delay, countdown, throttle)
     ---@class EncounterStartTrigger
     local obj = setmetatable({}, self)
     self.__index = self
-    obj.name = name
-    obj.delay = delay
-    obj.countdown = countdown
-    obj.throttle = throttle
+    obj.name = name or "ENCOUNTER_START"
+    obj.delay = delay or 0
+    obj.countdown = countdown or 0
+    obj.throttle = throttle or 0
     obj.height = 20
     obj.conditions = {}
     return obj

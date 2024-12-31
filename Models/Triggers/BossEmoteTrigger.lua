@@ -7,18 +7,18 @@ function BossEmoteTrigger:New(name, emoteText, delay, countdown, throttle)
     ---@class BossEmoteTrigger
     local obj = setmetatable({}, self)
     self.__index = self
-    obj.name = name
-    obj.emoteText = emoteText
-    obj.delay = delay
-    obj.countdown = countdown
-    obj.throttle = throttle
+    obj.name = name or "RAID_BOSS_EMOTE"
+    obj.emoteText = emoteText or "change me"
+    obj.delay = delay or 0
+    obj.countdown = countdown or 0
+    obj.throttle = throttle or 0
     obj.conditions = {}
     obj.height = 30
     return obj
 end
 
 function BossEmoteTrigger:GetDisplayName()
-    return "Boss emotes \n\'" .. Utils:RemoveChatCodes(self.emoteText) .. "\'".. (self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+    return "Boss emotes \n\'" .. Utils:RemoveChatCodes(self.emoteText) .. "\'".. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
 end
 
 function BossEmoteTrigger:Serialize(isUntrigger)
