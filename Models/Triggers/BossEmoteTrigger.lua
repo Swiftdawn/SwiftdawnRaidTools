@@ -18,7 +18,7 @@ function BossEmoteTrigger:New(name, emoteText, delay, countdown, throttle)
 end
 
 function BossEmoteTrigger:GetDisplayName()
-    return "Boss emotes \n\'" .. Utils:RemoveChatCodes(self.emoteText) .. "\'".. (self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
+    return "Boss emotes \n\'" .. Utils:RemoveChatCodes(self.emoteText) .. "\'".. (self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
 end
 
 function BossEmoteTrigger:Serialize(isUntrigger)

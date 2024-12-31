@@ -18,7 +18,7 @@ function SpellAuraTrigger:New(name, spellID, delay, countdown, throttle)
 end
 
 function SpellAuraTrigger:GetDisplayName()
-    return "\'"..GetSpellInfo(self.spellID) .. "' is activated".. (self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
+    return "\'"..GetSpellInfo(self.spellID) .. "' is activated".. (self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
 end
 
 ---Serializes the SpellAuraTrigger object into a format suitable for storage or transmission.

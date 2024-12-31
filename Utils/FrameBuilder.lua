@@ -60,7 +60,7 @@ function FrameBuilder.CreatePlayerFrame(parentFrame, playerName, classFileName, 
 end
 
 ---@return table|BackdropTemplate|Frame
-function FrameBuilder.CreateTextFrame(parentFrame, text, width, height, font, fontSize, iconSize)
+function FrameBuilder.CreateTextFrame(parentFrame, text, width, height, font, fontSize)
     local frame = CreateFrame("Frame", parentFrame:GetName() .. "_" .. text:gsub(" ", "_"), parentFrame, "BackdropTemplate")
     frame:EnableMouse(true)
     frame:SetSize(width, height)
@@ -100,72 +100,60 @@ function FrameBuilder.UpdateTextFrame(frame)
     frame:SetBackdropColor(0, 0, 0, 0)
 end
 
----@return table|BackdropTemplate|Frame
-function FrameBuilder.CreateEditableTextFrame(parentFrame, text, width, height, font, fontSize, onChanged)
-    local frame = FrameBuilder.CreateTextFrame(parentFrame, text, width, height, font, fontSize)
-    frame.editBox = CreateFrame("EditBox", frame:GetName().."Edit", frame)
-    frame.editBox:SetSize(width - 10, height)
-    frame.editBox:SetPoint("LEFT", frame, "LEFT", 5, 0)
-    frame.editBox:SetFont(font, fontSize, "")
-    frame.editBox:Hide()
-    frame:SetScript("OnMouseDown", function()
-        frame.text:Hide()
-        frame.editBox:SetText(frame.text:GetText())
-        frame.editBox:Show()
-        frame.editBox:SetFocus()
-    end)
-    frame.editBox:SetScript("OnEscapePressed", function()
-        frame.editBox:Hide()
-        frame.text:Show()
-    end)
-    frame.editBox:SetScript("OnEnterPressed", function()
-        onChanged(frame.editBox:GetText())
-        frame.text:SetText(frame.editBox:GetText())
-        frame.editBox:Hide()
-        frame.text:Show()
-    end)
-    frame:SetScript("OnEnter", function ()
-        frame:SetBackdropColor(1, 1, 1, 0.4)
-        frame.hoverIcon:Show()
-    end)
-    frame:SetScript("OnLeave", function ()
-        frame:SetBackdropColor(0, 0, 0, 0)
-        frame.hoverIcon:Hide()
-    end)
-
-    frame.hoverIcon = frame:CreateTexture(nil, "OVERLAY")
-    frame.hoverIcon:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\edit.png")
-    frame.hoverIcon:SetSize(fontSize, fontSize)
-    frame.hoverIcon:SetPoint("RIGHT", frame, "RIGHT", -5, 0)
-    frame.hoverIcon:Hide()
-    return frame
-end
-
-function FrameBuilder.CreateTriggersFrame(parentFrame, title, font, fontSize)
-    local frame = CreateFrame("Frame", "SRT_EditTriggers_Available"..title, UIParent, "BackdropTemplate")
-    frame:SetWidth(280)
-    frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    frame.title:SetFont(font, fontSize, "")
-    frame.title:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
-    frame.title:SetText(title)
+function FrameBuilder.CreateTriggerFrame(parentFrame, trigger, type, width, height, font, fontSize, onChanges)
+    local frame = CreateFrame("Frame", "TriggerFrame", parentFrame, "BackdropTemplate")
+    if trigger.name == "SPELL_CAST" then
+        frame.triggerFrame = FrameBuilder.CreateSpellCastTriggerFrame(frame, trigger, type, width, height, font, fontSize, onChanges)
+    elseif trigger.name == "SPELL_AURA" then
+        frame.triggerFrame = FrameBuilder.CreateSpellCastTriggerFrame(frame, trigger, type, width, height, font, fontSize, onChanges)
+    elseif trigger.name == "SPELL_AURA_REMOVED" then
+        frame.triggerFrame = FrameBuilder.CreateSpellCastTriggerFrame(frame, trigger, type, width, height, font, fontSize, onChanges)
+    elseif trigger.name == "RAID_BOSS_EMOTE" then
+        frame.triggerFrame = FrameBuilder.CreateEmoteTriggerFrame(frame, trigger, type, width, height, font, fontSize, onChanges)
+    elseif trigger.name == "UNIT_HEALTH" then
+        frame.triggerFrame = FrameBuilder.CreateUnitHealthTriggerFrame(frame, trigger, type, width, height, font, fontSize, onChanges)
+    elseif trigger.name == "ENCOUNTER_START" then
+        frame.triggerFrame = FrameBuilder.CreateTimeTriggerFrame(frame, trigger, type, width, height, font, fontSize, onChanges)
+    elseif trigger.name == "FOJJI_NUMEN_TIMER" then
+        frame.triggerFrame = FrameBuilder.CreateNumenTimerTriggerFrame(frame, trigger, type, width, height, font, fontSize, onChanges)
+    end
+    frame.triggerFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+    frame.type = type
     frame.items = {}
-    frame.AddTrigger = function (triggerFrame)
-        table.insert(frame.items, triggerFrame)
+    frame.AddCondition = function (cid, condition, onConditionChanges)
+        local conditionFrame
+        if condition.name == "SPELL_CAST_COUNT" then
+            conditionFrame = frame.items[cid] or FrameBuilder.CreateCastCountConditionFrame(frame, condition, width - 10, height, font, fontSize, onConditionChanges)
+        elseif condition.name == "UNIT_HEALTH" then
+            conditionFrame = frame.items[cid] or FrameBuilder.CreateUnitHealthConditionFrame(frame, condition, width - 10, height, font, fontSize, onConditionChanges)
+        end
+        if #frame.items == 0 then
+            conditionFrame:SetPoint("TOPLEFT", frame.triggerFrame, "BOTTOMLEFT", 10, 0)
+        else
+            conditionFrame:SetPoint("TOPLEFT", frame.items[#frame.items], "BOTTOMLEFT", 0, 0)
+        end
+        table.insert(frame.items, conditionFrame)
         frame:Update()
     end
-    frame.Update = function ()
-
-        -- The triggers should have their conditions in the trigger object
-        -- This function can build and update the trigger frames based on the trigger object
-        -- The built trigger frames should be updated as they may change after dragging and dropping
-
-        local height = frame.title:GetHeight() + 5
-        local previousFrame = frame.title
+    frame.GetCurrentHeight = function ()
+        local h = frame.triggerFrame:GetHeight()
         for _, item in pairs(frame.items) do
-            item:SetPoint("TOPLEFT", previousFrame, "BOTTOMLEFT", 0, 0)
-            previousFrame = item
+            h = h + item:GetHeight()
         end
+        return h
     end
+    frame.Update = function ()
+        frame:SetHeight(frame.GetCurrentHeight())
+        frame:SetBackdrop({
+            bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+            tile = true,
+            tileSize = (frame.hiddenFrames and not frame.hiddenFrames:IsShown()) and frame.GetCurrentHeight() or frame:GetHeight(),
+        })
+        frame:SetBackdropColor(0, 0, 0, 0)
+    end
+    frame:SetWidth(width)
+    frame:SetHeight(frame.GetCurrentHeight())
+    return frame
 end
 
 local function AddHiddenCountdownEditbox(frame, font, fontSize, width, height)
@@ -207,10 +195,11 @@ local function AddHiddenThrottleEditbox(frame, font, fontSize, width, height)
     frame.hiddenFrames.throttleEditBox:SetAutoFocus(false)
 end
 
-function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
+function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, type, width, height, font, fontSize, onChanges)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+    frame.type = type
+    frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -224,7 +213,7 @@ function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, heigh
     frame.hiddenFrames.emoteEditBox:SetSize(width - 10, height)
     frame.hiddenFrames.emoteEditBox:SetPoint("TOPLEFT", frame.hiddenFrames.emoteTitle, "BOTTOMLEFT", 5, 0)
     frame.hiddenFrames.emoteEditBox:SetAutoFocus(false)
-    if isTrigger then
+    if type == "trigger" then
         AddHiddenDelayEditbox(frame, font, fontSize, width, height)
         frame.hiddenFrames.delayTitle:SetPoint("TOPLEFT", frame.hiddenFrames.emoteEditBox, "BOTTOMLEFT", -5, -2)
         AddHiddenThrottleEditbox(frame, font, fontSize, width, height)
@@ -236,31 +225,33 @@ function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, heigh
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     local function acceptChanges()
         frame.trigger.emoteText = frame.hiddenFrames.emoteEditBox:GetText()
-        if isTrigger then
+        if type == "trigger" then
             frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
             frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
             frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
         end
-        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
         frame.hiddenFrames.emoteEditBox:SetText(frame.trigger.emoteText or "")
-        if isTrigger then
+        if type == "trigger" then
             frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
             frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
             frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
-        frame:SetSize(width, isTrigger and 80 or 35) -- Adjust the frame size to fit the hidden frames
-        frame.hiddenFrames:SetSize(width, isTrigger and 80 or 35)
+        frame:SetSize(width, type == "trigger" and 80 or 35) -- Adjust the frame size to fit the hidden frames
+        frame.hiddenFrames:SetSize(width, type == "trigger" and 80 or 35)
         frame:SetBackdrop({
             bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
             tile = true,
@@ -273,10 +264,11 @@ function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, heigh
         })
         frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
         frame.hiddenFrames.emoteEditBox:SetFocus()
+        parentFrame.Update()
     end)
     frame.hiddenFrames.emoteEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.emoteEditBox:SetScript("OnEnterPressed", acceptChanges)
-    if isTrigger then
+    if type == "trigger" then
         frame.hiddenFrames.throttleEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.delayEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.countdownEditBox:SetScript("OnEscapePressed", cancelEditing)
@@ -288,10 +280,10 @@ function FrameBuilder.CreateEmoteTriggerFrame(parentFrame, trigger, width, heigh
     return frame
 end
 
-function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
+function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, type, width, height, font, fontSize, onChanges)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+    frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -305,7 +297,7 @@ function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, width, 
     frame.hiddenFrames.numenKeyEditBox:SetSize(width - 10, height)
     frame.hiddenFrames.numenKeyEditBox:SetPoint("TOPLEFT", frame.hiddenFrames.numenKeyTitle, "BOTTOMLEFT", 5, 0)
     frame.hiddenFrames.numenKeyEditBox:SetAutoFocus(false)
-    if isTrigger then
+    if type == "trigger" then
         AddHiddenDelayEditbox(frame, font, fontSize, width, height)
         frame.hiddenFrames.delayTitle:SetPoint("TOPLEFT", frame.hiddenFrames.numenKeyEditBox, "BOTTOMLEFT", -5, -2)
         AddHiddenThrottleEditbox(frame, font, fontSize, width, height)
@@ -317,31 +309,33 @@ function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, width, 
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     local function acceptChanges()
         frame.trigger.key = frame.hiddenFrames.numenKeyEditBox:GetText()
-        if isTrigger then
+        if type == "trigger" then
             frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
             frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
             frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
         end
-        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
         frame.hiddenFrames.numenKeyEditBox:SetText(frame.trigger.key or "")
-        if isTrigger then
+        if type == "trigger" then
             frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
             frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
             frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
-        frame:SetSize(width, isTrigger and 80 or 35) -- Adjust the frame size to fit the hidden frames
-        frame.hiddenFrames:SetSize(width, isTrigger and 80 or 35)
+        frame:SetSize(width, type == "trigger" and 80 or 35) -- Adjust the frame size to fit the hidden frames
+        frame.hiddenFrames:SetSize(width, type == "trigger" and 80 or 35)
         frame:SetBackdrop({
             bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
             tile = true,
@@ -354,10 +348,11 @@ function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, width, 
         })
         frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
         frame.hiddenFrames.numenKeyEditBox:SetFocus()
+        parentFrame.Update()
     end)
     frame.hiddenFrames.numenKeyEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.numenKeyEditBox:SetScript("OnEnterPressed", acceptChanges)
-    if isTrigger then
+    if type == "trigger" then
         frame.hiddenFrames.throttleEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.delayEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.countdownEditBox:SetScript("OnEscapePressed", cancelEditing)
@@ -369,16 +364,16 @@ function FrameBuilder.CreateNumenTimerTriggerFrame(parentFrame, trigger, width, 
     return frame
 end
 
-function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
+function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, type, width, height, font, fontSize, onChanges)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+    frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
     AddHiddenDelayEditbox(frame, font, fontSize, width, height)
     frame.hiddenFrames.delayTitle:SetPoint("TOPLEFT", frame.hiddenFrames, "TOPLEFT", 5, -5)
-    if isTrigger then
+    if type == "trigger" then
         AddHiddenThrottleEditbox(frame, font, fontSize, width, height)
         frame.hiddenFrames.throttleTitle:SetPoint("TOPLEFT", frame.hiddenFrames.delayTitle, "BOTTOMLEFT", 0, -5)
         AddHiddenCountdownEditbox(frame, font, fontSize, width, height)
@@ -388,29 +383,31 @@ function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, width, height
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     local function acceptChanges()
         frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
-        if isTrigger then
+        if type == "trigger" then
             frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
             frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
         end
-        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
         frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
-        if isTrigger then
+        if type == "trigger" then
             frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
             frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
-        frame:SetSize(width, isTrigger and 50 or 20) -- Adjust the frame size to fit the hidden frames
-        frame.hiddenFrames:SetSize(width, isTrigger and 50 or 20)
+        frame:SetSize(width, type == "trigger" and 50 or 20) -- Adjust the frame size to fit the hidden frames
+        frame.hiddenFrames:SetSize(width, type == "trigger" and 50 or 20)
         frame:SetBackdrop({
             bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
             tile = true,
@@ -423,10 +420,11 @@ function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, width, height
         })
         frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
         frame.hiddenFrames.delayEditBox:SetFocus()
+        parentFrame.Update()
     end)
     frame.hiddenFrames.delayEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.delayEditBox:SetScript("OnEnterPressed", acceptChanges)
-    if isTrigger then
+    if type == "trigger" then
         frame.hiddenFrames.throttleEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.countdownEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.throttleEditBox:SetScript("OnEnterPressed", acceptChanges)
@@ -436,10 +434,10 @@ function FrameBuilder.CreateTimeTriggerFrame(parentFrame, trigger, width, height
     return frame
 end
 
-function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
+function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, type, width, height, font, fontSize, onChanges)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+    frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -498,7 +496,7 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, 
     frame.hiddenFrames.valueEditBox:SetNumericFullRange(true)
     frame.hiddenFrames.valueEditBox:SetPoint("LEFT", frame.hiddenFrames.valueTitle, "RIGHT", 5, 0)
     frame.hiddenFrames.valueEditBox:SetAutoFocus(false)
-    if isTrigger then
+    if type == "trigger" then
         AddHiddenDelayEditbox(frame, font, fontSize, width, height)
         frame.hiddenFrames.delayTitle:SetPoint("TOPLEFT", frame.hiddenFrames.valueTitle, "BOTTOMLEFT", 0, -5)
         AddHiddenThrottleEditbox(frame, font, fontSize, width, height)
@@ -510,22 +508,24 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, 
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     local function acceptChanges()
         frame.trigger.unitID = frame.hiddenFrames.unitEditBox:GetText()
         frame.trigger.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue()
         frame.trigger.type = frame.hiddenFrames.typeSelector:GetSelectedValue()
         frame.trigger.value = tonumber(frame.hiddenFrames.valueEditBox:GetText())
-        if isTrigger then
+        if type == "trigger" then
             frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
             frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
             frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
         end
-        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
@@ -533,14 +533,14 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, 
         frame.hiddenFrames.operatorSelector:SetSelectedValue(frame.trigger.operator or "<")
         frame.hiddenFrames.typeSelector:SetSelectedValue(frame.trigger.type or "Percentage")
         frame.hiddenFrames.valueEditBox:SetText(tostring(frame.trigger.value) or "0")
-        if isTrigger then
+        if type == "trigger" then
             frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
             frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
             frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
-        frame:SetSize(width, isTrigger and 108 or 63) -- Adjust the frame size to fit the hidden frames
-        frame.hiddenFrames:SetSize(width, isTrigger and 108 or 63)
+        frame:SetSize(width, type == "trigger" and 108 or 63) -- Adjust the frame size to fit the hidden frames
+        frame.hiddenFrames:SetSize(width, type == "trigger" and 108 or 63)
         frame:SetBackdrop({
             bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
             tile = true,
@@ -553,6 +553,7 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, 
         })
         frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
         frame.hiddenFrames.unitEditBox:SetFocus()
+        parentFrame.Update()
     end)
     frame.hiddenFrames.unitEditBox:SetScript("OnEscapePressed", cancelEditing)
     -- frame.hiddenFrames.operatorEditBox:SetScript("OnEscapePressed", cancelEditing)
@@ -560,7 +561,7 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, 
     frame.hiddenFrames.unitEditBox:SetScript("OnEnterPressed", acceptChanges)
     -- frame.hiddenFrames.operatorEditBox:SetScript("OnEnterPressed", acceptChanges)
     frame.hiddenFrames.valueEditBox:SetScript("OnEnterPressed", acceptChanges)
-    if isTrigger then
+    if type == "trigger" then
         frame.hiddenFrames.throttleEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.delayEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.countdownEditBox:SetScript("OnEscapePressed", cancelEditing)
@@ -572,10 +573,10 @@ function FrameBuilder.CreateUnitHealthTriggerFrame(parentFrame, trigger, width, 
     return frame
 end
 
-function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, height, font, fontSize, onChanges, isTrigger)
+function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, type, width, height, font, fontSize, onChanges)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.trigger = trigger
-    frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+    frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
@@ -595,7 +596,7 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, h
     frame.hiddenFrames.spellName:SetPoint("TOPLEFT", frame.hiddenFrames.spellTitle, "BOTTOMLEFT", 0, -5)
     frame.hiddenFrames.spellName:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     frame.hiddenFrames.spellName:SetText("Spell Name: "..(GetSpellInfo(frame.trigger.spellID) or "Spell not found!"))
-    if isTrigger then
+    if type == "trigger" then
         AddHiddenDelayEditbox(frame, font, fontSize, width, height)
         frame.hiddenFrames.delayTitle:SetPoint("TOPLEFT", frame.hiddenFrames.spellName, "BOTTOMLEFT", 0, -5)
         AddHiddenThrottleEditbox(frame, font, fontSize, width, height)
@@ -607,31 +608,33 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, h
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     local function acceptChanges()
         frame.trigger.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText())
-        if isTrigger then
+        if type == "trigger" then
             frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText())
             frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText())
             frame.trigger.throttle = tonumber(frame.hiddenFrames.throttleEditBox:GetText())
         end
-        frame.text:SetText((isTrigger and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
+        frame.text:SetText((type == "trigger" and "|cFFFFD200WHEN:|r " or "|cFFFFD200UNLESS:|r ")..frame.trigger:GetDisplayName())
         onChanges(frame.trigger)
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
         frame.hiddenFrames.spellEditBox:SetText(tostring(frame.trigger.spellID) or "")
-        if isTrigger then
+        if type == "trigger" then
             frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
             frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
             frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
         end
         frame.hiddenFrames:Show()
-        frame:SetSize(width, isTrigger and 80 or 35) -- Adjust the frame size to fit the hidden frames
-        frame.hiddenFrames:SetSize(width, isTrigger and 80 or 35)
+        frame:SetSize(width, type == "trigger" and 80 or 35) -- Adjust the frame size to fit the hidden frames
+        frame.hiddenFrames:SetSize(width, type == "trigger" and 80 or 35)
         frame:SetBackdrop({
             bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
             tile = true,
@@ -644,13 +647,14 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, h
         })
         frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
         frame.hiddenFrames.spellEditBox:SetFocus()
+        parentFrame.Update()
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnUpdate", function (editBox)
         frame.hiddenFrames.spellName:SetText("|cFFFFD200Spell Name:|r "..(GetSpellInfo(editBox:GetText()) or "Spell not found!"))
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.spellEditBox:SetScript("OnEnterPressed", acceptChanges)
-    if isTrigger then
+    if type == "trigger" then
         frame.hiddenFrames.delayEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.throttleEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.countdownEditBox:SetScript("OnEscapePressed", cancelEditing)
@@ -662,13 +666,18 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, width, h
     return frame
 end
 
-function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, width, height, font, fontSize, onChanges)
+function FrameBuilder.CreateConditionFrame(parentFrame, condition, width, height, font, fontSize)
     local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
     frame.condition = condition
     frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
     frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     frame.hiddenFrames:SetAllPoints()
     frame.hiddenFrames:Hide()
+    return frame
+end
+
+function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, width, height, font, fontSize, onChanges)
+    local frame = FrameBuilder.CreateConditionFrame(parentFrame, condition, width, height, font, fontSize)
     frame.hiddenFrames.spellTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.hiddenFrames.spellTitle:SetFont(font, fontSize, "")
     frame.hiddenFrames.spellTitle:SetPoint("TOPLEFT", frame.hiddenFrames, "TOPLEFT", 5, -5)
@@ -721,6 +730,7 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     local function acceptChanges()
         frame.condition.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText())
@@ -731,6 +741,7 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
@@ -752,6 +763,7 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
         })
         frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
         frame.hiddenFrames.spellEditBox:SetFocus()
+        parentFrame.Update()
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnUpdate", function (editBox)
         frame.hiddenFrames.spellName:SetText("|cFFFFD200Spell Name:|r "..(GetSpellInfo(editBox:GetText()) or "Spell not found!"))
@@ -767,12 +779,7 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
 end
 
 function FrameBuilder.CreateUnitHealthConditionFrame(parentFrame, condition, width, height, font, fontSize, onChanges)
-    local frame = FrameBuilder.CreateTextFrame(parentFrame, "", width, height, font, fontSize)
-    frame.condition = condition
-    frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
-    frame.hiddenFrames = CreateFrame("Frame", nil, frame, "BackdropTemplate")
-    frame.hiddenFrames:SetAllPoints()
-    frame.hiddenFrames:Hide()
+    local frame = FrameBuilder.CreateConditionFrame(parentFrame, condition, width, height, font, fontSize)
     frame.hiddenFrames.unitIDTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.hiddenFrames.unitIDTitle:SetFont(font, fontSize, "")
     frame.hiddenFrames.unitIDTitle:SetPoint("TOPLEFT", frame.hiddenFrames, "TOPLEFT", 5, -5)
@@ -832,6 +839,7 @@ function FrameBuilder.CreateUnitHealthConditionFrame(parentFrame, condition, wid
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     local function acceptChanges()
         frame.condition.unitID = frame.hiddenFrames.unitIDEditBox:GetText()
@@ -843,6 +851,7 @@ function FrameBuilder.CreateUnitHealthConditionFrame(parentFrame, condition, wid
         frame.hiddenFrames:Hide()
         frame:Update()
         frame.text:Show()
+        parentFrame.Update()
     end
     frame:SetScript("OnMouseUp", function()
         frame.text:Hide()
@@ -865,12 +874,54 @@ function FrameBuilder.CreateUnitHealthConditionFrame(parentFrame, condition, wid
         })
         frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
         frame.hiddenFrames.unitIDEditBox:SetFocus()
+        parentFrame.Update()
     end)
     frame.hiddenFrames.unitIDEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.unitIDEditBox:SetScript("OnEnterPressed", acceptChanges)
     frame.hiddenFrames.valueEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.valueEditBox:SetScript("OnEnterPressed", acceptChanges)
     frame.Update()
+    return frame
+end
+
+---@return table|BackdropTemplate|Frame
+function FrameBuilder.CreateEditableTextFrame(parentFrame, text, width, height, font, fontSize, onChanged)
+    local frame = FrameBuilder.CreateTextFrame(parentFrame, text, width, height, font, fontSize)
+    frame.editBox = CreateFrame("EditBox", frame:GetName().."Edit", frame)
+    frame.editBox:SetSize(width - 10, height)
+    frame.editBox:SetPoint("LEFT", frame, "LEFT", 5, 0)
+    frame.editBox:SetFont(font, fontSize, "")
+    frame.editBox:Hide()
+    frame:SetScript("OnMouseDown", function()
+        frame.text:Hide()
+        frame.editBox:SetText(frame.text:GetText())
+        frame.editBox:Show()
+        frame.editBox:SetFocus()
+    end)
+    frame.editBox:SetScript("OnEscapePressed", function()
+        frame.editBox:Hide()
+        frame.text:Show()
+    end)
+    frame.editBox:SetScript("OnEnterPressed", function()
+        onChanged(frame.editBox:GetText())
+        frame.text:SetText(frame.editBox:GetText())
+        frame.editBox:Hide()
+        frame.text:Show()
+    end)
+    frame:SetScript("OnEnter", function ()
+        frame:SetBackdropColor(1, 1, 1, 0.4)
+        frame.hoverIcon:Show()
+    end)
+    frame:SetScript("OnLeave", function ()
+        frame:SetBackdropColor(0, 0, 0, 0)
+        frame.hoverIcon:Hide()
+    end)
+
+    frame.hoverIcon = frame:CreateTexture(nil, "OVERLAY")
+    frame.hoverIcon:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\edit.png")
+    frame.hoverIcon:SetSize(fontSize, fontSize)
+    frame.hoverIcon:SetPoint("RIGHT", frame, "RIGHT", -5, 0)
+    frame.hoverIcon:Hide()
     return frame
 end
 

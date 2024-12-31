@@ -18,7 +18,7 @@ function SpellAuraRemovedTrigger:New(name, spellID, delay, countdown, throttle)
 end
 
 function SpellAuraRemovedTrigger:GetDisplayName()
-    return "\'"..GetSpellInfo(self.spellID) .. "' is removed".. (self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
+    return "\'"..GetSpellInfo(self.spellID) .. "' is removed".. (self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
 end
 
 ---Serializes the SpellAuraRemovedTrigger object into a format suitable for storage or transmission.

@@ -18,7 +18,7 @@ function NumenTimerTrigger:New(name, key, delay, countdown, throttle)
 end
 
 function NumenTimerTrigger:GetDisplayName()
-    return "Numen timer \'" .. self.key .. "\' is at 5 seconds".. (self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
+    return "Numen timer \'" .. self.key .. "\' is at 5 seconds".. (self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
 end
 
 function NumenTimerTrigger:Serialize(isUntrigger)

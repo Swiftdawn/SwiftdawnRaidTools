@@ -1540,12 +1540,12 @@ function RosterBuilder:UpdateEditTriggers()
         end
     end
     self.triggers.bossAbility.triggers = {}
-    if self.triggers.bossAbility.conditions then
-        for _, frame in pairs(self.triggers.bossAbility.conditions) do
+    if self.triggers.bossAbility.untriggers then
+        for _, frame in pairs(self.triggers.bossAbility.untriggers) do
             frame:Hide()
         end
     end
-    self.triggers.bossAbility.conditions = {}
+    self.triggers.bossAbility.untriggers = {}
 
     self.selectedAbilityID = self.selectedAbilityID or 1
 
@@ -1569,101 +1569,79 @@ function RosterBuilder:UpdateEditTriggers()
                     new = newName
                 }})
             end)
-
-            self.triggers.bossAbility.triggersTitle = self.triggers.bossAbility.triggersTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            self.triggers.bossAbility.triggersFrame = self.triggers.bossAbility.triggersFrame or CreateFrame("Frame", self.triggers.bossAbility.scroll.content:GetName().."_Triggers", self.triggers.bossAbility.scroll.content)
+            self.triggers.bossAbility.triggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.scroll.content, "TOPLEFT", 10, 0)
+            self.triggers.bossAbility.triggersFrame:SetWidth(280)
+            self.triggers.bossAbility.triggersTitle = self.triggers.bossAbility.triggersTitle or self.triggers.bossAbility.triggersFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
             self.triggers.bossAbility.triggersTitle:SetFont(self:GetHeaderFontType(), 14)
             self.triggers.bossAbility.triggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
             self.triggers.bossAbility.triggersTitle:SetText("Triggers")
-            self.triggers.bossAbility.triggersTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.scroll.content, "TOPLEFT", 10, 0)
+            self.triggers.bossAbility.triggersTitle:SetPoint("TOPLEFT")
 
             local lastTrigger = nil
             local lastCondition = nil
             for ti, trigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers) do
                 local triggerID = string.format("%d_%d_trigger%d", self.selectedEncounterID, self.selectedAbilityID, ti)
                 local parsedTrigger = Utils:ParseTrigger(trigger)
-
                 if not parsedTrigger then
-                    print("Failed to parse trigger")
                     return
                 end
-                local triggerFrame
-                local updateTrigger = function (tr)
-                    local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions
-                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti] = tr:Serialize()
-                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions = conditions
-                    Roster.MarkUpdated(self.selectedRoster, { trigger = {
-                        encounter = self.selectedEncounterID,
-                        ability = self.selectedAbilityID,
-                        id = ti
-                    }})
-                end
-                if parsedTrigger.name == "SPELL_CAST" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
-                elseif parsedTrigger.name == "SPELL_AURA" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
-                elseif parsedTrigger.name == "SPELL_AURA_REMOVED" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
-                elseif parsedTrigger.name == "RAID_BOSS_EMOTE" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateEmoteTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
-                elseif parsedTrigger.name == "UNIT_HEALTH" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateUnitHealthTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
-                elseif parsedTrigger.name == "ENCOUNTER_START" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateTimeTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
-                elseif parsedTrigger.name == "FOJJI_NUMEN_TIMER" then
-                    triggerFrame = self.triggers.bossAbility.triggers[triggerID] or FrameBuilder.CreateNumenTimerTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateTrigger, true)
-                end
-                triggerFrame:Update()
-                if not lastTrigger then
-                    triggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersTitle, "BOTTOMLEFT", 0, -10)
-                else
-                    if not lastCondition then
-                        triggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, 0)
+                if self.triggers.bossAbility.triggers and not self.triggers.bossAbility.triggers[triggerID] then
+                    local triggerFrame = FrameBuilder.CreateTriggerFrame(self.triggers.bossAbility.triggersFrame, parsedTrigger, "trigger", 250, 18, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (tr)
+                        local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti] = tr:Serialize()
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions = conditions
+                        Roster.MarkUpdated(self.selectedRoster, { trigger = {
+                            encounter = self.selectedEncounterID,
+                            ability = self.selectedAbilityID,
+                            id = ti
+                        }})
+                    end)
+                    Log.debug("Created trigger", { trigger=trigger, parsedTrigger=parsedTrigger })
+                    if not lastTrigger then
+                        triggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersTitle, "BOTTOMLEFT", 0, -10)
                     else
-                        triggerFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, 0)
+                        triggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, 0)
                     end
-                end
-                triggerFrame:Show()
-                self.triggers.bossAbility.triggers[triggerID] = triggerFrame
-                lastTrigger = triggerFrame
-                
-                if trigger.conditions then
+                    triggerFrame:Show()
+                    self.triggers.bossAbility.triggers[triggerID] = triggerFrame
+                    lastTrigger = triggerFrame
+                    
                     lastCondition = nil
-                    for ci, condition in pairs(trigger.conditions) do
-                        local conditionID = string.format("%d_%d_trigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
-                        local parsedCondition = Utils:ParseCondition(condition)
-
-                        if not parsedCondition then
-                            print("Failed to parse condition", Utils:TableToString(condition))
-                            return
+                    if trigger.conditions then
+                        for ci, condition in pairs(trigger.conditions) do
+                            local conditionID = string.format("%d_%d_trigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
+                            local parsedCondition = Utils:ParseCondition(condition)
+                            if not parsedCondition then
+                                print("Failed to parse condition", Utils:TableToString(condition))
+                                return
+                            end
+                            local conditionFrame = triggerFrame.AddCondition(conditionID, parsedCondition, function (cnd)
+                                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions[ci] = cnd:Serialize()
+                                Roster.MarkUpdated(self.selectedRoster, { condition = {
+                                    encounter = self.selectedEncounterID,
+                                    ability = self.selectedAbilityID,
+                                    type = "trigger",
+                                    id = ti,
+                                    condition = ci
+                                }})
+                            end)
+                            Log.debug("Created condition", { condition=condition, parsedCondition=parsedCondition })
+                            lastCondition = conditionFrame
                         end
-                        local conditionFrame
-                        local updateCondition = function (cnd)
-                            self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions[ci] = cnd:Serialize()
-                            Roster.MarkUpdated(self.selectedRoster, { condition = {
-                                encounter = self.selectedEncounterID,
-                                ability = self.selectedAbilityID,
-                                type = "trigger",
-                                id = ti,
-                                condition = ci
-                            }})
-                        end
-                        if parsedCondition.name == "SPELL_CAST_COUNT" then
-                            conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateCastCountConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
-                        elseif parsedCondition.name == "UNIT_HEALTH" then
-                            conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateUnitHealthConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
-                        end
-                        if not lastCondition then
-                            conditionFrame:SetPoint("TOPLEFT", triggerFrame, "BOTTOMLEFT", 10, 0)
-                        else
-                            conditionFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", 0, 0)
-                        end
-                        conditionFrame:Show()
-                        self.triggers.bossAbility.conditions[conditionID] = conditionFrame
-                        lastCondition = conditionFrame
                     end
                 end
             end
 
+            local triggersFrameHeight = 20 -- Initial height for the title
+            for _, triggerFrame in pairs(self.triggers.bossAbility.triggers) do
+                triggersFrameHeight = triggersFrameHeight + triggerFrame.GetCurrentHeight()
+            end
+            self.triggers.bossAbility.triggersFrame:SetHeight(triggersFrameHeight)
+
+            self.triggers.bossAbility.untriggersFrame = self.triggers.bossAbility.untriggersFrame or CreateFrame("Frame", self.triggers.bossAbility.scroll.content:GetName().."_Untriggers", self.triggers.bossAbility.scroll.content)
+            self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersFrame, "BOTTOMLEFT", 0, -5)
+            self.triggers.bossAbility.untriggersFrame:SetWidth(280)
             self.triggers.bossAbility.untriggersTitle = self.triggers.bossAbility.untriggersTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
             self.triggers.bossAbility.untriggersTitle:SetFont(self:GetHeaderFontType(), 14)
             self.triggers.bossAbility.untriggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
@@ -1679,91 +1657,60 @@ function RosterBuilder:UpdateEditTriggers()
                 for ti, untrigger in pairs(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers) do
                     local untriggerID = string.format("%d_%d_untrigger%d", self.selectedEncounterID, self.selectedAbilityID, ti)
                     local parsedTrigger = Utils:ParseTrigger(untrigger)
-    
                     if not parsedTrigger then
-                        print("Failed to parse trigger")
+                        print("Failed to parse untrigger")
                         return
                     end
-                    
-                    local untriggerFrame
-                    local updateUntrigger = function (tr)
-                        local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions
-                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti] = tr:Serialize(true)
-                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions = conditions
-                        Roster.MarkUpdated(self.selectedRoster, { untrigger = {
-                            encounter = self.selectedEncounterID,
-                            ability = self.selectedAbilityID,
-                            id = ti
-                        }})
-                    end
-                    if parsedTrigger.name == "SPELL_CAST" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
-                    elseif parsedTrigger.name == "SPELL_AURA" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
-                    elseif parsedTrigger.name == "SPELL_AURA_REMOVED" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateSpellCastTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
-                    elseif parsedTrigger.name == "RAID_BOSS_EMOTE" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateEmoteTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
-                    elseif parsedTrigger.name == "UNIT_HEALTH" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateUnitHealthTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
-                    elseif parsedTrigger.name == "ENCOUNTER_START" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateTimeTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
-                    elseif parsedTrigger.name == "FOJJI_NUMEN_TIMER" then
-                        untriggerFrame = self.triggers.bossAbility.triggers[untriggerID] or FrameBuilder.CreateNumenTimerTriggerFrame(self.triggers.bossAbility.scroll.content, parsedTrigger, 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateUntrigger, false)
-                    end
-                    if not lastUntrigger then
-                        untriggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersTitle, "BOTTOMLEFT", 0, -10)
-                    else
-                        if not lastCondition then
-                            untriggerFrame:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, 0)
+                    if self.triggers.bossAbility.untriggers and not self.triggers.bossAbility.untriggers[untriggerID] then
+                        local untriggerFrame = FrameBuilder.CreateTriggerFrame(self.triggers.bossAbility.untriggersFrame, parsedTrigger, "untrigger", 250, 18, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (tr)
+                            local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions
+                            self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti] = tr:Serialize(true)
+                            self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions = conditions
+                            Roster.MarkUpdated(self.selectedRoster, { untrigger = {
+                                encounter = self.selectedEncounterID,
+                                ability = self.selectedAbilityID,
+                                id = ti
+                            }})
+                        end)
+                        if not lastUntrigger then
+                            untriggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersTitle, "BOTTOMLEFT", 0, -10)
                         else
-                            untriggerFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, 0)
+                            untriggerFrame:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, 0)
                         end
-                    end
-                    untriggerFrame:Show()
-                    self.triggers.bossAbility.triggers[untriggerID] = untriggerFrame
-                    lastUntrigger = untriggerFrame
+                        untriggerFrame:Show()
+                        self.triggers.bossAbility.untriggers[untriggerID] = untriggerFrame
+                        lastUntrigger = untriggerFrame
 
-                    lastCondition = nil
-                    if untrigger.conditions then
-                        for ci, condition in pairs(untrigger.conditions) do
-                            local conditionID = string.format("%d_%d_untrigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
-                            local parsedCondition = Utils:ParseCondition(condition)
-
-                            if not parsedCondition then
-                                print("Failed to parse condition", Utils:TableToString(condition))
-                                return
+                        lastCondition = nil
+                        if untrigger.conditions then
+                            for ci, condition in pairs(untrigger.conditions) do
+                                local conditionID = string.format("%d_%d_untrigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
+                                local parsedCondition = Utils:ParseCondition(condition)
+                                if not parsedCondition then
+                                    print("Failed to parse condition", Utils:TableToString(condition))
+                                    return
+                                end
+                                local conditionFrame = untriggerFrame.AddCondition(conditionID, parsedCondition, function (cnd)
+                                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions[ci] = cnd:Serialize()
+                                    Roster.MarkUpdated(self.selectedRoster, { condition = {
+                                        encounter = self.selectedEncounterID,
+                                        ability = self.selectedAbilityID,
+                                        type = "untrigger",
+                                        id = ti,
+                                        condition = ci
+                                    }})
+                                end)
+                                lastCondition = conditionFrame
                             end
-                            local conditionFrame
-                            local updateCondition = function (cnd)
-                                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions[ci] = cnd:Serialize()
-                                Roster.MarkUpdated(self.selectedRoster, { condition = {
-                                    encounter = self.selectedEncounterID,
-                                    ability = self.selectedAbilityID,
-                                    type = "untrigger",
-                                    id = ti,
-                                    condition = ci
-                                }})
-                            end
-                            if parsedCondition.name == "SPELL_CAST_COUNT" then
-                                conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateCastCountConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
-                            elseif parsedCondition.name == "UNIT_HEALTH" then
-                                conditionFrame = self.triggers.bossAbility.conditions[conditionID] or FrameBuilder.CreateUnitHealthConditionFrame(self.triggers.bossAbility.scroll.content, parsedCondition, 240, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, updateCondition)
-                            end
-                            conditionFrame.condition = conditionFrame.condition or parsedCondition
-                            conditionFrame.text:SetText("|cFFFFD200IF:|r "..conditionFrame.condition:GetDisplayName())
-                            conditionFrame:Update()
-                            if not lastCondition then
-                                conditionFrame:SetPoint("TOPLEFT", untriggerFrame, "BOTTOMLEFT", 10, 0)
-                            else
-                                conditionFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", 0, 0)
-                            end
-                            conditionFrame:Show()
-                            self.triggers.bossAbility.conditions[conditionID] = conditionFrame
-                            lastCondition = conditionFrame
                         end
                     end
                 end
+
+                local untriggersFrameHeight = 20 -- Initial height for the title
+                for _, triggerFrame in pairs(self.triggers.bossAbility.untriggers) do
+                    untriggersFrameHeight = untriggersFrameHeight + triggerFrame.GetCurrentHeight()
+                end
+                self.triggers.bossAbility.untriggersFrame:SetHeight(untriggersFrameHeight)
             end
 
             self.triggers.bossAbility.notificationTitle = self.triggers.bossAbility.notificationTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")

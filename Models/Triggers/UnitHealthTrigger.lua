@@ -22,9 +22,9 @@ end
 
 function UnitHealthTrigger:GetDisplayName()
     if self.type == "percentage" then
-        return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value).." percent"..(self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
+        return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value).." percent"..(self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
     elseif self.type == "absolute" then
-        return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value)..(self.delay and "\n|cFFFFD200Trigger after|r " .. tostring(self.delay) .. " seconds" or "")
+        return self:GetUnitName() .. "'s health is "..self.operator.." "..tostring(self.value)..(self.delay and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
     end
 end
 

@@ -374,24 +374,31 @@ function Utils:ParseTrigger(rawTrigger)
         Log.info("[ERROR] Trigger's type is missing", rawTrigger)
         return nil
     end
+    local trigger
     if rawTrigger.type == "SPELL_CAST" then
-        return SpellCastTrigger:Deserialize(rawTrigger)
+        trigger = SpellCastTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "SPELL_AURA" then
-        return SpellAuraTrigger:Deserialize(rawTrigger)
+        trigger = SpellAuraTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "SPELL_AURA_REMOVED" then
-        return SpellAuraRemovedTrigger:Deserialize(rawTrigger)
+        trigger = SpellAuraRemovedTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "RAID_BOSS_EMOTE" then
-        return BossEmoteTrigger:Deserialize(rawTrigger)
+        trigger = BossEmoteTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "UNIT_HEALTH" then
-        return UnitHealthTrigger:Deserialize(rawTrigger)
+        trigger = UnitHealthTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "ENCOUNTER_START" then
-        return EncounterStartTrigger:Deserialize(rawTrigger)
+        trigger = EncounterStartTrigger:Deserialize(rawTrigger)
     elseif rawTrigger.type == "FOJJI_NUMEN_TIMER" then
-        return NumenTimerTrigger:Deserialize(rawTrigger)
+        trigger = NumenTimerTrigger:Deserialize(rawTrigger)
     else
         Log.info("[ERROR] Trigger's type is not supported", rawTrigger)
         return nil
     end
+    if rawTrigger.conditions then
+        for i, rawCondition in ipairs(rawTrigger.conditions) do
+            trigger.conditions[i] = Utils:ParseCondition(rawCondition)
+        end
+    end
+    return trigger
 end
 
 ---@return CastCountCondition|UnitHealthCondition|nil
