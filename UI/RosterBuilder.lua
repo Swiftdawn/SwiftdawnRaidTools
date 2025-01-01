@@ -662,6 +662,46 @@ function RosterBuilder:InitializeEditTriggers()
     self.triggers.bossAbility.scroll:SetPoint("BOTTOMLEFT", 10, 38)
     self.triggers.bossAbility.scroll:SetPoint("BOTTOMRIGHT", 0, 38)
     self.triggers.bossAbility.scroll.content:SetWidth(280)
+
+    self.triggers.bossAbility.triggersFrame = CreateFrame("Frame", self.triggers.bossAbility.scroll.content:GetName().."_Triggers", self.triggers.bossAbility.scroll.content, "BackdropTemplate")
+    self.triggers.bossAbility.triggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.scroll.content, "TOPLEFT", 0, 0)
+    self.triggers.bossAbility.triggersFrame:SetWidth(280)
+    self.triggers.bossAbility.triggersFrame.Update = function ()
+        self:UpdateEditTriggers()
+    end
+    self.triggers.bossAbility.triggersFrame:SetScript("OnEnter", nil)
+    self.triggers.bossAbility.triggersFrame:SetScript("OnLeave", nil)
+    self.triggers.bossAbility.triggersFrame:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = self.triggers.bossAbility.triggersFrame:GetHeight(),
+    })
+    self.triggers.bossAbility.triggersFrame:SetBackdropColor(0, 0, 0, 0)
+    self.triggers.bossAbility.triggersTitle = self.triggers.bossAbility.triggersFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    self.triggers.bossAbility.triggersTitle:SetFont(self:GetHeaderFontType(), 14)
+    self.triggers.bossAbility.triggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.triggers.bossAbility.triggersTitle:SetText("Triggers")
+    self.triggers.bossAbility.triggersTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersFrame, "TOPLEFT", 10, -5)
+    self.triggers.bossAbility.untriggersFrame = CreateFrame("Frame", self.triggers.bossAbility.scroll.content:GetName().."_Untriggers", self.triggers.bossAbility.scroll.content, "BackdropTemplate")
+    self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersFrame, "BOTTOMLEFT", 0, -5)
+    self.triggers.bossAbility.untriggersFrame:SetWidth(280)
+    self.triggers.bossAbility.untriggersFrame.Update = function ()
+        self:UpdateEditTriggers()
+    end
+    self.triggers.bossAbility.untriggersFrame:SetScript("OnEnter", nil)
+    self.triggers.bossAbility.untriggersFrame:SetScript("OnLeave", nil)
+    self.triggers.bossAbility.untriggersFrame:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = self.triggers.bossAbility.untriggersFrame:GetHeight(),
+    })
+    self.triggers.bossAbility.untriggersFrame:SetBackdropColor(0, 0, 0, 0)
+    self.triggers.bossAbility.untriggersTitle = self.triggers.bossAbility.untriggersFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    self.triggers.bossAbility.untriggersTitle:SetFont(self:GetHeaderFontType(), 14)
+    self.triggers.bossAbility.untriggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    self.triggers.bossAbility.untriggersTitle:SetText("Untriggers")
+    self.triggers.bossAbility.untriggersTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersFrame, "TOPLEFT", 10, -5)
+    
     self.triggers.backButton = FrameBuilder.CreateButton(self.triggers.availableTypes.pane, 70, 25, "Back", SRTColor.Red, SRTColor.RedHighlight)
     self.triggers.backButton:SetPoint("BOTTOMLEFT", self.content, "BOTTOMLEFT", 0, 5)
     self.triggers.backButton:SetScript("OnMouseDown", function()
@@ -1455,7 +1495,7 @@ function RosterBuilder:UpdateEditTriggers()
         availableTrigger.creator = triggerType.creator
         lastTriggerType = availableTrigger
         self.triggers.availableTypes.triggersScroll.items[triggerType.name] = availableTrigger
-        triggersScrollHeight = triggersScrollHeight + 20
+        triggersScrollHeight = triggersScrollHeight + 25
         -- Set-up drag and drop
         availableTrigger:SetMovable(true)
         availableTrigger:EnableMouse(true)
@@ -1464,26 +1504,77 @@ function RosterBuilder:UpdateEditTriggers()
             availableTrigger:SetScript("OnDragStart", function(_)
                 self.triggers.availableTypes.triggersScroll.DisconnectItem(triggerType.name, availableTrigger, self.content)
                 availableTrigger:StartMoving()
+                availableTrigger:SetScript("OnUpdate", function ()
+                    if FrameBuilder.IsMouseOverFrame(self.triggers.bossAbility.triggersFrame) then
+                        self.triggers.bossAbility.triggersFrame:SetBackdrop({
+                            bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+                            tile = true,
+                            tileSize = self.triggers.bossAbility.triggersFrame:GetHeight(),
+                        })
+                        self.triggers.bossAbility.triggersFrame:SetBackdropColor(1, 1, 1, 0.4)
+                    else
+                        self.triggers.bossAbility.triggersFrame:SetBackdrop({
+                            bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+                            tile = true,
+                            tileSize = self.triggers.bossAbility.triggersFrame:GetHeight(),
+                        })
+                        self.triggers.bossAbility.triggersFrame:SetBackdropColor(0, 0, 0, 0)
+                    end
+                    if FrameBuilder.IsMouseOverFrame(self.triggers.bossAbility.untriggersFrame) then
+                        self.triggers.bossAbility.untriggersFrame:SetBackdrop({
+                            bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+                            tile = true,
+                            tileSize = self.triggers.bossAbility.untriggersFrame:GetHeight(),
+                        })
+                        self.triggers.bossAbility.untriggersFrame:SetBackdropColor(1, 1, 1, 0.4)
+                    else
+                        self.triggers.bossAbility.untriggersFrame:SetBackdrop({
+                            bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+                            tile = true,
+                            tileSize = self.triggers.bossAbility.untriggersFrame:GetHeight(),
+                        })
+                        self.triggers.bossAbility.untriggersFrame:SetBackdropColor(0, 0, 0, 0)
+                    end
+                end)
             end)
             availableTrigger:SetScript("OnDragStop", function(_)
+                availableTrigger:SetScript("OnUpdate", nil)
                 availableTrigger:SetParent(self.triggers.availableTypes.triggersScroll.content)
                 availableTrigger:StopMovingOrSizing()
                 self.triggers.availableTypes.triggersScroll.ConnectItem(triggerType.name, availableTrigger)
-                -- if self.triggers.bossAbility.scroll.IsMouseOverArea() then
-                --     self.selectedRoster.encounters = self.selectedRoster.encounters or {}
-                --     self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
-                --     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] or {}
-                --     self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers or {}
-                --     table.insert(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers, triggerType:creator())
-                --     Roster.MarkUpdated(self.selectedRoster, { trigger = {
-                --         encounter = self.selectedEncounterID,
-                --         ability = self.selectedAbilityID,
-                --         id = #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers
-                --     }})
-                --     self:UpdateEditTriggers()
-                -- else
-                --     self.triggers.availableTypes.triggersScroll.ConnectItem(triggerType.name, availableTrigger)
-                -- end
+                -- Is dropped over boss ability pane?
+                if self.triggers.bossAbility.scroll.IsMouseOverArea() then
+                    -- Find which area it was dropped on; triggers or untriggers
+                    if FrameBuilder.IsMouseOverFrame(self.triggers.bossAbility.triggersFrame) then
+                        self.selectedRoster.encounters = self.selectedRoster.encounters or {}
+                        self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] or {}
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers or {}
+                        local trigger = triggerType:creator()
+                        table.insert(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers, trigger:Serialize(false))
+                        Roster.MarkUpdated(self.selectedRoster, { trigger = {
+                            encounter = self.selectedEncounterID,
+                            ability = self.selectedAbilityID,
+                            id = #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers
+                        }})
+                        self:UpdateEditTriggers()
+                    elseif FrameBuilder.IsMouseOverFrame(self.triggers.bossAbility.untriggersFrame) then
+                        self.selectedRoster.encounters = self.selectedRoster.encounters or {}
+                        self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or SRTData.GetAssignmentDefaults()[self.selectedEncounterID]
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] or {}
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers or {}
+                        local untrigger = triggerType:creator()
+                        table.insert(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers, untrigger:Serialize(true))
+                        Roster.MarkUpdated(self.selectedRoster, { untrigger = {
+                            encounter = self.selectedEncounterID,
+                            ability = self.selectedAbilityID,
+                            id = #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers
+                        }})
+                        self:UpdateEditTriggers()
+                    end
+                else
+                    self.triggers.availableTypes.triggersScroll.ConnectItem(triggerType.name, availableTrigger)
+                end
             end)
         end
     end
@@ -1569,14 +1660,6 @@ function RosterBuilder:UpdateEditTriggers()
                     new = newName
                 }})
             end)
-            self.triggers.bossAbility.triggersFrame = self.triggers.bossAbility.triggersFrame or CreateFrame("Frame", self.triggers.bossAbility.scroll.content:GetName().."_Triggers", self.triggers.bossAbility.scroll.content)
-            self.triggers.bossAbility.triggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.scroll.content, "TOPLEFT", 10, 0)
-            self.triggers.bossAbility.triggersFrame:SetWidth(280)
-            self.triggers.bossAbility.triggersTitle = self.triggers.bossAbility.triggersTitle or self.triggers.bossAbility.triggersFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-            self.triggers.bossAbility.triggersTitle:SetFont(self:GetHeaderFontType(), 14)
-            self.triggers.bossAbility.triggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
-            self.triggers.bossAbility.triggersTitle:SetText("Triggers")
-            self.triggers.bossAbility.triggersTitle:SetPoint("TOPLEFT")
 
             local lastTrigger = nil
             local lastCondition = nil
@@ -1633,23 +1716,16 @@ function RosterBuilder:UpdateEditTriggers()
                 end
             end
 
-            local triggersFrameHeight = 20 -- Initial height for the title
+            local triggersFrameHeight = 30 -- Initial height for the title
             for _, triggerFrame in pairs(self.triggers.bossAbility.triggers) do
                 triggersFrameHeight = triggersFrameHeight + triggerFrame.GetCurrentHeight()
             end
             self.triggers.bossAbility.triggersFrame:SetHeight(triggersFrameHeight)
 
-            self.triggers.bossAbility.untriggersFrame = self.triggers.bossAbility.untriggersFrame or CreateFrame("Frame", self.triggers.bossAbility.scroll.content:GetName().."_Untriggers", self.triggers.bossAbility.scroll.content)
-            self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersFrame, "BOTTOMLEFT", 0, -5)
-            self.triggers.bossAbility.untriggersFrame:SetWidth(280)
-            self.triggers.bossAbility.untriggersTitle = self.triggers.bossAbility.untriggersTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-            self.triggers.bossAbility.untriggersTitle:SetFont(self:GetHeaderFontType(), 14)
-            self.triggers.bossAbility.untriggersTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
-            self.triggers.bossAbility.untriggersTitle:SetText("Untriggers")
             if lastCondition then
-                self.triggers.bossAbility.untriggersTitle:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, -10)
+                self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -20, -10)
             else
-                self.triggers.bossAbility.untriggersTitle:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, -10)
+                self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", -10, -10)
             end
 
             local lastUntrigger = nil
@@ -1706,7 +1782,7 @@ function RosterBuilder:UpdateEditTriggers()
                     end
                 end
 
-                local untriggersFrameHeight = 20 -- Initial height for the title
+                local untriggersFrameHeight = 30 -- Initial height for the title
                 for _, triggerFrame in pairs(self.triggers.bossAbility.untriggers) do
                     untriggersFrameHeight = untriggersFrameHeight + triggerFrame.GetCurrentHeight()
                 end
