@@ -1458,30 +1458,6 @@ function RosterBuilder:UpdateEditTriggers()
         return
     end
 
-    -- playerFrame:SetMovable(true)
-    -- playerFrame:EnableMouse(true)
-    -- playerFrame:RegisterForDrag("LeftButton")
-    -- playerFrame:SetScript("OnDragStart", function(_)
-    --     self.addRemove.roster.scroll.DisconnectItem(rosteredPlayer.name, playerFrame, self.content)
-    --     playerFrame:StartMoving()
-    -- end)
-    -- playerFrame:SetScript("OnDragStop", function(_)
-    --     -- Change parent back to scrollpane
-    --     playerFrame:SetParent(self.addRemove.roster.scroll.content)
-    --     -- Stop moving
-    --     playerFrame:StopMovingOrSizing()
-    --     -- Check if over other pane
-    --     if self.addRemove.available.scroll.IsMouseOverArea() then
-    --         -- Remove from roster
-    --         self.selectedRoster.players[rosteredPlayer.name] = nil
-    --         self.addRemove.roster.scroll.items[rosteredPlayer.name] = nil
-    --         playerFrame:Hide()
-    --     else
-    --         self.addRemove.roster.scroll.ConnectItem(rosteredPlayer.name, playerFrame)
-    --     end
-    --     self:UpdateAddOrRemovePlayers()
-    -- end)
-
     -- Populate triggers and conditions
     local lastTriggerType = nil
     local triggersScrollHeight = 0
