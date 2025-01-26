@@ -205,7 +205,11 @@ function SRTNotification:ToggleFrameLock(lock)
             local x, y = GetScaledTopLeftCoords(frame)
             SwiftdawnRaidTools.db.profile.notifications.anchorX = x
             SwiftdawnRaidTools.db.profile.notifications.anchorY = y
-            self.container.frameLockPositionText:SetText(string.format("%.1f, %.1f", x, y))
+            if x and y then
+                self.container.frameLockPositionText:SetText(string.format("%.1f, %.1f", x, y))
+            else
+                self.container.frameLockPositionText:SetText("X, Y")
+            end
         end)
     end
 end
