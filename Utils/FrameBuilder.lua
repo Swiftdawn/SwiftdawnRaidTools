@@ -159,7 +159,7 @@ function FrameBuilder.CreateTriggerFrame(parentFrame, trigger, type, width, heig
         frame:SetBackdropColor(0, 0, 0, 0)
     end
     frame:SetWidth(width)
-    frame:SetHeight(frame.GetCurrentHeight())
+    frame.Update()
     return frame
 end
 
