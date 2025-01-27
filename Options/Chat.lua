@@ -32,7 +32,7 @@ function SwiftdawnRaidTools:ChatHandleCommand(input)
             end
         elseif trimmed == "debug" then
             SRT_SetDebugMode(not SRT_IsDebugging())
-            Log.info("Debug logging: " .. SRT_IsDebugging() and "On" or "Off")
+            Log.info("Debug logging: " .. (SRT_IsDebugging() and "On" or "Off"))
         elseif trimmed == "teststart" then
             self:InternalTestStart()
         elseif trimmed == "testend" then
