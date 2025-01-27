@@ -88,81 +88,81 @@ function AssignmentsController:StartEncounter(encounterID, encounterName)
 
     -- Populate caches
     for _, part in ipairs(AssignmentsController:GetActiveEncounter()) do
-        if part.type == "RAID_ASSIGNMENTS" then
-            local triggerClones = Utils:DeepClone(part.triggers)
 
-            for _, trigger in ipairs(triggerClones) do
-                trigger.triggered = false
-                trigger.uuid = part.uuid
+        local triggerClones = Utils:DeepClone(part.triggers)
 
-                if trigger.type == "ENCOUNTER_START" then
-                    AssignmentsController:Trigger(trigger, { encounterName = encounterName })
-                elseif trigger.type == "UNIT_HEALTH" then
-                    if not AssignmentsController.unitHealthTriggersCache[trigger.unit] then
-                        AssignmentsController.unitHealthTriggersCache[trigger.unit] = {}
-                    end
-                    table.insert(AssignmentsController.unitHealthTriggersCache[trigger.unit], trigger)
-                elseif trigger.type == "SPELL_CAST" then
-                    if not AssignmentsController.spellCastTriggersCache[trigger.spell_id] then
-                        AssignmentsController.spellCastTriggersCache[trigger.spell_id] = {}
-                    end
-                    table.insert(AssignmentsController.spellCastTriggersCache[trigger.spell_id], trigger)
-                elseif trigger.type == "SPELL_AURA" then
-                    if not AssignmentsController.spellAuraTriggersCache[trigger.spell_id] then
-                        AssignmentsController.spellAuraTriggersCache[trigger.spell_id] = {}
-                    end
-                    table.insert(AssignmentsController.spellAuraTriggersCache[trigger.spell_id], trigger)
-                elseif trigger.type == "SPELL_AURA_REMOVED" then
-                    if not AssignmentsController.spellAuraRemovedTriggersCache[trigger.spell_id] then
-                        AssignmentsController.spellAuraRemovedTriggersCache[trigger.spell_id] = {}
-                    end
-                    table.insert(AssignmentsController.spellAuraRemovedTriggersCache[trigger.spell_id], trigger)
-                elseif trigger.type == "RAID_BOSS_EMOTE" then
-                    if not AssignmentsController.raidBossEmoteTriggersCache[trigger.text] then
-                        AssignmentsController.raidBossEmoteTriggersCache[trigger.text] = {}
-                    end
-                    table.insert(AssignmentsController.raidBossEmoteTriggersCache[trigger.text], trigger)
-                elseif trigger.type == "FOJJI_NUMEN_TIMER" then
-                    if not AssignmentsController.fojjiNumenTimersTriggersCache[trigger.key] then
-                        AssignmentsController.fojjiNumenTimersTriggersCache[trigger.key] = {}
-                    end
-                    table.insert(AssignmentsController.fojjiNumenTimersTriggersCache[trigger.key], trigger)
+        for _, trigger in ipairs(triggerClones) do
+            trigger.triggered = false
+            trigger.uuid = part.uuid
+
+            if trigger.type == "ENCOUNTER_START" then
+                trigger.triggered = true
+                AssignmentsController:Trigger(trigger, { encounterName = encounterName })
+            elseif trigger.type == "UNIT_HEALTH" then
+                if not AssignmentsController.unitHealthTriggersCache[trigger.unit] then
+                    AssignmentsController.unitHealthTriggersCache[trigger.unit] = {}
                 end
+                table.insert(AssignmentsController.unitHealthTriggersCache[trigger.unit], trigger)
+            elseif trigger.type == "SPELL_CAST" then
+                if not AssignmentsController.spellCastTriggersCache[trigger.spell_id] then
+                    AssignmentsController.spellCastTriggersCache[trigger.spell_id] = {}
+                end
+                table.insert(AssignmentsController.spellCastTriggersCache[trigger.spell_id], trigger)
+            elseif trigger.type == "SPELL_AURA" then
+                if not AssignmentsController.spellAuraTriggersCache[trigger.spell_id] then
+                    AssignmentsController.spellAuraTriggersCache[trigger.spell_id] = {}
+                end
+                table.insert(AssignmentsController.spellAuraTriggersCache[trigger.spell_id], trigger)
+            elseif trigger.type == "SPELL_AURA_REMOVED" then
+                if not AssignmentsController.spellAuraRemovedTriggersCache[trigger.spell_id] then
+                    AssignmentsController.spellAuraRemovedTriggersCache[trigger.spell_id] = {}
+                end
+                table.insert(AssignmentsController.spellAuraRemovedTriggersCache[trigger.spell_id], trigger)
+            elseif trigger.type == "RAID_BOSS_EMOTE" then
+                if not AssignmentsController.raidBossEmoteTriggersCache[trigger.text] then
+                    AssignmentsController.raidBossEmoteTriggersCache[trigger.text] = {}
+                end
+                table.insert(AssignmentsController.raidBossEmoteTriggersCache[trigger.text], trigger)
+            elseif trigger.type == "FOJJI_NUMEN_TIMER" then
+                if not AssignmentsController.fojjiNumenTimersTriggersCache[trigger.key] then
+                    AssignmentsController.fojjiNumenTimersTriggersCache[trigger.key] = {}
+                end
+                table.insert(AssignmentsController.fojjiNumenTimersTriggersCache[trigger.key], trigger)
             end
+        end
 
-            if part.untriggers then
-                local untriggerClones = Utils:DeepClone(part.untriggers)
+        if part.untriggers then
+            local untriggerClones = Utils:DeepClone(part.untriggers)
 
-                for _, untrigger in ipairs(untriggerClones) do
-                    untrigger.triggered = false
-                    untrigger.uuid = part.uuid
+            for _, untrigger in ipairs(untriggerClones) do
+                untrigger.triggered = false
+                untrigger.uuid = part.uuid
 
-                    if untrigger.type == "UNIT_HEALTH" then
-                        if not AssignmentsController.unitHealthUntriggersCache[untrigger.unit] then
-                            AssignmentsController.unitHealthUntriggersCache[untrigger.unit] = {}
-                        end
-                        table.insert(AssignmentsController.unitHealthUntriggersCache[untrigger.unit], untrigger)
-                    elseif untrigger.type == "SPELL_CAST" then
-                        if not AssignmentsController.spellCastUntriggersCache[untrigger.spell_id] then
-                            AssignmentsController.spellCastUntriggersCache[untrigger.spell_id] = {}
-                        end
-                        table.insert(AssignmentsController.spellCastUntriggersCache[untrigger.spell_id], untrigger)
-                    elseif untrigger.type == "SPELL_AURA" then
-                        if not AssignmentsController.spellAuraUntriggersCache[untrigger.spell_id] then
-                            AssignmentsController.spellAuraUntriggersCache[untrigger.spell_id] = {}
-                        end
-                        table.insert(AssignmentsController.spellAuraUntriggersCache[untrigger.spell_id], untrigger)
-                    elseif untrigger.type == "SPELL_AURA_REMOVED" then
-                        if not AssignmentsController.spellAuraRemovedUntriggersCache[untrigger.spell_id] then
-                            AssignmentsController.spellAuraRemovedUntriggersCache[untrigger.spell_id] = {}
-                        end
-                        table.insert(AssignmentsController.spellAuraRemovedUntriggersCache[untrigger.spell_id], untrigger)
-                    elseif untrigger.type == "RAID_BOSS_EMOTE" then
-                        if not AssignmentsController.raidBossEmoteUntriggersCache[untrigger.text] then
-                            AssignmentsController.raidBossEmoteUntriggersCache[untrigger.text] = {}
-                        end
-                        table.insert(AssignmentsController.raidBossEmoteUntriggersCache[untrigger.text], untrigger)
+                if untrigger.type == "UNIT_HEALTH" then
+                    if not AssignmentsController.unitHealthUntriggersCache[untrigger.unit] then
+                        AssignmentsController.unitHealthUntriggersCache[untrigger.unit] = {}
                     end
+                    table.insert(AssignmentsController.unitHealthUntriggersCache[untrigger.unit], untrigger)
+                elseif untrigger.type == "SPELL_CAST" then
+                    if not AssignmentsController.spellCastUntriggersCache[untrigger.spell_id] then
+                        AssignmentsController.spellCastUntriggersCache[untrigger.spell_id] = {}
+                    end
+                    table.insert(AssignmentsController.spellCastUntriggersCache[untrigger.spell_id], untrigger)
+                elseif untrigger.type == "SPELL_AURA" then
+                    if not AssignmentsController.spellAuraUntriggersCache[untrigger.spell_id] then
+                        AssignmentsController.spellAuraUntriggersCache[untrigger.spell_id] = {}
+                    end
+                    table.insert(AssignmentsController.spellAuraUntriggersCache[untrigger.spell_id], untrigger)
+                elseif untrigger.type == "SPELL_AURA_REMOVED" then
+                    if not AssignmentsController.spellAuraRemovedUntriggersCache[untrigger.spell_id] then
+                        AssignmentsController.spellAuraRemovedUntriggersCache[untrigger.spell_id] = {}
+                    end
+                    table.insert(AssignmentsController.spellAuraRemovedUntriggersCache[untrigger.spell_id], untrigger)
+                elseif untrigger.type == "RAID_BOSS_EMOTE" then
+                    if not AssignmentsController.raidBossEmoteUntriggersCache[untrigger.text] then
+                        AssignmentsController.raidBossEmoteUntriggersCache[untrigger.text] = {}
+                    end
+                    table.insert(AssignmentsController.raidBossEmoteUntriggersCache[untrigger.text], untrigger)
                 end
             end
         end
@@ -226,35 +226,33 @@ function AssignmentsController:UpdateGroups()
     local groupsUpdated = false
 
     for _, part in ipairs(AssignmentsController:GetActiveEncounter()) do
-        if part.type == "RAID_ASSIGNMENTS" then
-            -- Prevent active group from being updated if all spells in the current active group is still ready
-            local allActiveGroupsReady = true
+        -- Prevent active group from being updated if all spells in the current active group is still ready
+        local allActiveGroupsReady = true
 
-            local activeGroups = Groups.GetActive(part.uuid)
+        local activeGroups = Groups.GetActive(part.uuid)
 
-            if not activeGroups or #activeGroups == 0 then
-                allActiveGroupsReady = false
-            else
-                for _, groupIndex in ipairs(activeGroups) do
-                    local group = part.assignments[groupIndex]
+        if not activeGroups or #activeGroups == 0 then
+            allActiveGroupsReady = false
+        else
+            for _, groupIndex in ipairs(activeGroups) do
+                local group = part.assignments[groupIndex]
 
-                    for _, assignment in ipairs(group) do
-                        if not SpellCache.IsSpellReady(assignment.player, assignment.spell_id) then
-                            allActiveGroupsReady = false
-                        end
+                for _, assignment in ipairs(group) do
+                    if not SpellCache.IsSpellReady(assignment.player, assignment.spell_id) then
+                        allActiveGroupsReady = false
                     end
                 end
             end
+        end
 
-            if not allActiveGroupsReady then
-                local selectedGroups = AssignmentsController:SelectGroup(part.assignments)
+        if not allActiveGroupsReady then
+            local selectedGroups = AssignmentsController:SelectGroup(part.assignments)
 
-                if not AssignmentsController:IsGroupsEqual(activeGroups, selectedGroups) then
-                    Log.debug("Updated groups for", part.uuid, Utils:StringJoin(selectedGroups))
+            if not AssignmentsController:IsGroupsEqual(activeGroups, selectedGroups) then
+                Log.debug("Updated groups for", part.uuid, Utils:StringJoin(selectedGroups))
 
-                    groupsUpdated = true
-                    Groups.SetActive(part.uuid, selectedGroups)
-                end
+                groupsUpdated = true
+                Groups.SetActive(part.uuid, selectedGroups)
             end
         end
     end
@@ -274,11 +272,13 @@ function AssignmentsController:SelectBestMatchIndex(assignments)
         local ready = true
         for _, assignment in ipairs(group) do
             if not SpellCache.IsSpellActive(assignment.player, assignment.spell_id, GetTime() + 5) and not SpellCache.IsSpellReady(assignment.player, assignment.spell_id) then
+                print("Found an assignment that is not ready", assignment.player, assignment.spell_id)
                 ready = false
                 break
             end
         end
         if ready then
+            print("Found a group where all assignments are ready", i)
             return i
         end
     end

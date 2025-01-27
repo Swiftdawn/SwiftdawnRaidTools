@@ -873,7 +873,6 @@ local testAssignments = {
                     } -- [1]
                 }, -- [1]
             },
-            ["type"] = "RAID_ASSIGNMENTS",
             ["version"] = 1,
             ["encounter"] = 42001,
             ["triggers"] = {
@@ -898,7 +897,6 @@ local testAssignments = {
                     } -- [1]
                 }, -- [1]
             },
-            ["type"] = "RAID_ASSIGNMENTS",
             ["version"] = 1,
             ["encounter"] = 42001,
             ["triggers"] = {
@@ -922,7 +920,6 @@ local testAssignments = {
                     }, -- [1]
                 }, -- [1]
             },
-            ["type"] = "RAID_ASSIGNMENTS",
             ["version"] = 1,
             ["untriggers"] = {
                 {
@@ -971,7 +968,6 @@ local testAssignments = {
                     }, -- [2]
                 }, -- [2]
             },
-            ["type"] = "RAID_ASSIGNMENTS",
             ["version"] = 1,
             ["encounter"] = 1023,
             ["triggers"] = {
@@ -1012,7 +1008,6 @@ local testAssignments = {
         --            }, -- [2]
         --        }, -- [2]
         --    },
-        --    ["type"] = "RAID_ASSIGNMENTS",
         --    ["version"] = 1,
         --    ["encounter"] = 1023,
         --    ["triggers"] = {
@@ -1050,7 +1045,6 @@ local testAssignments = {
         --            }, -- [1]
         --        }, -- [2]
         --    },
-        --    ["type"] = "RAID_ASSIGNMENTS",
         --    ["version"] = 1,
         --    ["encounter"] = 42001,
         --    ["triggers"] = {
@@ -1124,6 +1118,8 @@ function SRTData.Initialize()
         LastStand = SRTSpell:New(12975, "Last Stand", 60 * 3, 0),
         EnragedRegeneration = SRTSpell:New(55694, "Enraged Regeneration", 60 * 3, 10),
         RallyingCry = SRTSpell:New(97462, "Rallying Cry", 60 * 3, 10),
+        -- Rogue
+        Vanish = SRTSpell:New(1856, "Vanish", 60 * 3, 0),
     }
     SRT_Global().srt_data.classes = {
         DeathKnight = Class:New("Death Knight", "DEATHKNIGHT", {
@@ -1157,7 +1153,9 @@ function SRTData.Initialize()
             SRT_Global().srt_data.spells.PainSuppression,
             SRT_Global().srt_data.spells.PowerWordBarrier,
         }),
-        Rogue = Class:New("Rogue", "ROGUE", {}),
+        Rogue = Class:New("Rogue", "ROGUE", {
+            SRT_Global().srt_data.spells.Vanish,
+        }),
         Shaman = Class:New("Shaman", "SHAMAN", {
             SRT_Global().srt_data.spells.ManaTideTotem,
             SRT_Global().srt_data.spells.SpiritLinkTotem,

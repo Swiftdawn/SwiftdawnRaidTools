@@ -52,10 +52,6 @@ local function validateTypeAndVersion(import)
         return false, "Import is missing a type field."
     end
 
-    if import.type ~= "RAID_ASSIGNMENTS" then
-        return false, "Import has an unknown type: " .. stringSafe(import.type) .. "."
-    end
-
     if not import.version then
         return false, "Import is missing a version field."
     end
@@ -79,87 +75,85 @@ local function validateEncounter(import)
 end
 
 local function validateRaidAssignments(import)
-    if import.type == "RAID_ASSIGNMENTS" then
-        if not import.assignments then
-            return false, "Import with type RAID_ASSIGNMENTS is missing a assignments field."
+    if not import.assignments then
+        return false, "Import is missing a assignments field."
+    end
+
+    if type(import.assignments) ~= "table" then
+        return false, "Import has an invalid assignments value: " .. stringSafe(import.assignments) .. "."
+    end
+
+    for _, group in ipairs(import.assignments) do
+        if type(group) ~= "table" then
+            return false, "Import has an invalid assignments value: " .. stringSafe(group) .. "."
+        end
+    end
+
+    if not import.triggers then
+        return false, "Import is missing a triggers field."
+    end
+
+    if type(import.triggers) ~= "table" or not Utils:IsArray(import.triggers) then
+        return false, "Import has an invalid triggers value: " .. stringSafe(import.triggers) .. "."
+    end
+
+    if import.untriggers and (type(import.untriggers) ~= "table" or not Utils:IsArray(import.untriggers)) then
+        return false, "Import has an invalid untriggers value: " .. stringSafe(import.untriggers) .. "."
+    end
+
+    if not import.metadata then
+        return false, "Import is missing a metadata field."
+    end
+
+    if not import.metadata.name then
+        return false, "Import metadata requires a name field."
+    end
+
+    if import.metadata.spell_id and (type(import.metadata.spell_id) ~= "number" or import.metadata.spell_id ~= math.floor(import.metadata.spell_id)) then
+        return false, "Import has an invalid spell_id value: " .. stringSafe(import.spell_id) .. "."
+    end
+
+    if not import.assignments then
+        return false, "Import is missing an assignments field."
+    end
+
+    if type(import.assignments) ~= "table" or not Utils:IsArray(import.assignments) then
+        return false, "Import has an invalid assignments value: " .. stringSafe(import.assignments) .. "."
+    end
+
+    if #import.assignments == 0 then
+        return false, "Import assignments is empty."
+    end
+    
+    for _, group in pairs(import.assignments) do
+        if type(group) ~= "table" or not Utils:IsArray(group) then
+            return false, "Import has an invalid assignments value: " .. stringSafe(group) .. "."
         end
 
-        if type(import.assignments) ~= "table" then
-            return false, "Import has an invalid assignments value: " .. stringSafe(import.assignments) .. "."
+        if #group > 2 then
+            return false, "Import has invalid assignments: " .. stringSafe(group) .. ". The group size is more than 2."
         end
 
-        for _, group in ipairs(import.assignments) do
-            if type(group) ~= "table" then
-                return false, "Import has an invalid assignments value: " .. stringSafe(group) .. "."
+        for _, assignment in pairs(group) do
+            if type(assignment) ~= "table" then
+                return false, "Import has an invalid assignments value: " .. stringSafe(assignment) .. "."
             end
-        end
 
-        if not import.triggers then
-            return false, "Import with type RAID_ASSIGNMENTS is missing a triggers field."
-        end
-
-        if type(import.triggers) ~= "table" or not Utils:IsArray(import.triggers) then
-            return false, "Import has an invalid triggers value: " .. stringSafe(import.triggers) .. "."
-        end
-
-        if import.untriggers and (type(import.untriggers) ~= "table" or not Utils:IsArray(import.untriggers)) then
-            return false, "Import has an invalid untriggers value: " .. stringSafe(import.untriggers) .. "."
-        end
-
-        if not import.metadata then
-            return false, "Import with type RAID_ASSIGNMENTS is missing a metadata field."
-        end
-
-        if not import.metadata.name then
-            return false, "Import metadata requires a name field."
-        end
-
-        if import.metadata.spell_id and (type(import.metadata.spell_id) ~= "number" or import.metadata.spell_id ~= math.floor(import.metadata.spell_id)) then
-            return false, "Import has an invalid spell_id value: " .. stringSafe(import.spell_id) .. "."
-        end
-
-        if not import.assignments then
-            return false, "Import with type RAID_ASSIGNMENTS is missing an assignments field."
-        end
-
-        if type(import.assignments) ~= "table" or not Utils:IsArray(import.assignments) then
-            return false, "Import has an invalid assignments value: " .. stringSafe(import.assignments) .. "."
-        end
-
-        if #import.assignments == 0 then
-            return false, "Import assignments is empty."
-        end
-        
-        for _, group in pairs(import.assignments) do
-            if type(group) ~= "table" or not Utils:IsArray(group) then
-                return false, "Import has an invalid assignments value: " .. stringSafe(group) .. "."
+            if not assignment.type then
+                return false, "Import has a invalid assignments field. Missing type: " .. stringSafe(assignment)
             end
 
-            if #group > 2 then
-                return false, "Import has invalid assignments: " .. stringSafe(group) .. ". The group size is more than 2."
+            if not assignment.player then
+                return false, "Import has a invalid assignments field. Missing player: " .. stringSafe(assignment)
             end
-
-            for _, assignment in pairs(group) do
-                if type(assignment) ~= "table" then
-                    return false, "Import has an invalid assignments value: " .. stringSafe(assignment) .. "."
-                end
-
-                if not assignment.type then
-                    return false, "Import has a invalid assignments field. Missing type: " .. stringSafe(assignment)
-                end
-
-                if not assignment.player then
-                    return false, "Import has a invalid assignments field. Missing player: " .. stringSafe(assignment)
-                end
-                if not assignment.spell_id then
-                    return false, "Import has a invalid assignments field. Missing spell_id: " .. stringSafe(assignment)
-                end
-                if type(assignment.spell_id) ~= "number" or assignment.spell_id ~= math.floor(assignment.spell_id) then
-                    return false, "Import has an unknown spell_id value: " .. stringSafe(assignment.spell_id) .. "."
-                end
-                if not SRTData.GetSpellByID(assignment.spell_id) then
-                    return false, "Import has a spell_id that's not supported: " .. stringSafe(assignment.spell_id) .. "."
-                end
+            if not assignment.spell_id then
+                return false, "Import has a invalid assignments field. Missing spell_id: " .. stringSafe(assignment)
+            end
+            if type(assignment.spell_id) ~= "number" or assignment.spell_id ~= math.floor(assignment.spell_id) then
+                return false, "Import has an unknown spell_id value: " .. stringSafe(assignment.spell_id) .. "."
+            end
+            if not SRTData.GetSpellByID(assignment.spell_id) then
+                return false, "Import has a spell_id that's not supported: " .. stringSafe(assignment.spell_id) .. "."
             end
         end
     end

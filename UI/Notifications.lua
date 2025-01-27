@@ -385,7 +385,7 @@ function SRTNotification:ShowRaidAssignment(uuid, context, delay, countdown)
     if encounter then            
         local groupIndex = 1
         for _, part in pairs(encounter) do
-            if part.type == "RAID_ASSIGNMENTS" and part.uuid == uuid then
+            if part.uuid == uuid then
                 local activeGroups = Groups.GetActive(uuid)
 
                 if not activeGroups or #activeGroups == 0 then
