@@ -8,8 +8,6 @@ function BossInfo.Initialize()
         return
     end
 
-    DevTool:AddData()
-
     local currTier = EJ_GetCurrentTier()
     local numTiers = EJ_GetNumTiers()
     for tierIndex = 1, numTiers do
