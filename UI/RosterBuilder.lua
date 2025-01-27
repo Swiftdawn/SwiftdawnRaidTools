@@ -1387,6 +1387,9 @@ function RosterBuilder:UpdateCreateAssignments()
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
                         }})
+                        if not self.selectedRoster.encounters[encounterID][abilityIndex].uuid then
+                            self.selectedRoster.encounters[encounterID][abilityIndex].uuid = Utils:GenerateUUID()
+                        end
                         Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][1] })
                     elseif attach == "addOrBelow" then
                         local numberOfAssignments = #self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex]
@@ -1396,6 +1399,9 @@ function RosterBuilder:UpdateCreateAssignments()
                                 ["type"] = "SPELL",
                                 ["player"] = self.pickedPlayer.name,
                             })
+                            if not self.selectedRoster.encounters[encounterID][abilityIndex].uuid then
+                                self.selectedRoster.encounters[encounterID][abilityIndex].uuid = Utils:GenerateUUID()
+                            end
                             Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex][2] })
                         elseif numberOfAssignments == 2 then
                             table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments, groupIndex + 1, {[1] = {
@@ -1403,6 +1409,9 @@ function RosterBuilder:UpdateCreateAssignments()
                                 ["type"] = "SPELL",
                                 ["player"] = self.pickedPlayer.name,
                             }})
+                            if not self.selectedRoster.encounters[encounterID][abilityIndex].uuid then
+                                self.selectedRoster.encounters[encounterID][abilityIndex].uuid = Utils:GenerateUUID()
+                            end
                             Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex + 1][1] })
                         end
                     elseif attach == "below" then
@@ -1411,6 +1420,9 @@ function RosterBuilder:UpdateCreateAssignments()
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
                         }})
+                        if not self.selectedRoster.encounters[encounterID][abilityIndex].uuid then
+                            self.selectedRoster.encounters[encounterID][abilityIndex].uuid = Utils:GenerateUUID()
+                        end
                         Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[groupIndex + 1][1] })
                     elseif attach == "newAtBottom" then
                         table.insert(self.selectedRoster.encounters[encounterID][abilityIndex].assignments, {[1] = {
@@ -1418,6 +1430,9 @@ function RosterBuilder:UpdateCreateAssignments()
                             ["type"] = "SPELL",
                             ["player"] = self.pickedPlayer.name,
                         }})
+                        if not self.selectedRoster.encounters[encounterID][abilityIndex].uuid then
+                            self.selectedRoster.encounters[encounterID][abilityIndex].uuid = Utils:GenerateUUID()
+                        end
                         Roster.MarkUpdated(self.selectedRoster, { added = self.selectedRoster.encounters[encounterID][abilityIndex].assignments[numberOfGroups + 1][1] })
                     end
                     self.state = State.CREATE_ASSIGNMENTS
@@ -1516,6 +1531,8 @@ function RosterBuilder:UpdateEditTriggers()
                 end)
             end)
             availableTrigger:SetScript("OnDragStop", function(_)
+                self.triggers.bossAbility.triggersFrame:SetBackdropColor(0, 0, 0, 0)
+                self.triggers.bossAbility.untriggersFrame:SetBackdropColor(0, 0, 0, 0)
                 availableTrigger:SetScript("OnUpdate", nil)
                 availableTrigger:SetParent(self.triggers.availableTypes.triggersScroll.content)
                 availableTrigger:StopMovingOrSizing()
