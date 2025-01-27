@@ -685,6 +685,7 @@ function RosterBuilder:InitializeEditTriggers()
     self.triggers.bossAbility.untriggersFrame = CreateFrame("Frame", self.triggers.bossAbility.scroll.content:GetName().."_Untriggers", self.triggers.bossAbility.scroll.content, "BackdropTemplate")
     self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersFrame, "BOTTOMLEFT", 0, -5)
     self.triggers.bossAbility.untriggersFrame:SetWidth(280)
+    self.triggers.bossAbility.untriggersFrame:SetHeight(30)
     self.triggers.bossAbility.untriggersFrame.Update = function ()
         self:UpdateEditTriggers()
     end
