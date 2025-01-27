@@ -260,7 +260,7 @@ function SRTNotification:UpdateNotificationGroupAssignment(assignmentFrame, assi
     local spellIcon, _ = C_Spell.GetSpellTexture(assignment.spell_id)
 
     assignmentFrame.icon:SetTexture(spellIcon)
-    assignmentFrame.text:SetText(assignment.player)
+    assignmentFrame.text:SetText(strsplit("-", assignment.player))
 
     local color = SRTData.GetClassColorBySpellID(assignment.spell_id)
 
