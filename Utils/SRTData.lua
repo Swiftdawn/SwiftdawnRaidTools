@@ -1119,7 +1119,7 @@ function SRTData.Initialize()
         EnragedRegeneration = SRTSpell:New(55694, "Enraged Regeneration", 60 * 3, 10),
         RallyingCry = SRTSpell:New(97462, "Rallying Cry", 60 * 3, 10),
         -- Rogue
-        Vanish = SRTSpell:New(1856, "Vanish", 60 * 3, 0),
+        -- Vanish = SRTSpell:New(1856, "Vanish", 60 * 3, 0),
     }
     SRT_Global().srt_data.classes = {
         DeathKnight = Class:New("Death Knight", "DEATHKNIGHT", {
@@ -1154,7 +1154,7 @@ function SRTData.Initialize()
             SRT_Global().srt_data.spells.PowerWordBarrier,
         }),
         Rogue = Class:New("Rogue", "ROGUE", {
-            SRT_Global().srt_data.spells.Vanish,
+            -- SRT_Global().srt_data.spells.Vanish,
         }),
         Shaman = Class:New("Shaman", "SHAMAN", {
             SRT_Global().srt_data.spells.ManaTideTotem,
