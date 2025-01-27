@@ -15,9 +15,10 @@ function SpellCache.IsSpellReady(unit, spellId, timestamp)
             return false
         end
 
-        if not UnitIsPlayer(unit) and not UnitInRaid(unit) then
-            return false
-        end
+        -- if not UnitIsPlayer(unit) and not UnitInRaid(unit) then
+        --     print("Unit is not player or in raid", unit)
+        --     return false
+        -- end
     end
 
     timestamp = timestamp or GetTime()
@@ -43,9 +44,10 @@ function SpellCache.IsSpellActive(unit, spellId, timestamp)
             return false
         end
 
-        if not UnitIsPlayer(unit) and not UnitInRaid(unit) then
-            return false
-        end
+        -- if not UnitIsPlayer(unit) and not UnitInRaid(unit) then
+        --     print("Unit is not player or in raid", unit)
+        --     return false
+        -- end
     end
 
     local timestamp = timestamp or GetTime()
