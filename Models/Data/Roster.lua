@@ -51,6 +51,11 @@ end
 
 function Roster.Copy(roster)
     local copiedRoster = Utils:DeepClone(roster)
+    for _, encounter in pairs(copiedRoster.encounters) do
+        for _, ability in pairs(encounter) do
+            ability.uuid = Utils:GenerateUUID()
+        end
+    end
     copiedRoster.id = Utils:GenerateUUID()
     copiedRoster.name = "Copied Roster"
     copiedRoster.lastUpdated = time()
