@@ -1576,23 +1576,23 @@ function RosterBuilder:UpdateEditTriggers()
             availableCondition:SetScript("OnDragStart", function(_)
                 self.triggers.availableTypes.conditionsScroll.DisconnectItem(conditionType.name, availableCondition, self.content)
                 availableCondition:StartMoving()
-                -- availableCondition:SetScript("OnUpdate", function ()
-                --     for _, triggerFrame in pairs(self.triggers.bossAbility.triggers) do
-                --         triggerFrame:SetBackdropColor(0, 0, 0, 0)
-                --         if triggerFrame:IsShown() and FrameBuilder.IsMouseOverFrame(triggerFrame) then
-                --             triggerFrame:SetBackdropColor(1, 1, 1, 0.4)
-                --         end
-                --     end
-                --     for _, untriggerFrame in pairs(self.triggers.bossAbility.untriggers) do
-                --         untriggerFrame:SetBackdropColor(0, 0, 0, 0)
-                --         if untriggerFrame:IsShown() and FrameBuilder.IsMouseOverFrame(untriggerFrame) then
-                --             untriggerFrame:SetBackdropColor(1, 1, 1, 0.4)
-                --         end
-                --     end
-                -- end)
+                availableCondition:SetScript("OnUpdate", function ()
+                    for _, triggerFrame in pairs(self.triggers.bossAbility.triggers) do
+                        triggerFrame:SetBackdropColor(0, 0, 0, 0)
+                        if FrameBuilder.IsMouseOverFrame(triggerFrame) then
+                            triggerFrame:SetBackdropColor(1, 1, 1, 0.4)
+                        end
+                    end
+                    for _, untriggerFrame in pairs(self.triggers.bossAbility.untriggers) do
+                        untriggerFrame:SetBackdropColor(0, 0, 0, 0)
+                        if FrameBuilder.IsMouseOverFrame(untriggerFrame) then
+                            untriggerFrame:SetBackdropColor(1, 1, 1, 0.4)
+                        end
+                    end
+                end)
             end)
             availableCondition:SetScript("OnDragStop", function(_)
-                -- availableCondition:SetScript("OnUpdate", nil)
+                availableCondition:SetScript("OnUpdate", nil)
                 availableCondition:SetParent(self.triggers.availableTypes.conditionsScroll.content)
                 availableCondition:StopMovingOrSizing()
                 self.triggers.availableTypes.conditionsScroll.ConnectItem(conditionType.name, availableCondition)
@@ -1726,6 +1726,7 @@ function RosterBuilder:UpdateEditTriggers()
                         end)
                         if not lastUntrigger then
                             untriggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersTitle, "BOTTOMLEFT", 0, -10)
+                            -- untriggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, -10)
                         else
                             untriggerFrame:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, 0)
                         end
@@ -1759,10 +1760,12 @@ function RosterBuilder:UpdateEditTriggers()
                 end
 
                 local untriggersFrameHeight = 30 -- Initial height for the title
-                for _, triggerFrame in pairs(self.triggers.bossAbility.untriggers) do
-                    untriggersFrameHeight = untriggersFrameHeight + triggerFrame.GetCurrentHeight()
+                for _, untriggerFrame in pairs(self.triggers.bossAbility.untriggers) do
+                    untriggersFrameHeight = untriggersFrameHeight + untriggerFrame.GetCurrentHeight()
                 end
                 self.triggers.bossAbility.untriggersFrame:SetHeight(untriggersFrameHeight)
+            else
+                self.triggers.bossAbility.untriggersFrame:SetHeight(30)
             end
 
             self.triggers.bossAbility.notificationTitle = self.triggers.bossAbility.notificationTitle or self.triggers.bossAbility.scroll.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -1797,10 +1800,11 @@ function RosterBuilder:UpdateEditTriggers()
                 self.triggers.bossAbility.notificationFrame.text:SetText("No custom message set...")
                 self.triggers.bossAbility.notificationFrame:Update()
             end
-        else
-            -- TODO: Hide stuff
-            self.triggers.bossAbility.triggers = {}
-            self.triggers.bossAbility.conditions = {}
+        -- else
+        --     -- TODO: Hide stuff
+        --     self.triggers.bossAbility.triggers = {}
+        --     self.triggers.bossAbility.untriggers = {}
+        --     self.triggers.bossAbility.conditions = {}
         end
     end
 end
