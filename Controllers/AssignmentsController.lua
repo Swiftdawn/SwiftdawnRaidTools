@@ -178,7 +178,7 @@ function AssignmentsController:EndEncounter(encounterID, encounterName, success)
     if not encounterID then
         Log.info("Encounter ended, zone changed!")
     else
-        Log.info(string.format("Encounter '%s' (id:%s) ended with %s at %s", tostring(encounterName), tostring(encounterID), success and "SUCCESS" or "FAILURE", Utils:Timestamp()))
+        Log.info(string.format("Encounter '%s' (id:%s) ended with %s at %s", tostring(encounterName), tostring(encounterID), success == 1 and "SUCCESS" or "FAILURE", Utils:Timestamp()))
     end
 
     AssignmentsController:ResetState()
