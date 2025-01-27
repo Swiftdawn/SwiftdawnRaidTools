@@ -4,7 +4,9 @@ Groups = {
 }
 
 function Groups.SetActive(uuid, groups)
-    Groups.active[uuid] = groups
+    if uuid then
+        Groups.active[uuid] = groups
+    end
 end
 
 function Groups.GetActive(uuid)
