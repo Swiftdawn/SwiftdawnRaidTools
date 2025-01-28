@@ -7,13 +7,12 @@ function UnitHealthCondition:New(name, unitID, operator, value, type)
     ---@class UnitHealthCondition
     local obj = setmetatable({}, self)
     self.__index = self
-    obj.name = name
-    obj.unitID = unitID
-    obj.operator = operator
-    obj.value = value
-    obj.type = type
+    obj.name = name or "UNIT_HEALTH"
+    obj.unitID = unitID or "player"
+    obj.operator = operator or ">"
+    obj.value = value or 0
+    obj.type = type or "percentage"
     obj.height = 20
-    obj.conditions = {}
     return obj
 end
 

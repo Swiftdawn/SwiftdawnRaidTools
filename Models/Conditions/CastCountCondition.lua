@@ -7,17 +7,16 @@ function CastCountCondition:New(name, spellID, operator, count)
     ---@class CastCountCondition
     local obj = setmetatable({}, self)
     self.__index = self
-    obj.name = name
-    obj.spellID = spellID
-    obj.operator = operator
-    obj.count = count
+    obj.name = name or "SPELL_CAST_COUNT"
+    obj.spellID = spellID or 0
+    obj.operator = operator or ">"
+    obj.count = count or 0
     obj.height = 20
-    obj.conditions = {}
     return obj
 end
 
 function CastCountCondition:GetDisplayName()
-    return "\'"..GetSpellInfo(self.spellID) .. "\' is cast "..self.operator.." " .. self.count .. " times"
+    return "\'".. (GetSpellInfo(self.spellID) or "Spell not found") .. "\' is cast "..self.operator.." " .. self.count .. " times"
 end
 
 ---Serializes the CastCountCondition object into a format suitable for storage or transmission.
