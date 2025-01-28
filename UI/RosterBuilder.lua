@@ -1615,6 +1615,42 @@ function RosterBuilder:UpdateEditTriggers()
                 availableCondition:SetParent(self.triggers.availableTypes.conditionsScroll.content)
                 availableCondition:StopMovingOrSizing()
                 self.triggers.availableTypes.conditionsScroll.ConnectItem(conditionType.name, availableCondition)
+                for _, triggerFrame in pairs(self.triggers.bossAbility.triggers) do
+                    triggerFrame:SetBackdropColor(0, 0, 0, 0)
+                    if FrameBuilder.IsMouseOverFrame(triggerFrame) then
+                        local condition = conditionType:creator()
+                        local cid = triggerFrame.GetNextConditionID()
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[triggerFrame.id].conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[triggerFrame.id].conditions or {}
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[triggerFrame.id].conditions[cid] = condition:Serialize()
+                        Roster.MarkUpdated(self.selectedRoster, { condition = {
+                            encounter = self.selectedEncounterID,
+                            ability = self.selectedAbilityID,
+                            type = "trigger",
+                            tid = triggerFrame.id,
+                            cid = cid,
+                            condition = condition
+                        }})
+                        self:UpdateEditTriggers()
+                    end
+                end
+                for _, untriggerFrame in pairs(self.triggers.bossAbility.untriggers) do
+                    untriggerFrame:SetBackdropColor(0, 0, 0, 0)
+                    if FrameBuilder.IsMouseOverFrame(untriggerFrame) then
+                        local condition = conditionType:creator()
+                        local cid = untriggerFrame.GetNextConditionID()
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[untriggerFrame.id].conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[untriggerFrame.id].conditions or {}
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[untriggerFrame.id].conditions[cid] = condition:Serialize()
+                        Roster.MarkUpdated(self.selectedRoster, { condition = {
+                            encounter = self.selectedEncounterID,
+                            ability = self.selectedAbilityID,
+                            type = "untrigger",
+                            tid = untriggerFrame.id,
+                            cid = cid,
+                            condition = condition
+                        }})
+                        self:UpdateEditTriggers()
+                    end
+                end
             end)
         end
     end
@@ -1665,16 +1701,29 @@ function RosterBuilder:UpdateEditTriggers()
                     return
                 end
                 if self.triggers.bossAbility.triggers and not self.triggers.bossAbility.triggers[triggerID] then
-                    local triggerFrame = FrameBuilder.CreateTriggerFrame(self.triggers.bossAbility.triggersFrame, parsedTrigger, "trigger", 250, 18, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (tr)
-                        local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions
-                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti] = tr:Serialize()
-                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions = conditions
-                        Roster.MarkUpdated(self.selectedRoster, { trigger = {
-                            encounter = self.selectedEncounterID,
-                            ability = self.selectedAbilityID,
-                            id = ti
-                        }})
-                    end)
+                    local triggerFrame = FrameBuilder.CreateTriggerFrame(self.triggers.bossAbility.triggersFrame, ti, parsedTrigger, "trigger", 250, 18, self:GetPlayerFont(), self:GetAppearance().playerFontSize,
+                        function (tr)
+                            local serialized = tr:Serialize()
+                            local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions
+                            self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti] = serialized
+                            self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions = conditions
+                            Roster.MarkUpdated(self.selectedRoster, { trigger = {
+                                encounter = self.selectedEncounterID,
+                                ability = self.selectedAbilityID,
+                                tid = ti,
+                                trigger = serialized
+                            }})
+                        end,
+                        function (pf)
+                            pf.RemoveAllConditions()
+                            table.remove(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers, ti)
+                            Roster.MarkUpdated(self.selectedRoster, { trigger = {
+                                encounter = self.selectedEncounterID,
+                                ability = self.selectedAbilityID,
+                                id = ti
+                            }})
+                            self:UpdateEditTriggers()
+                        end)
                     Log.debug("Created trigger", { trigger=trigger, parsedTrigger=parsedTrigger })
                     if not lastTrigger then
                         triggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersTitle, "BOTTOMLEFT", 0, -10)
@@ -1694,20 +1743,37 @@ function RosterBuilder:UpdateEditTriggers()
                                 print("Failed to parse condition", Utils:TableToString(condition))
                                 return
                             end
-                            local conditionFrame = triggerFrame.AddCondition(conditionID, parsedCondition, function (cnd)
-                                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions[ci] = cnd:Serialize()
-                                Roster.MarkUpdated(self.selectedRoster, { condition = {
-                                    encounter = self.selectedEncounterID,
-                                    ability = self.selectedAbilityID,
-                                    type = "trigger",
-                                    id = ti,
-                                    condition = ci
-                                }})
-                            end)
-                            Log.debug("Created condition", { condition=condition, parsedCondition=parsedCondition })
+                            local conditionFrame = triggerFrame.AddCondition(conditionID, parsedCondition,
+                                function (cnd)
+                                    local serialized = cnd:Serialize()
+                                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions or {}
+                                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions[ci] = serialized
+                                    Roster.MarkUpdated(self.selectedRoster, { condition = {
+                                        encounter = self.selectedEncounterID,
+                                        ability = self.selectedAbilityID,
+                                        type = "trigger",
+                                        tid = ti,
+                                        cid = ci,
+                                        condition = ci
+                                    }})
+                                end,
+                                function (pf)
+                                    table.remove(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers[ti].conditions, ci)
+                                    Roster.MarkUpdated(self.selectedRoster, { condition = {
+                                        encounter = self.selectedEncounterID,
+                                        ability = self.selectedAbilityID,
+                                        type = "trigger",
+                                        id = ti,
+                                        condition = ci
+                                    }})
+                                    self:UpdateEditTriggers()
+                                end)
+                            Log.debug("Created trigger condition", { condition=condition, parsedCondition=parsedCondition })
                             lastCondition = conditionFrame
                         end
                     end
+                elseif self.triggers.bossAbility.triggers then
+                    self.triggers.bossAbility.triggers[triggerID].id = ti
                 end
             end
 
@@ -1733,16 +1799,27 @@ function RosterBuilder:UpdateEditTriggers()
                         return
                     end
                     if self.triggers.bossAbility.untriggers and not self.triggers.bossAbility.untriggers[untriggerID] then
-                        local untriggerFrame = FrameBuilder.CreateTriggerFrame(self.triggers.bossAbility.untriggersFrame, parsedTrigger, "untrigger", 250, 18, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (tr)
-                            local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions
-                            self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti] = tr:Serialize(true)
-                            self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions = conditions
-                            Roster.MarkUpdated(self.selectedRoster, { untrigger = {
-                                encounter = self.selectedEncounterID,
-                                ability = self.selectedAbilityID,
-                                id = ti
-                            }})
-                        end)
+                        local untriggerFrame = FrameBuilder.CreateTriggerFrame(self.triggers.bossAbility.untriggersFrame, ti, parsedTrigger, "untrigger", 250, 18, self:GetPlayerFont(), self:GetAppearance().playerFontSize,
+                            function (tr)
+                                local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions
+                                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti] = tr:Serialize(true)
+                                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions = conditions
+                                Roster.MarkUpdated(self.selectedRoster, { untrigger = {
+                                    encounter = self.selectedEncounterID,
+                                    ability = self.selectedAbilityID,
+                                    tid = ti
+                                }})
+                            end,
+                            function (pf)
+                                table.remove(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers, ti)
+                                Roster.MarkUpdated(self.selectedRoster, { untrigger = {
+                                    encounter = self.selectedEncounterID,
+                                    ability = self.selectedAbilityID,
+                                    tid = ti
+                                }})
+                                self:UpdateEditTriggers()
+                                
+                            end)
                         if not lastUntrigger then
                             untriggerFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersTitle, "BOTTOMLEFT", 0, -10)
                             -- untriggerFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", 0, -10)
@@ -1763,18 +1840,34 @@ function RosterBuilder:UpdateEditTriggers()
                                     return
                                 end
                                 local conditionFrame = untriggerFrame.AddCondition(conditionID, parsedCondition, function (cnd)
-                                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions[ci] = cnd:Serialize()
+                                    local serialized = cnd:Serialize()
+                                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions or {}
+                                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions[ci] = serialized
                                     Roster.MarkUpdated(self.selectedRoster, { condition = {
                                         encounter = self.selectedEncounterID,
                                         ability = self.selectedAbilityID,
                                         type = "untrigger",
-                                        id = ti,
-                                        condition = ci
+                                        tid = ti,
+                                        cid = ci,
+                                        condition = serialized
                                     }})
+                                end, function (pf)
+                                    table.remove(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions, ci)
+                                    Roster.MarkUpdated(self.selectedRoster, { condition = {
+                                        encounter = self.selectedEncounterID,
+                                        ability = self.selectedAbilityID,
+                                        type = "untrigger",
+                                        tid = ti,
+                                        cid = ci
+                                    }})
+                                    self:UpdateEditTriggers()
                                 end)
+                                Log.debug("Created untrigger condition", { condition=condition, parsedCondition=parsedCondition })
                                 lastCondition = conditionFrame
                             end
                         end
+                    elseif self.triggers.bossAbility.untriggers then
+                        self.triggers.bossAbility.untriggers[untriggerID].id = ti
                     end
                 end
 
