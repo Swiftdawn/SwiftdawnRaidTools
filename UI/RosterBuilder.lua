@@ -1895,28 +1895,27 @@ function RosterBuilder:UpdateEditTriggers()
             self.triggers.bossAbility.notificationTitle:SetText("Notification message")
 
             self.triggers.bossAbility.notificationFrame = self.triggers.bossAbility.notificationFrame or FrameBuilder.CreateEditableTextFrame(self.triggers.bossAbility.scroll.content, "No custom message set...", 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (text)
-                local oldName = self.triggers.bossAbility.abilitySelector.selectedName
-                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = #text and text or nil
                 Roster.MarkUpdated(self.selectedRoster, { notification = {
-                    old = oldName,
+                    old = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification,
                     new = text
                 }})
+                if #text > 0 then
+                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = text
+                else
+                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = nil
+                    self.triggers.bossAbility.notificationFrame.text:SetText("No custom message set...")
+                end
+                self.triggers.bossAbility.notificationFrame:Update()
             end)
             self.triggers.bossAbility.notificationFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.notificationTitle, "BOTTOMLEFT", 0, -10)
             self.triggers.bossAbility.notificationFrame:Show()
 
             if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification then
                 self.triggers.bossAbility.notificationFrame.text:SetText(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification)
-                self.triggers.bossAbility.notificationFrame:Update()
             else
                 self.triggers.bossAbility.notificationFrame.text:SetText("No custom message set...")
-                self.triggers.bossAbility.notificationFrame:Update()
             end
-        -- else
-        --     -- TODO: Hide stuff
-        --     self.triggers.bossAbility.triggers = {}
-        --     self.triggers.bossAbility.untriggers = {}
-        --     self.triggers.bossAbility.conditions = {}
+            self.triggers.bossAbility.notificationFrame:Update()
         end
     end
 end
