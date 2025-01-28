@@ -1783,11 +1783,7 @@ function RosterBuilder:UpdateEditTriggers()
             end
             self.triggers.bossAbility.triggersFrame:SetHeight(triggersFrameHeight)
 
-            if lastCondition then
-                self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -20, -10)
-            else
-                self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", -10, -10)
-            end
+            self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersFrame, "BOTTOMLEFT", 0, 0)
 
             local lastUntrigger = nil
             if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers then
@@ -1885,13 +1881,7 @@ function RosterBuilder:UpdateEditTriggers()
             self.triggers.bossAbility.notificationTitle:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
             self.triggers.bossAbility.notificationTitle:SetJustifyH("LEFT")
             self.triggers.bossAbility.notificationTitle:SetWidth(260)
-            if lastUntrigger and lastCondition then
-                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, -10)
-            elseif lastUntrigger then
-                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, -10)
-            else
-                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersTitle, "BOTTOMLEFT", 0, -10)
-            end
+            self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersFrame, "BOTTOMLEFT", 10, -5)
             self.triggers.bossAbility.notificationTitle:SetText("Notification message")
 
             self.triggers.bossAbility.notificationFrame = self.triggers.bossAbility.notificationFrame or FrameBuilder.CreateEditableTextFrame(self.triggers.bossAbility.scroll.content, "No custom message set...", 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (text)
