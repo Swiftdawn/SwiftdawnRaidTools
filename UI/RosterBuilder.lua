@@ -1700,7 +1700,7 @@ function RosterBuilder:UpdateEditTriggers()
                 if not parsedTrigger then
                     return
                 end
-                if self.triggers.bossAbility.triggers and not self.triggers.bossAbility.triggers[triggerID] then
+                if not self.triggers.bossAbility.triggers[triggerID] then
                     local triggerFrame = FrameBuilder.CreateTriggerFrame(self.triggers.bossAbility.triggersFrame, ti, parsedTrigger, "trigger", 250, 18, self:GetPlayerFont(), self:GetAppearance().playerFontSize,
                         function (tr)
                             local serialized = tr:Serialize()
@@ -1783,7 +1783,13 @@ function RosterBuilder:UpdateEditTriggers()
             end
             self.triggers.bossAbility.triggersFrame:SetHeight(triggersFrameHeight)
 
-            self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersFrame, "BOTTOMLEFT", 0, 0)
+            if lastCondition then
+                self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -20, -10)
+            elseif lastTrigger then
+                self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", lastTrigger, "BOTTOMLEFT", -10, -10)
+            else
+                self.triggers.bossAbility.untriggersFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.triggersFrame, "BOTTOMLEFT", 0, 0)
+            end
 
             local lastUntrigger = nil
             if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers then
@@ -1794,7 +1800,7 @@ function RosterBuilder:UpdateEditTriggers()
                         print("Failed to parse untrigger")
                         return
                     end
-                    if self.triggers.bossAbility.untriggers and not self.triggers.bossAbility.untriggers[untriggerID] then
+                    if not self.triggers.bossAbility.untriggers[untriggerID] then
                         local untriggerFrame = FrameBuilder.CreateTriggerFrame(self.triggers.bossAbility.untriggersFrame, ti, parsedTrigger, "untrigger", 250, 18, self:GetPlayerFont(), self:GetAppearance().playerFontSize,
                             function (tr)
                                 local conditions = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].untriggers[ti].conditions
@@ -1884,28 +1890,38 @@ function RosterBuilder:UpdateEditTriggers()
             self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersFrame, "BOTTOMLEFT", 10, -5)
             self.triggers.bossAbility.notificationTitle:SetText("Notification message")
 
-            self.triggers.bossAbility.notificationFrame = self.triggers.bossAbility.notificationFrame or FrameBuilder.CreateEditableTextFrame(self.triggers.bossAbility.scroll.content, "No custom message set...", 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize, function (text)
-                Roster.MarkUpdated(self.selectedRoster, { notification = {
-                    old = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification,
-                    new = text
-                }})
-                if #text > 0 then
-                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = text
-                else
-                    self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = nil
-                    self.triggers.bossAbility.notificationFrame.text:SetText("No custom message set...")
-                end
-                self.triggers.bossAbility.notificationFrame:Update()
-            end)
-            self.triggers.bossAbility.notificationFrame:SetPoint("TOPLEFT", self.triggers.bossAbility.notificationTitle, "BOTTOMLEFT", 0, -10)
-            self.triggers.bossAbility.notificationFrame:Show()
+            self.triggers.bossAbility.notificationText = self.triggers.bossAbility.notificationText or FrameBuilder.CreateEditableTextFrame(self.triggers.bossAbility.scroll.content, "No custom message set...", 250, 20, self:GetPlayerFont(), self:GetAppearance().playerFontSize,
+                function (text)
+                    Roster.MarkUpdated(self.selectedRoster, { notification = {
+                        old = self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification,
+                        new = text
+                    }})
+                    if #text > 0 then
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = text
+                    else
+                        self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification = nil
+                        self.triggers.bossAbility.notificationText.text:SetText("No custom message set...")
+                    end
+                    self.triggers.bossAbility.notificationText:Update()
+                end)
+            
+            if lastUntrigger and lastCondition then
+                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", lastCondition, "BOTTOMLEFT", -10, -10)
+            elseif lastUntrigger then
+                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", lastUntrigger, "BOTTOMLEFT", 0, -10)
+            else
+                self.triggers.bossAbility.notificationTitle:SetPoint("TOPLEFT", self.triggers.bossAbility.untriggersFrame, "BOTTOMLEFT", 10, -5)
+            end
+
+            self.triggers.bossAbility.notificationText:SetPoint("TOPLEFT", self.triggers.bossAbility.notificationTitle, "BOTTOMLEFT", 0, -10)
+            self.triggers.bossAbility.notificationText:Show()
 
             if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification then
-                self.triggers.bossAbility.notificationFrame.text:SetText(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification)
+                self.triggers.bossAbility.notificationText.text:SetText(self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.notification)
             else
-                self.triggers.bossAbility.notificationFrame.text:SetText("No custom message set...")
+                self.triggers.bossAbility.notificationText.text:SetText("No custom message set...")
             end
-            self.triggers.bossAbility.notificationFrame:Update()
+            self.triggers.bossAbility.notificationText:Update()
         end
     end
 end
