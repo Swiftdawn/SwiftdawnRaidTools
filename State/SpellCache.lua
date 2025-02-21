@@ -16,7 +16,7 @@ function SpellCache.IsSpellReady(unit, spellId, timestamp)
         end
 
         if not UnitIsPlayer(unit) and not UnitInRaid(unit) then
-            print("Unit is not player or in raid", unit)
+            -- print("Unit is not player or in raid", unit)
             return false
         end
     end
