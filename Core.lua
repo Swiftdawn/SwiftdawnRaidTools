@@ -262,11 +262,11 @@ end
 
 function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
     if payload.e == "SYNC_REQ_VERSIONS" then
-        Log.debug("Received message version request from "..tostring(sender), payload)
+        Log.debug("Received version request from "..tostring(sender), payload)
         SyncController:SendVersion()
     elseif payload.e == "SYNC_STATUS" then
         if IsEncounterInProgress() or not Utils:IsPlayerRaidLeader() then
-            return
+            return 
         end
         if TriggerSyncOrNot(payload.d) then
             SyncController:ScheduleAssignmentsSync()
@@ -294,7 +294,7 @@ function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
         Groups.SetAllActive(payload.d)
         self.overview:UpdateActiveGroups()
     elseif payload.e == "TRIGGER" then
-        Log.debug("Received message trigger from "..tostring(sender), payload)
+        Log.debug("Received assignment trigger from "..tostring(sender), payload)
         self.debugLog:AddItem(payload.d)
         Groups.SetActive(payload.d.uuid, payload.d.activeGroups)
         self.notification:ShowRaidAssignment(payload.d.uuid, payload.d.context, payload.d.delay, payload.d.countdown)

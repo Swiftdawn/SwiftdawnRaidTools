@@ -258,7 +258,7 @@ function AssignmentsController:UpdateGroups()
     end
 
     if groupsUpdated then
-        Log.debug("Sending message ACT_GRPS", Groups.GetAllActive())
+        Log.debug("Sending activate groups message", Groups.GetAllActive())
         SwiftdawnRaidTools:SendRaidMessage("ACT_GRPS", Groups.GetAllActive())
     end
 end
