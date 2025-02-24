@@ -130,6 +130,8 @@ function SwiftdawnRaidTools:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("SwiftdawnRaidTools", self.DEFAULTS)
     
     SRTData.Initialize()
+    
+    if DevTool then DevTool:AddData(SpellCache, "SpellCache") end
 
     self:OptionsInit()
     self:MinimapInit()
@@ -266,7 +268,7 @@ function SwiftdawnRaidTools:HandleMessagePayload(payload, sender)
         SyncController:SendVersion()
     elseif payload.e == "SYNC_STATUS" then
         if IsEncounterInProgress() or not Utils:IsPlayerRaidLeader() then
-            return 
+            return
         end
         if TriggerSyncOrNot(payload.d) then
             SyncController:ScheduleAssignmentsSync()
@@ -375,6 +377,9 @@ function SwiftdawnRaidTools:CHAT_MSG_MONSTER_YELL(_, text, ...)
 end
 
 function SwiftdawnRaidTools:HandleCombatLog(subEvent, sourceName, destGUID, destName, spellId)
+    if not IsEncounterInProgress() and not SRT_IsTesting() then
+        return
+    end
     if subEvent == "SPELL_CAST_START" then
         AssignmentsController:HandleSpellCast(subEvent, spellId, sourceName, destName)
     elseif subEvent == "SPELL_CAST_SUCCESS" then

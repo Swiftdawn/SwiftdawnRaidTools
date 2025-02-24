@@ -1,12 +1,57 @@
 local SwiftdawnRaidTools = SwiftdawnRaidTools
 
 SpellCache = {
-    -- casts[spellID] = [{source = source, target = target, time = time}]
+    -- casts[spellID] = {[source] = {target = target, time = time, count = count}}
     casts = {}
 }
 
 function SpellCache.Reset()
     SpellCache.casts = {}
+end
+
+function SpellCache.RegisterCast(source, target, spellId, updateFunc)
+    if not SpellCache.casts[spellId] then
+        SpellCache.casts[spellId] = {}
+    end
+    if not SpellCache.casts[spellId][source] then
+        SpellCache.casts[spellId][source] = {target = target, time = GetTime(), count = 1}
+    else
+        SpellCache.casts[spellId][source].count = SpellCache.casts[spellId][source].count + 1
+        SpellCache.casts[spellId][source].time = GetTime()
+    end
+    Log.info("Registered cast #".. SpellCache.casts[spellId][source].count .." of "..GetSpellInfo(spellId) .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime(), count=SpellCache.casts[spellId][source].count })
+
+    if (UnitIsPlayer(source) and UnitInRaid(source)) or SRT_IsTesting() then
+        local spell = SRTData.GetSpellByID(spellId)
+        if spell then
+            updateFunc()
+            if spell.duration > 5 then
+                C_Timer.After(spell.duration - 5, updateFunc)
+            end
+            C_Timer.After(spell.duration, updateFunc)
+            C_Timer.After(spell.cooldown, updateFunc)
+        end
+    end
+end
+
+function SpellCache.GetCastTime(source, spellId)
+    if not SpellCache.casts[spellId] then
+        return nil
+    end
+    if not SpellCache.casts[spellId][source] then
+        return nil
+    end
+    return SpellCache.casts[spellId][source].time
+end
+
+function SpellCache.GetCastCount(source, spellId)
+    if not SpellCache.casts[spellId] then
+        return nil
+    end
+    if not SpellCache.casts[spellId][source] then
+        return nil
+    end
+    return SpellCache.casts[spellId][source].count
 end
 
 function SpellCache.IsSpellReady(source, spellId, timestamp)
@@ -23,22 +68,11 @@ function SpellCache.IsSpellReady(source, spellId, timestamp)
 
     timestamp = timestamp or GetTime()
 
-    -- If the spell has never been cast, it is ready
-    if not SpellCache.casts[spellId] then
-        return true
-    end
-
     -- Find the most recent cast by source
-    local cachedCasts = SpellCache.casts[spellId]
-    local mostRecentCast = 0
-    for _, cachedCast in pairs(cachedCasts) do
-        if cachedCast.source == source and cachedCast.time > mostRecentCast then
-            mostRecentCast = cachedCast.time
-        end
-    end
+    local mostRecentCast = SpellCache.GetCastTime(source, spellId)
 
-    -- If the spell was never cast by the source, the spell is ready
-    if mostRecentCast == 0 then
+    -- If the spell has never been cast, it is ready
+    if not mostRecentCast then
         return true
     end
 
@@ -63,22 +97,11 @@ function SpellCache.IsSpellActive(source, spellId, timestamp)
 
     local timestamp = timestamp or GetTime()
 
-    -- If the spell has never been cast, it is not active
-    if not SpellCache.casts[spellId] then
-        return false
-    end
-
     -- Find the most recent cast by source
-    local cachedCasts = SpellCache.casts[spellId]
-    local mostRecentCast = 0
-    for _, cachedCast in pairs(cachedCasts) do
-        if cachedCast.source == source and cachedCast.time > mostRecentCast then
-            mostRecentCast = cachedCast.time
-        end
-    end
+    local mostRecentCast = SpellCache.GetCastTime(source, spellId)
 
-    -- If the spell was never cast by the source, the spell is not active
-    if mostRecentCast == 0 then
+    -- If the spell has never been cast, it is ready
+    if not mostRecentCast then
         return false
     end
 
@@ -87,47 +110,4 @@ function SpellCache.IsSpellActive(source, spellId, timestamp)
         return true
     end
     return false
-end
-
-function SpellCache.GetCastTime(source, spellId)
-    if not SpellCache.casts[spellId] then
-        return nil
-    end
-
-    -- Find the most recent cast by source
-    local cachedCasts = SpellCache.casts[spellId]
-    local mostRecentCast = 0
-    for _, cachedCast in pairs(cachedCasts) do
-        if cachedCast.source == source and cachedCast.time > mostRecentCast then
-            mostRecentCast = cachedCast.time
-        end
-    end
-
-    return mostRecentCast == 0 and nil or mostRecentCast
-end
-
-function SpellCache.RegisterCast(source, target, spellId, updateFunc)
-    if not SRT_IsTesting() then
-        if not UnitIsPlayer(source) and not UnitInRaid(source) then
-            return
-        end
-    end
-
-    local spell = SRTData.GetSpellByID(spellId)
-    if spell then
-        if not SpellCache.casts[spellId] then
-            SpellCache.casts[spellId] = {}
-        end
-        table.insert(SpellCache.casts[spellId], {source = source, target = target, time = GetTime()})
-        Log.info("Registered cast of "..spell.name .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime() })
-
-        updateFunc()
-
-        if spell.duration > 5 then
-            C_Timer.After(spell.duration - 5, updateFunc)
-        end
-
-        C_Timer.After(spell.duration, updateFunc)
-        C_Timer.After(spell.cooldown, updateFunc)
-    end
 end
