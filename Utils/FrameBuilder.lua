@@ -128,6 +128,8 @@ function FrameBuilder.CreateTriggerFrame(parentFrame, triggerID, trigger, type, 
             conditionFrame = frame.items[cid] or FrameBuilder.CreateCastCountConditionFrame(frame, condition, width - 10, height, font, fontSize, onConditionChanges, onConditionRemove)
         elseif condition.name == "UNIT_HEALTH" then
             conditionFrame = frame.items[cid] or FrameBuilder.CreateUnitHealthConditionFrame(frame, condition, width - 10, height, font, fontSize, onConditionChanges, onConditionRemove)
+        elseif condition.name == "AURA_REMOVED_COUNT" then
+            conditionFrame = frame.items[cid] or FrameBuilder.CreateAuraRemovedCountConditionsFrame(frame, condition, width - 10, height, font, fontSize, onConditionChanges, onConditionRemove)
         end
         if #frame.items == 0 then
             conditionFrame:SetPoint("TOPLEFT", frame.triggerFrame, "BOTTOMLEFT", 10, 0)
@@ -764,9 +766,29 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
     frame.hiddenFrames.spellName:SetPoint("TOPLEFT", frame.hiddenFrames.spellTitle, "BOTTOMLEFT", 0, -5)
     frame.hiddenFrames.spellName:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     frame.hiddenFrames.spellName:SetText("Spell Name: "..(GetSpellInfo(frame.condition.spellID) or "Spell not found!"))
+    frame.hiddenFrames.sourceTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.sourceTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.sourceTitle:SetPoint("TOPLEFT", frame.hiddenFrames.spellName, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.sourceTitle:SetText("Source:")
+    frame.hiddenFrames.sourceTitle:SetWidth(frame.hiddenFrames.sourceTitle:GetStringWidth())
+    frame.hiddenFrames.sourceEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.sourceEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.sourceEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.sourceEditBox:SetPoint("LEFT", frame.hiddenFrames.sourceTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.sourceEditBox:SetAutoFocus(false)
+    frame.hiddenFrames.targetTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.targetTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.targetTitle:SetPoint("TOPLEFT", frame.hiddenFrames.sourceTitle, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.targetTitle:SetText("Target:")
+    frame.hiddenFrames.targetTitle:SetWidth(frame.hiddenFrames.targetTitle:GetStringWidth())
+    frame.hiddenFrames.targetEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.targetEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.targetEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.targetEditBox:SetPoint("LEFT", frame.hiddenFrames.targetTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.targetEditBox:SetAutoFocus(false)
     frame.hiddenFrames.operatorTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.hiddenFrames.operatorTitle:SetFont(font, fontSize, "")
-    frame.hiddenFrames.operatorTitle:SetPoint("TOPLEFT", frame.hiddenFrames.spellName, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.operatorTitle:SetPoint("TOPLEFT", frame.hiddenFrames.targetTitle, "BOTTOMLEFT", 0, -5)
     frame.hiddenFrames.operatorTitle:SetText("Operator:")
     frame.hiddenFrames.operatorTitle:SetWidth(frame.hiddenFrames.operatorTitle:GetStringWidth())
     local operatorItems = {
@@ -804,6 +826,8 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
     end
     local function acceptChanges()
         frame.condition.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText()) or 0
+        frame.condition.source = frame.hiddenFrames.sourceEditBox:GetText() or ""
+        frame.condition.target = frame.hiddenFrames.targetEditBox:GetText() or ""
         frame.condition.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue() or "=="
         frame.condition.count = tonumber(frame.hiddenFrames.countEditBox:GetText()) or 0
         frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
@@ -817,11 +841,13 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
         if button == "LeftButton" then
             frame.text:Hide()
             frame.hiddenFrames.spellEditBox:SetText(tostring(frame.condition.spellID) or "0")
+            frame.hiddenFrames.sourceEditBox:SetText(frame.condition.source or "")
+            frame.hiddenFrames.targetEditBox:SetText(frame.condition.target or "")
             frame.hiddenFrames.operatorSelector:SetSelectedValue(frame.condition.operator or "==")
             frame.hiddenFrames.countEditBox:SetText(tostring(frame.condition.count) or "0")
             frame.hiddenFrames:Show()
-            frame:SetSize(width, 65) -- Adjust the frame size to fit the hidden frames
-            frame.hiddenFrames:SetSize(width, 65)
+            frame:SetSize(width, 95) -- Adjust the frame size to fit the hidden frames
+            frame.hiddenFrames:SetSize(width, 95)
             frame:SetBackdrop({
                 bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
                 tile = true,
@@ -844,8 +870,142 @@ function FrameBuilder.CreateCastCountConditionFrame(parentFrame, condition, widt
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.spellEditBox:SetScript("OnEnterPressed", acceptChanges)
-    -- frame.hiddenFrames.operatorEditBox:SetScript("OnEscapePressed", cancelEditing)
-    -- frame.hiddenFrames.operatorEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.sourceEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.sourceEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.targetEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.targetEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.countEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.countEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.Update()
+    return frame
+end
+
+function FrameBuilder.CreateAuraRemovedCountConditionsFrame(parentFrame, condition, width, height, font, fontSize, onChanges, onRemove)
+    local frame = FrameBuilder.CreateConditionFrame(parentFrame, condition, width, height, font, fontSize)
+    frame.hiddenFrames.spellTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.spellTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.spellTitle:SetPoint("TOPLEFT", frame.hiddenFrames, "TOPLEFT", 5, -5)
+    frame.hiddenFrames.spellTitle:SetText("Aura ID:")
+    frame.hiddenFrames.spellTitle:SetWidth(frame.hiddenFrames.spellTitle:GetStringWidth())
+    frame.hiddenFrames.spellEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.spellEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.spellEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.spellEditBox:SetNumeric(true)
+    frame.hiddenFrames.spellEditBox:SetPoint("LEFT", frame.hiddenFrames.spellTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.spellEditBox:SetAutoFocus(false)
+    frame.hiddenFrames.spellName = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.spellName:SetFont(font, fontSize, "")
+    frame.hiddenFrames.spellName:SetPoint("TOPLEFT", frame.hiddenFrames.spellTitle, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.spellName:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
+    frame.hiddenFrames.spellName:SetText("Aura Name: "..(GetSpellInfo(frame.condition.spellID) or "Aura not found!"))
+    frame.hiddenFrames.sourceTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.sourceTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.sourceTitle:SetPoint("TOPLEFT", frame.hiddenFrames.spellName, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.sourceTitle:SetText("Source:")
+    frame.hiddenFrames.sourceTitle:SetWidth(frame.hiddenFrames.sourceTitle:GetStringWidth())
+    frame.hiddenFrames.sourceEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.sourceEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.sourceEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.sourceEditBox:SetPoint("LEFT", frame.hiddenFrames.sourceTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.sourceEditBox:SetAutoFocus(false)
+    frame.hiddenFrames.targetTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.targetTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.targetTitle:SetPoint("TOPLEFT", frame.hiddenFrames.sourceTitle, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.targetTitle:SetText("Target:")
+    frame.hiddenFrames.targetTitle:SetWidth(frame.hiddenFrames.targetTitle:GetStringWidth())
+    frame.hiddenFrames.targetEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.targetEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.targetEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.targetEditBox:SetPoint("LEFT", frame.hiddenFrames.targetTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.targetEditBox:SetAutoFocus(false)
+    frame.hiddenFrames.operatorTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.operatorTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.operatorTitle:SetPoint("TOPLEFT", frame.hiddenFrames.targetTitle, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.operatorTitle:SetText("Operator:")
+    frame.hiddenFrames.operatorTitle:SetWidth(frame.hiddenFrames.operatorTitle:GetStringWidth())
+    local operatorItems = {
+        { name = "<", onClick = function ()
+            frame.hiddenFrames.operatorSelector.selectedName = "<"
+            frame.hiddenFrames.operatorSelector:Update()
+        end },
+        { name = ">", onClick = function ()
+            frame.hiddenFrames.operatorSelector.selectedName = ">"
+            frame.hiddenFrames.operatorSelector:Update()
+        end },
+        { name = "==", onClick = function ()
+            frame.hiddenFrames.operatorSelector.selectedName = "=="
+            frame.hiddenFrames.operatorSelector:Update()
+        end }
+    }
+    frame.hiddenFrames.operatorSelector = FrameBuilder.CreateSelector(frame.hiddenFrames, operatorItems, width - 10 - frame.hiddenFrames.operatorTitle:GetWidth(), font, fontSize, frame.condition.operator or "==")
+    frame.hiddenFrames.operatorSelector:SetPoint("LEFT", frame.hiddenFrames.operatorTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.countTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.countTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.countTitle:SetPoint("TOPLEFT", frame.hiddenFrames.operatorTitle, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.countTitle:SetText("Count:")
+    frame.hiddenFrames.countTitle:SetWidth(frame.hiddenFrames.countTitle:GetStringWidth())
+    frame.hiddenFrames.countEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.countEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.countEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.countEditBox:SetNumeric(true)
+    frame.hiddenFrames.countEditBox:SetPoint("LEFT", frame.hiddenFrames.countTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.countEditBox:SetAutoFocus(false)
+    local function cancelEditing()
+        frame.hiddenFrames:Hide()
+        frame:Update()
+        frame.text:Show()
+        parentFrame.Update()
+    end
+    local function acceptChanges()
+        frame.condition.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText()) or 0
+        frame.condition.source = frame.hiddenFrames.sourceEditBox:GetText() or ""
+        frame.condition.target = frame.hiddenFrames.targetEditBox:GetText() or ""
+        frame.condition.operator = frame.hiddenFrames.operatorSelector:GetSelectedValue() or "=="
+        frame.condition.count = tonumber(frame.hiddenFrames.countEditBox:GetText()) or 0
+        frame.text:SetText("|cFFFFD200IF:|r "..frame.condition:GetDisplayName())
+        onChanges(frame.condition)
+        frame.hiddenFrames:Hide()
+        frame:Update()
+        frame.text:Show()
+        parentFrame.Update()
+    end
+    frame:SetScript("OnMouseUp", function(_, button)
+        if button == "LeftButton" then
+            frame.text:Hide()
+            frame.hiddenFrames.spellEditBox:SetText(tostring(frame.condition.spellID) or "0")
+            frame.hiddenFrames.sourceEditBox:SetText(frame.condition.source or "")
+            frame.hiddenFrames.targetEditBox:SetText(frame.condition.target or "")
+            frame.hiddenFrames.operatorSelector:SetSelectedValue(frame.condition.operator or "==")
+            frame.hiddenFrames.countEditBox:SetText(tostring(frame.condition.count) or "0")
+            frame.hiddenFrames:Show()
+            frame:SetSize(width, 95) -- Adjust the frame size to fit the hidden frames
+            frame.hiddenFrames:SetSize(width, 95)
+            frame:SetBackdrop({
+                bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+                tile = true,
+                tileSize = frame:GetHeight(),
+            })
+            frame.hiddenFrames:SetBackdrop({
+                bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+                tile = true,
+                tileSize = frame:GetHeight(),
+            })
+            frame.hiddenFrames:SetBackdropColor(1, 1, 1, 0.2)
+            frame.hiddenFrames.spellEditBox:SetFocus()
+            parentFrame.Update()
+        elseif button == "RightButton" then
+            onRemove(parentFrame)
+        end
+    end)
+    frame.hiddenFrames.spellEditBox:SetScript("OnUpdate", function (editBox)
+        frame.hiddenFrames.spellName:SetText("|cFFFFD200Aura Name:|r "..(GetSpellInfo(editBox:GetText()) or "Aura not found!"))
+    end)
+    frame.hiddenFrames.spellEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.spellEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.sourceEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.sourceEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.targetEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.targetEditBox:SetScript("OnEnterPressed", acceptChanges)
     frame.hiddenFrames.countEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.countEditBox:SetScript("OnEnterPressed", acceptChanges)
     frame.Update()

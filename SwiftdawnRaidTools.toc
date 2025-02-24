@@ -65,6 +65,7 @@ Models\Triggers\SpellAuraTrigger.lua
 Models\Triggers\SpellAuraRemovedTrigger.lua
 Models\Triggers\NumenTimerTrigger.lua
 Models\Enum\Trigger.lua
+Models\Conditions\AuraRemovedCountCondition.lua
 Models\Conditions\CastCountCondition.lua
 Models\Conditions\UnitHealthCondition.lua
 Models\Enum\Condition.lua

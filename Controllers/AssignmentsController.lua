@@ -29,6 +29,7 @@ AssignmentsController = {
     delayTimers = {},
     -- key: spellid, value = number of casts
     spellCastCache = {},
+    auraRemovedCache = {},
     activeEncounterID = nil,
     encounterStart = nil
 }
@@ -47,6 +48,7 @@ function AssignmentsController:ResetState()
     AssignmentsController.raidBossEmoteUntriggersCache = {}
     AssignmentsController.fojjiNumenTimersTriggersCache = {}
     AssignmentsController.spellCastCache = {}
+    AssignmentsController.auraRemovedCache = {}
 
     for key, timer in pairs(AssignmentsController.fojjiNumenTimers) do
         timer:Cancel()
@@ -365,6 +367,26 @@ function AssignmentsController:CheckTriggerConditions(conditions)
                         return false
                     end
                 end
+            elseif condition.type == "AURA_REMOVED_COUNT" then
+                local removed = AssignmentsController.auraRemovedCache[condition.spell_id]
+
+                if condition.eq then
+                    if not removed or removed ~= condition.eq then
+                        return false
+                    end
+                end
+
+                if condition.lt then
+                    if removed and removed >= condition.lt then
+                         return false
+                    end
+                end
+
+                if condition.gt then
+                    if not removed or removed <= condition.gt then
+                        return false
+                    end
+                end
             end
         end
     end
@@ -583,6 +605,11 @@ function AssignmentsController:HandleSpellAura(subEvent, spellId, sourceName, de
 
     local spellAuraTriggers = AssignmentsController.spellAuraTriggersCache[spellId]
 
+    if not AssignmentsController.spellCastCache[spellId] then
+        AssignmentsController.spellCastCache[spellId] = 0
+    end
+    AssignmentsController.spellCastCache[spellId] = AssignmentsController.spellCastCache[spellId] + 1
+
     if spellAuraTriggers then
         for _, spellAuraTrigger in ipairs(spellAuraTriggers) do
 
@@ -620,6 +647,11 @@ function AssignmentsController:HandleSpellAuraRemoved(subEvent, spellId, sourceN
         dest_name = destName
     }
     local spellAuraRemovedTriggers = AssignmentsController.spellAuraRemovedTriggersCache[spellId]
+
+    if not AssignmentsController.auraRemovedCache[spellId] then
+        AssignmentsController.auraRemovedCache[spellId] = 0
+    end
+    AssignmentsController.auraRemovedCache[spellId] = AssignmentsController.auraRemovedCache[spellId] + 1
 
     if spellAuraRemovedTriggers then
         for _, spellAuraRemovedTrigger in ipairs(spellAuraRemovedTriggers) do

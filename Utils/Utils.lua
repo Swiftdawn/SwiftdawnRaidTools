@@ -401,7 +401,7 @@ function Utils:ParseTrigger(rawTrigger)
     return trigger
 end
 
----@return CastCountCondition|UnitHealthCondition|nil
+---@return CastCountCondition|UnitHealthCondition|AuraRemovedCountCondition|nil
 function Utils:ParseCondition(rawCondition)
     if not rawCondition.type then
         Log.info("[ERROR] Condition's type is missing", rawCondition)
@@ -411,6 +411,8 @@ function Utils:ParseCondition(rawCondition)
         return CastCountCondition:Deserialize(rawCondition)
     elseif rawCondition.type == "UNIT_HEALTH" then
         return UnitHealthCondition:Deserialize(rawCondition)
+    elseif rawCondition.type == "AURA_REMOVED_COUNT" then
+        return AuraRemovedCountCondition:Deserialize(rawCondition)
     else
         Log.info("[ERROR] Condition's type is not supported", rawCondition)
         return nil

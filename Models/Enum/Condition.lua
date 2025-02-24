@@ -1,6 +1,12 @@
 Condition = {
+    AuraRemovedCount = {
+        name = "Aura Removed Count",
+        creator = function ()
+            return AuraRemovedCountCondition:New()
+        end
+    },
     CastCount = {
-        name = "Cast Count",
+        name = "Spell Cast Count",
         creator = function ()
             return CastCountCondition:New()
         end
