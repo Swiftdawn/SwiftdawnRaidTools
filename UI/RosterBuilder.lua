@@ -550,7 +550,6 @@ function RosterBuilder:InitializeCreateAssignments()
         self.state = State.EDIT_TRIGGERS
         self.triggers.bossAbility.bossSelector.selectedName = self.assignments.bossSelector.selectedName
         self.triggers.bossAbility.bossSelector:Update()
-        self.selectedAbilityID = 1
         self:Update()
         self:UpdateAppearance()
     end)
@@ -628,9 +627,82 @@ function RosterBuilder:InitializeEditTriggers()
         self.triggers.bossAbility.abilityEditBox:SetFocus()
         self.triggers.bossAbility.abilitySelector.text:Hide()
     end)
-    -- Move the edit button to sit just before the dropdown arrow button
+    self.triggers.bossAbility.deleteButton = CreateFrame("Button", self.triggers.bossAbility.pane:GetName().."_DeleteAbility", self.triggers.bossAbility.pane, "BackdropTemplate")
+    self.triggers.bossAbility.deleteButton:SetPoint("RIGHT", self.triggers.bossAbility.abilitySelector.button, "LEFT", -5, 0)
+    self.triggers.bossAbility.deleteButton:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = 16,
+    })
+    self.triggers.bossAbility.deleteButton:SetBackdropColor(0, 0, 0, 0)
+    self.triggers.bossAbility.deleteButton.texture = self.triggers.bossAbility.deleteButton:CreateTexture(nil, "BACKGROUND")
+    self.triggers.bossAbility.deleteButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\delete.png")
+    self.triggers.bossAbility.deleteButton.texture:SetAllPoints()
+    self.triggers.bossAbility.deleteButton.texture:SetAlpha(0.8)
+    self.triggers.bossAbility.deleteButton:SetSize(16, 16)
+    self.triggers.bossAbility.deleteButton:SetScript("OnMouseUp", function ()
+        if self.selectedEncounterID and self.selectedAbilityID then
+            print("Deleting ability " .. self.selectedAbilityID .. " from encounter " .. self.selectedEncounterID)
+            table.remove(self.selectedRoster.encounters[self.selectedEncounterID], self.selectedAbilityID)
+            table.remove(self.triggers.bossAbility.abilitySelector.items, self.selectedAbilityID)
+            self.selectedAbilityID = #self.selectedRoster.encounters[self.selectedEncounterID] > 0 and #self.selectedRoster.encounters[self.selectedEncounterID] or nil
+            self.triggers.bossAbility.abilitySelector.selectedName = #self.triggers.bossAbility.abilitySelector.items > 0 and self.triggers.bossAbility.abilitySelector.items[self.selectedAbilityID].name or "Create ability..."
+            self.triggers.bossAbility.abilitySelector:Update()
+            self:UpdateAppearance()
+        else
+            print("No ability to delete")
+        end
+    end)
+    self.triggers.bossAbility.deleteButton:SetScript("OnEnter", function ()
+        self.triggers.bossAbility.deleteButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\delete_hover.png")
+    end)
+    self.triggers.bossAbility.deleteButton:SetScript("OnLeave", function ()
+        self.triggers.bossAbility.deleteButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\delete.png")
+    end)
+    self.triggers.bossAbility.addButton = CreateFrame("Button", self.triggers.bossAbility.pane:GetName().."_AddAbility", self.triggers.bossAbility.pane, "BackdropTemplate")
+    self.triggers.bossAbility.addButton:SetPoint("RIGHT", self.triggers.bossAbility.deleteButton, "LEFT", -5, 0)
+    self.triggers.bossAbility.addButton:SetBackdrop({
+        bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+        tile = true,
+        tileSize = 16,
+    })
+    self.triggers.bossAbility.addButton:SetBackdropColor(0, 0, 0, 0)
+    self.triggers.bossAbility.addButton.texture = self.triggers.bossAbility.addButton:CreateTexture(nil, "BACKGROUND")
+    self.triggers.bossAbility.addButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\add.png")
+    self.triggers.bossAbility.addButton.texture:SetAllPoints()
+    self.triggers.bossAbility.addButton.texture:SetAlpha(0.8)
+    self.triggers.bossAbility.addButton:SetSize(16, 16)
+    self.triggers.bossAbility.addButton:SetScript("OnMouseUp", function ()
+        if self.selectedEncounterID then
+            local newAbility = {
+                metadata = { name = "New Ability" },
+                assignments = {},
+                triggers = {},
+                untriggers = {},
+            }
+            self.selectedRoster.encounters[self.selectedEncounterID] = self.selectedRoster.encounters[self.selectedEncounterID] or {}
+            table.insert(self.selectedRoster.encounters[self.selectedEncounterID], newAbility)
+            self.selectedAbilityID = #self.selectedRoster.encounters[self.selectedEncounterID]
+            self.triggers.bossAbility.abilitySelector.selectedName = newAbility.metadata.name
+            if not self.triggers.bossAbility.abilitySelector.items then
+                self.triggers.bossAbility.abilitySelector.items = {}
+            end
+            table.insert(self.triggers.bossAbility.abilitySelector.items, { name = newAbility.metadata.name, abilityID = self.selectedAbilityID, onClick = function (r)
+                self.selectedAbilityID = r.item.abilityID
+                self:UpdateAppearance()
+            end })
+            self.triggers.bossAbility.abilitySelector:Update()
+            self:UpdateAppearance()
+        end
+    end)
+    self.triggers.bossAbility.addButton:SetScript("OnEnter", function ()
+        self.triggers.bossAbility.addButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\add_hover.png")
+    end)
+    self.triggers.bossAbility.addButton:SetScript("OnLeave", function ()
+        self.triggers.bossAbility.addButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\add.png")
+    end)
     self.triggers.bossAbility.editButton = CreateFrame("Button", self.triggers.bossAbility.pane:GetName().."_EditAbility", self.triggers.bossAbility.pane, "BackdropTemplate")
-    self.triggers.bossAbility.editButton:SetPoint("RIGHT", self.triggers.bossAbility.abilitySelector.button, "LEFT", -5, 0)
+    self.triggers.bossAbility.editButton:SetPoint("RIGHT", self.triggers.bossAbility.addButton, "LEFT", -5, 0)
     self.triggers.bossAbility.editButton:SetBackdrop({
         bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
         tile = true,
@@ -643,12 +715,10 @@ function RosterBuilder:InitializeEditTriggers()
     self.triggers.bossAbility.editButton.texture:SetAlpha(0.8)
     self.triggers.bossAbility.editButton:SetSize(16, 16)
     self.triggers.bossAbility.editButton:SetScript("OnMouseUp", function ()
-        if self.selectedAbilityID then
-            self.triggers.bossAbility.abilityEditBox:SetText(self.triggers.bossAbility.abilitySelector.text:GetText())
-            self.triggers.bossAbility.abilityEditBox:Show()
-            self.triggers.bossAbility.abilityEditBox:SetFocus()
-            self.triggers.bossAbility.abilitySelector.text:Hide()
-        end
+        self.triggers.bossAbility.abilityEditBox:SetText(self.triggers.bossAbility.abilitySelector.text:GetText())
+        self.triggers.bossAbility.abilityEditBox:Show()
+        self.triggers.bossAbility.abilityEditBox:SetFocus()
+        self.triggers.bossAbility.abilitySelector.text:Hide()
     end)
     self.triggers.bossAbility.editButton:SetScript("OnEnter", function ()
         self.triggers.bossAbility.editButton.texture:SetTexture("Interface\\Addons\\SwiftdawnRaidTools\\Media\\edit_hover.png")
@@ -1669,15 +1739,23 @@ function RosterBuilder:UpdateEditTriggers()
     end
     self.triggers.bossAbility.untriggers = {}
 
-    self.selectedAbilityID = self.selectedAbilityID or 1
-
-    if self.selectedRoster.encounters[self.selectedEncounterID] then
-        if self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] then
+    if self.selectedEncounterID then
+        print("Selected encounter ID: " .. self.selectedEncounterID)
+        self.triggers.bossAbility.abilitySelector:Show()
+        self.triggers.bossAbility.editButton:Show()
+        if self.selectedRoster.encounters[self.selectedEncounterID] and self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID or 1] and #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID or 1] then
+            print("Selected ability ID: " .. self.selectedAbilityID)
+            self.triggers.bossAbility.triggersTitle:Show()
+            self.triggers.bossAbility.untriggersTitle:Show()
+            if self.triggers.bossAbility.notificationTitle then
+                self.triggers.bossAbility.notificationTitle:Show()
+                self.triggers.bossAbility.notificationText:Show()
+            end
             self.triggers.bossAbility.abilityEditBox:SetScript("OnEnterPressed", function()
                 local oldName = self.triggers.bossAbility.abilitySelector.selectedName
                 local newName = self.triggers.bossAbility.abilityEditBox:GetText()
-                if #newName == 0 then
-                    newName = "Select ability..."
+                if #newName == 0 or newName == oldName then
+                    return
                 end
                 self.triggers.bossAbility.abilitySelector.selectedName = newName
                 self.triggers.bossAbility.abilitySelector:Update()
@@ -1922,6 +2000,66 @@ function RosterBuilder:UpdateEditTriggers()
                 self.triggers.bossAbility.notificationText.text:SetText("No custom message set...")
             end
             self.triggers.bossAbility.notificationText:Update()
+        else
+            print("No abilities yet")
+            self.triggers.bossAbility.triggersTitle:Hide()
+            self.triggers.bossAbility.untriggersTitle:Hide()
+            if self.triggers.bossAbility.notificationTitle then
+                self.triggers.bossAbility.notificationTitle:Hide()
+                self.triggers.bossAbility.notificationText:Hide()
+            end
+            self.triggers.bossAbility.abilitySelector.selectedName = "Create ability..."
+            self.triggers.bossAbility.abilitySelector.items = {}
+            self.triggers.bossAbility.abilitySelector:Update()
+            self.triggers.bossAbility.abilityEditBox:SetScript("OnEnterPressed", function()
+                local oldName = self.triggers.bossAbility.abilitySelector.selectedName
+                local newName = self.triggers.bossAbility.abilityEditBox:GetText()
+                if #newName == 0 or newName == oldName then
+                    return
+                end
+                if not self.selectedRoster.encounters[self.selectedEncounterID] then
+                    self.selectedRoster.encounters[self.selectedEncounterID] = {}
+                    self.selectedAbilityID = 1
+                else
+                    self.selectedAbilityID = #self.selectedRoster.encounters[self.selectedEncounterID] + 1
+                end
+                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID] = {}
+                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata = {
+                    name = newName,
+                    notification = nil
+                }
+                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].encounter = self.selectedEncounterID
+                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].assignments = {}
+                self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].triggers = {}
+                self.triggers.bossAbility.abilitySelector.selectedName = newName
+                self.triggers.bossAbility.abilitySelector.items = {
+                    { name = newName, abilityID = self.selectedAbilityID, onClick = function (r)
+                        self.selectedAbilityID = r.item.abilityID
+                        self:UpdateAppearance()
+                    end }
+                }
+                self.triggers.bossAbility.abilitySelector:Update()
+                self.triggers.bossAbility.abilityEditBox:ClearFocus()
+                self.triggers.bossAbility.abilityEditBox:Hide()
+                self.triggers.bossAbility.abilitySelector.text:Show()
+                self:UpdateAppearance()
+                Roster.MarkUpdated(self.selectedRoster, { createdAbility = {
+                    name = newName
+                }})
+            end)
+        end
+    else
+        self.triggers.bossAbility.abilitySelector:Hide()
+        self.triggers.bossAbility.abilityEditBox:Hide()
+        self.triggers.bossAbility.editButton:Hide()
+        self.triggers.bossAbility.abilitySelector.selectedName = "Create ability..."
+        self.triggers.bossAbility.abilitySelector.items = {}
+        self.triggers.bossAbility.abilitySelector:Update()
+        self.triggers.bossAbility.triggersTitle:Hide()
+        self.triggers.bossAbility.untriggersTitle:Hide()
+        if self.triggers.bossAbility.notificationTitle then
+            self.triggers.bossAbility.notificationTitle:Hide()
+            self.triggers.bossAbility.notificationText:Hide()
         end
     end
 end
@@ -1943,6 +2081,7 @@ function RosterBuilder:Update()
                 encounterID = encounterID,
                 onClick = function (row)
                     self.selectedEncounterID = row.item.encounterID
+                    self.selectedAbilityID = nil
                     for _, r in pairs(self.triggers.bossAbility.abilitySelector.dropdown.rows) do
                         r:Hide()
                     end
