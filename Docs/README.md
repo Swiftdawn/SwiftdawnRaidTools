@@ -35,6 +35,8 @@ triggers:
 
 Required values: `spell_id`.
 
+Optional values: `source`, `target`
+
 Context variables: `spell_name`, `source_name` and `dest_name`.
 
 ```yaml
@@ -46,6 +48,8 @@ triggers:
 #### SPELL_AURA_REMOVED
 
 Required values: `spell_id`.
+
+Optional values: `source`, `target`
 
 Context variables: `spell_name`, `source_name`.
 
@@ -59,12 +63,28 @@ triggers:
 
 Required values: `spell_id`.
 
+Optional values: `source`, `target`
+
 Context variables: `spell_name`, `source_name` and `dest_name`.
 
 ```yaml
 triggers:
 - type: SPELL_CAST
   spell_id: 12345
+```
+
+```yaml
+triggers:
+- type: SPELL_CAST
+  spell_id: 12345
+  source: boss1
+```
+
+```yaml
+triggers:
+- type: SPELL_CAST
+  spell_id: 12345
+  target: boss1
 ```
 
 #### RAID_BOSS_EMOTE

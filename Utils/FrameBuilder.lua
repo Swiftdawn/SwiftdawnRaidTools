@@ -634,9 +634,29 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, type, wi
     frame.hiddenFrames.spellName:SetPoint("TOPLEFT", frame.hiddenFrames.spellTitle, "BOTTOMLEFT", 0, -5)
     frame.hiddenFrames.spellName:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b, SRTColor.LightGray.a)
     frame.hiddenFrames.spellName:SetText("Spell Name: "..(GetSpellInfo(frame.trigger.spellID) or "Spell not found!"))
+    frame.hiddenFrames.sourceTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.sourceTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.sourceTitle:SetPoint("TOPLEFT", frame.hiddenFrames.spellName, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.sourceTitle:SetText("Source:")
+    frame.hiddenFrames.sourceTitle:SetWidth(frame.hiddenFrames.sourceTitle:GetStringWidth())
+    frame.hiddenFrames.sourceEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.sourceEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.sourceEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.sourceEditBox:SetPoint("LEFT", frame.hiddenFrames.sourceTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.sourceEditBox:SetAutoFocus(false)
+    frame.hiddenFrames.targetTitle = frame.hiddenFrames:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    frame.hiddenFrames.targetTitle:SetFont(font, fontSize, "")
+    frame.hiddenFrames.targetTitle:SetPoint("TOPLEFT", frame.hiddenFrames.sourceTitle, "BOTTOMLEFT", 0, -5)
+    frame.hiddenFrames.targetTitle:SetText("Target:")
+    frame.hiddenFrames.targetTitle:SetWidth(frame.hiddenFrames.targetTitle:GetStringWidth())
+    frame.hiddenFrames.targetEditBox = CreateFrame("EditBox", nil, frame.hiddenFrames)
+    frame.hiddenFrames.targetEditBox:SetFont(font, fontSize, "")
+    frame.hiddenFrames.targetEditBox:SetSize(width - 10, height)
+    frame.hiddenFrames.targetEditBox:SetPoint("LEFT", frame.hiddenFrames.targetTitle, "RIGHT", 5, 0)
+    frame.hiddenFrames.targetEditBox:SetAutoFocus(false)
     if type == "trigger" then
         AddHiddenDelayEditbox(frame, font, fontSize, width, height)
-        frame.hiddenFrames.delayTitle:SetPoint("TOPLEFT", frame.hiddenFrames.spellName, "BOTTOMLEFT", 0, -5)
+        frame.hiddenFrames.delayTitle:SetPoint("TOPLEFT", frame.hiddenFrames.targetTitle, "BOTTOMLEFT", 0, -5)
         AddHiddenThrottleEditbox(frame, font, fontSize, width, height)
         frame.hiddenFrames.throttleTitle:SetPoint("TOPLEFT", frame.hiddenFrames.delayTitle, "BOTTOMLEFT", 0, -5)
         AddHiddenCountdownEditbox(frame, font, fontSize, width, height)
@@ -650,6 +670,8 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, type, wi
     end
     local function acceptChanges()
         frame.trigger.spellID = tonumber(frame.hiddenFrames.spellEditBox:GetText()) or 0
+        frame.trigger.source = frame.hiddenFrames.sourceEditBox:GetText() or ""
+        frame.trigger.target = frame.hiddenFrames.targetEditBox:GetText() or ""
         if type == "trigger" then
             frame.trigger.countdown = tonumber(frame.hiddenFrames.countdownEditBox:GetText()) or 0
             frame.trigger.delay = tonumber(frame.hiddenFrames.delayEditBox:GetText()) or 0
@@ -666,14 +688,16 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, type, wi
         if button == "LeftButton" then
             frame.text:Hide()
             frame.hiddenFrames.spellEditBox:SetText(tostring(frame.trigger.spellID) or "0")
+            frame.hiddenFrames.sourceEditBox:SetText(frame.trigger.source or "")
+            frame.hiddenFrames.targetEditBox:SetText(frame.trigger.target or "")
             if type == "trigger" then
                 frame.hiddenFrames.delayEditBox:SetText(tostring(frame.trigger.delay) or "0")
                 frame.hiddenFrames.throttleEditBox:SetText(tostring(frame.trigger.throttle) or "0")
                 frame.hiddenFrames.countdownEditBox:SetText(tostring(frame.trigger.countdown) or "0")
             end
             frame.hiddenFrames:Show()
-            frame:SetSize(width, type == "trigger" and 80 or 35) -- Adjust the frame size to fit the hidden frames
-            frame.hiddenFrames:SetSize(width, type == "trigger" and 80 or 35)
+            frame:SetSize(width, type == "trigger" and 110 or 35) -- Adjust the frame size to fit the hidden frames
+            frame.hiddenFrames:SetSize(width, type == "trigger" and 110 or 35)
             frame:SetBackdrop({
                 bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
                 tile = true,
@@ -696,6 +720,10 @@ function FrameBuilder.CreateSpellCastTriggerFrame(parentFrame, trigger, type, wi
     end)
     frame.hiddenFrames.spellEditBox:SetScript("OnEscapePressed", cancelEditing)
     frame.hiddenFrames.spellEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.sourceEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.sourceEditBox:SetScript("OnEnterPressed", acceptChanges)
+    frame.hiddenFrames.targetEditBox:SetScript("OnEscapePressed", cancelEditing)
+    frame.hiddenFrames.targetEditBox:SetScript("OnEnterPressed", acceptChanges)
     if type == "trigger" then
         frame.hiddenFrames.delayEditBox:SetScript("OnEscapePressed", cancelEditing)
         frame.hiddenFrames.throttleEditBox:SetScript("OnEscapePressed", cancelEditing)

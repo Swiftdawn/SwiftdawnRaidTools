@@ -2,7 +2,7 @@ local SwiftdawnRaidTools = SwiftdawnRaidTools
 Log = {}
 
 function Log.info(message, ...)
-    SwiftdawnRaidTools:Print(message, ...)
+    SwiftdawnRaidTools:Print(message)
     if SwiftdawnRaidTools.debugLog then
         SwiftdawnRaidTools.debugLog:AddItem(message, ...)
     end

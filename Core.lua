@@ -378,14 +378,21 @@ function SwiftdawnRaidTools:HandleCombatLog(subEvent, sourceName, destGUID, dest
     if subEvent == "SPELL_CAST_START" then
         AssignmentsController:HandleSpellCast(subEvent, spellId, sourceName, destName)
     elseif subEvent == "SPELL_CAST_SUCCESS" then
-        SpellCache.RegisterCast(sourceName, spellId, function()
+        SpellCache.RegisterCast(sourceName, destName, spellId, function()
             AssignmentsController:UpdateGroups()
             self.overview:UpdateSpells()
             self.notification:UpdateSpells()
         end)
         AssignmentsController:HandleSpellCast(subEvent, spellId, sourceName, destName)
-    elseif subEvent == "SPELL_AURA_APPLIED" or subEvent =="SPELL_AURA_REMOVED" then
+    elseif subEvent == "SPELL_AURA_APPLIED" then
+        SpellCache.RegisterCast(sourceName, destName, spellId, function()
+            AssignmentsController:UpdateGroups()
+            self.overview:UpdateSpells()
+            self.notification:UpdateSpells()
+        end)
         AssignmentsController:HandleSpellAura(subEvent, spellId, sourceName, destName)
+    elseif subEvent == "SPELL_AURA_REMOVED" then
+        AssignmentsController:HandleSpellAuraRemoved(subEvent, spellId, sourceName, destName)
     elseif subEvent == "UNIT_DIED" then
         if Utils:IsFriendlyRaidMemberOrPlayer(destGUID) then
             UnitCache:SetDead(destGUID)

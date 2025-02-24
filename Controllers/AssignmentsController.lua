@@ -272,13 +272,13 @@ function AssignmentsController:SelectBestMatchIndex(assignments)
         local ready = true
         for _, assignment in ipairs(group) do
             if not SpellCache.IsSpellActive(assignment.player, assignment.spell_id, GetTime() + 5) and not SpellCache.IsSpellReady(assignment.player, assignment.spell_id) then
-                print("Found an assignment that is not ready", assignment.player, assignment.spell_id)
+                -- Log.debug("Found an assignment that is not ready", assignment.player, assignment.spell_id)
                 ready = false
                 break
             end
         end
         if ready then
-            print("Found a group where all assignments are ready", i)
+            -- Log.debug("Found a group where all assignments are ready", i, group)
             return i
         end
     end
@@ -373,17 +373,17 @@ function AssignmentsController:CheckTriggerConditions(conditions)
 end
 
 function AssignmentsController:Trigger(trigger, context, countdown, ignoreTriggerDelay)
-    Log.debug("TRIGGER "..tostring(trigger.type), { trigger = trigger, context = context, countdown = countdown, ignoreTriggerDelay = ignoreTriggerDelay })
+    Log.debug("Trigger: "..tostring(trigger.type), { trigger = trigger, context = context, countdown = countdown, ignoreTriggerDelay = ignoreTriggerDelay })
 
     if trigger.throttle then
         if trigger.lastTriggerTime and GetTime() < trigger.lastTriggerTime + trigger.throttle then
-            Log.debug("TRIGGER "..tostring(trigger.type)..": Throttled", { trigger = trigger, context = context, countdown = countdown, ignoreTriggerDelay = ignoreTriggerDelay })
+            Log.debug("Trigger: "..tostring(trigger.type).." throttled", { trigger = trigger, context = context, countdown = countdown, ignoreTriggerDelay = ignoreTriggerDelay })
             return
         end
     end
 
     if not AssignmentsController:CheckTriggerConditions(trigger.conditions) then
-        Log.debug("TRIGGER "..tostring(trigger.type)..": Conditions did not pass", { trigger = trigger, context = context, countdown = countdown, ignoreTriggerDelay = ignoreTriggerDelay })
+        Log.debug("Trigger: "..tostring(trigger.type).." conditions did not pass", { trigger = trigger, context = context, countdown = countdown, ignoreTriggerDelay = ignoreTriggerDelay })
         return
     end
 
@@ -405,7 +405,7 @@ function AssignmentsController:Trigger(trigger, context, countdown, ignoreTrigge
             context = context
         }
 
-        Log.debug("TRIGGER "..tostring(trigger.type)..": Found groups", data)
+        Log.debug("Trigger: "..tostring(trigger.type).." found groups", data)
 
         if not ignoreTriggerDelay and (trigger.delay and trigger.delay > 0) then
             if not AssignmentsController.delayTimers[trigger.uuid] then
@@ -519,7 +519,7 @@ function AssignmentsController:HandleSpellCast(event, spellId, sourceName, destN
         return
     end
 
-    local triggers = AssignmentsController.spellCastTriggersCache[spellId]
+    local spellCastTriggers = AssignmentsController.spellCastTriggersCache[spellId]
 
     if event == "SPELL_CAST_SUCCESS" then
         if not AssignmentsController.spellCastCache[spellId] then
@@ -528,7 +528,7 @@ function AssignmentsController:HandleSpellCast(event, spellId, sourceName, destN
         AssignmentsController.spellCastCache[spellId] = AssignmentsController.spellCastCache[spellId] + 1
     end
 
-    if triggers then
+    if spellCastTriggers then
         local spellInfo = C_Spell.GetSpellInfo(spellId)
 
         local ctx = {
@@ -539,9 +539,18 @@ function AssignmentsController:HandleSpellCast(event, spellId, sourceName, destN
 
         -- We don't want to handle a spellcast twice so we only look for start events or success events for instant cast spells
         if event == "SPELL_CAST_START" or (event == "SPELL_CAST_SUCCESS" and (not spellInfo.castTime or spellInfo.castTime == 0)) then
-            for _, trigger in ipairs(triggers) do
+            for _, spellCastTrigger in ipairs(spellCastTriggers) do
+
+                -- Handle source and target filters
+                if sourceName and spellCastTrigger.source and sourceName ~= spellCastTrigger.source then
+                    return
+                end
+                if destName and spellCastTrigger.target and destName ~= spellCastTrigger.target then
+                    return
+                end
+
                 local countdown = spellInfo.castTime / 1000
-                AssignmentsController:Trigger(trigger, ctx, countdown)
+                AssignmentsController:Trigger(spellCastTrigger, ctx, countdown)
             end
         end
     end
@@ -572,37 +581,66 @@ function AssignmentsController:HandleSpellAura(subEvent, spellId, sourceName, de
         dest_name = destName
     }
 
-    if subEvent == "SPELL_AURA_APPLIED" then
-        local triggers = AssignmentsController.spellAuraTriggersCache[spellId]
+    local spellAuraTriggers = AssignmentsController.spellAuraTriggersCache[spellId]
 
-        if triggers then
-            for _, trigger in ipairs(triggers) do
-                AssignmentsController:Trigger(trigger, ctx)
-            end
-        end
-    
-        local untriggers = AssignmentsController.spellAuraUntriggersCache[spellId]
-    
-        if untriggers then
-            for _, untrigger in ipairs(untriggers) do
-                AssignmentsController:CancelDelayTimers(untrigger.uuid)
-            end
-        end
-    elseif subEvent == "SPELL_AURA_REMOVED" then
-        local triggers = AssignmentsController.spellAuraRemovedTriggersCache[spellId]
+    if spellAuraTriggers then
+        for _, spellAuraTrigger in ipairs(spellAuraTriggers) do
 
-        if triggers then
-            for _, trigger in ipairs(triggers) do
-                AssignmentsController:Trigger(trigger, ctx)
+            -- Handle source and target filters
+            if sourceName and spellAuraTrigger.source and sourceName ~= spellAuraTrigger.source then
+                return
             end
+            if destName and spellAuraTrigger.target and destName ~= spellAuraTrigger.target then
+                return
+            end
+
+            AssignmentsController:Trigger(spellAuraTrigger, ctx)
         end
-    
-        local untriggers = AssignmentsController.spellAuraRemovedUntriggersCache[spellId]
-    
-        if untriggers then
-            for _, untrigger in ipairs(untriggers) do
-                AssignmentsController:CancelDelayTimers(untrigger.uuid)
+    end
+
+    local untriggers = AssignmentsController.spellAuraUntriggersCache[spellId]
+
+    if untriggers then
+        for _, untrigger in ipairs(untriggers) do
+            AssignmentsController:CancelDelayTimers(untrigger.uuid)
+        end
+    end
+end
+
+function AssignmentsController:HandleSpellAuraRemoved(subEvent, spellId, sourceName, destName)
+    if not AssignmentsController.activeEncounterID then
+        return
+    end
+
+    local spellName = C_Spell.GetSpellName(spellId)
+
+    local ctx = {
+        spell_name = spellName,
+        source_name = sourceName,
+        dest_name = destName
+    }
+    local spellAuraRemovedTriggers = AssignmentsController.spellAuraRemovedTriggersCache[spellId]
+
+    if spellAuraRemovedTriggers then
+        for _, spellAuraRemovedTrigger in ipairs(spellAuraRemovedTriggers) do
+
+            -- Handle source and target filters
+            if sourceName and spellAuraRemovedTrigger.source and sourceName ~= spellAuraRemovedTrigger.source then
+                return
             end
+            if destName and spellAuraRemovedTrigger.target and destName ~= spellAuraRemovedTrigger.target then
+                return
+            end
+
+            AssignmentsController:Trigger(spellAuraRemovedTrigger, ctx)
+        end
+    end
+
+    local untriggers = AssignmentsController.spellAuraRemovedUntriggersCache[spellId]
+
+    if untriggers then
+        for _, untrigger in ipairs(untriggers) do
+            AssignmentsController:CancelDelayTimers(untrigger.uuid)
         end
     end
 end
