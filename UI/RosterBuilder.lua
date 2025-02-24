@@ -613,7 +613,7 @@ function RosterBuilder:InitializeEditTriggers()
         self.triggers.bossAbility.abilityEditBox:ClearFocus()
         self.triggers.bossAbility.abilityEditBox:Hide()
         self.triggers.bossAbility.abilitySelector.text:Show()
-        print("Renaming ability " .. self.selectedAbilityID .. " to " .. newName)
+        Log.debug("Renaming ability " .. self.selectedAbilityID .. " to " .. newName)
         self.triggers.bossAbility.abilitySelector.items[self.selectedAbilityID].name = newName
         self.triggers.bossAbility.abilitySelector.Update()
         self:UpdateAppearance()
@@ -645,7 +645,7 @@ function RosterBuilder:InitializeEditTriggers()
     self.triggers.bossAbility.deleteButton:SetSize(16, 16)
     self.triggers.bossAbility.deleteButton:SetScript("OnMouseUp", function ()
         if self.selectedEncounterID and self.selectedAbilityID then
-            print("Deleting ability " .. self.selectedAbilityID .. " from encounter " .. self.selectedEncounterID)
+            Log.debug("Deleting ability " .. self.selectedAbilityID .. " from encounter " .. self.selectedEncounterID)
             table.remove(self.selectedRoster.encounters[self.selectedEncounterID], self.selectedAbilityID)
             self.triggers.bossAbility.abilitySelector.RemoveItem(self.selectedAbilityID)
             self.selectedAbilityID = #self.selectedRoster.encounters[self.selectedEncounterID] > 0 and #self.selectedRoster.encounters[self.selectedEncounterID] or nil
@@ -653,7 +653,7 @@ function RosterBuilder:InitializeEditTriggers()
             self.triggers.bossAbility.abilitySelector:Update()
             self:UpdateAppearance()
         else
-            print("No ability to delete")
+            Log.debug("No ability to delete")
         end
     end)
     self.triggers.bossAbility.deleteButton:SetScript("OnEnter", function ()
@@ -1743,13 +1743,11 @@ function RosterBuilder:UpdateEditTriggers()
     self.triggers.bossAbility.untriggers = {}
 
     if self.selectedEncounterID then
-        print("Selected encounter ID: " .. self.selectedEncounterID)
         self.triggers.bossAbility.abilitySelector:Show()
         -- self.triggers.bossAbility.editButton:Show()
         self.triggers.bossAbility.addButton:Show()
         self.triggers.bossAbility.deleteButton:Show()
         if self.selectedRoster.encounters[self.selectedEncounterID] and self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID or 1] and #self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID or 1] then
-            print("Selected ability ID: " .. self.selectedAbilityID)
             self.triggers.bossAbility.triggersTitle:Show()
             self.triggers.bossAbility.untriggersTitle:Show()
             if self.triggers.bossAbility.notificationTitle then
@@ -1763,7 +1761,7 @@ function RosterBuilder:UpdateEditTriggers()
                     return
                 end
                 self.triggers.bossAbility.abilitySelector.selectedName = newName
-                print("Renaming ability " .. self.selectedAbilityID .. " to " .. newName)
+                Log.debug("Renaming ability " .. self.selectedAbilityID .. " to " .. newName)
                 self.triggers.bossAbility.abilitySelector.items[self.selectedAbilityID].name = newName
                 self.triggers.bossAbility.abilitySelector.Update()
                 self.selectedRoster.encounters[self.selectedEncounterID][self.selectedAbilityID].metadata.name = newName
@@ -1825,7 +1823,7 @@ function RosterBuilder:UpdateEditTriggers()
                             local conditionID = string.format("%d_%d_trigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
                             local parsedCondition = Utils:ParseCondition(condition)
                             if not parsedCondition then
-                                print("Failed to parse condition", Utils:TableToString(condition))
+                                Log.debug("Failed to parse condition", Utils:TableToString(condition))
                                 return
                             end
                             local conditionFrame = triggerFrame.AddCondition(conditionID, parsedCondition,
@@ -1882,7 +1880,7 @@ function RosterBuilder:UpdateEditTriggers()
                     local untriggerID = string.format("%d_%d_untrigger%d", self.selectedEncounterID, self.selectedAbilityID, ti)
                     local parsedTrigger = Utils:ParseTrigger(untrigger)
                     if not parsedTrigger then
-                        print("Failed to parse untrigger")
+                        Log.debug("Failed to parse untrigger")
                         return
                     end
                     if not self.triggers.bossAbility.untriggers[untriggerID] then
@@ -2008,7 +2006,6 @@ function RosterBuilder:UpdateEditTriggers()
             end
             self.triggers.bossAbility.notificationText:Update()
         else
-            print("No abilities yet")
             self.triggers.bossAbility.triggersTitle:Hide()
             self.triggers.bossAbility.untriggersTitle:Hide()
             if self.triggers.bossAbility.notificationTitle then
