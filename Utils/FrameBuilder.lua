@@ -1346,6 +1346,10 @@ function FrameBuilder.CreateSelector(parentFrame, items, width, font, fontSize, 
             end
         end
     end
+    selector.RemoveItem = function (index)
+        table.remove(selector.items, index)
+        selector.Update()
+    end
     selector.Update()
     return selector
 end
@@ -1360,8 +1364,12 @@ function FrameBuilder.UpdateSelector(selector)
     })
     selector.dropdown:SetBackdropColor(0.1, 0.1, 0.1, 0.9)
     selector.dropdown.rows = selector.dropdown.rows or {}
+    for _, row in ipairs(selector.dropdown.rows) do
+        row:Hide()
+    end
     local lastRow
     for rowIndex, item in ipairs(selector.items) do
+        item.index = rowIndex
         local row = selector.dropdown.rows[rowIndex] or CreateFrame("Frame", nil, selector.dropdown, "BackdropTemplate")
         row:SetSize(selector:GetWidth(), 18)
         if lastRow then
