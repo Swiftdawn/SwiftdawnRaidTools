@@ -1053,7 +1053,42 @@ local testAssignments = {
            ["metadata"] = {
                ["name"] = "Aura Removed Condition",
            },
-        }, -- [6]  Unit Health Phase
+        }, -- [6]  Aura Removed Condition
+        {
+            ["assignments"] = {
+                {
+                    {
+                        ["spell_id"] = 740,
+                        ["type"] = "SPELL",
+                        ["player"] = "Bushtree",
+                    }, -- [1]
+                    {
+                        ["spell_id"] = 64843,
+                        ["type"] = "SPELL",
+                        ["player"] = "Kondec",
+                    }, -- [2]
+                }, -- [1]
+            },
+            ["version"] = 1,
+            ["encounter"] = 42001,
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 98934,
+                    ["type"] = "SPELL_CAST",
+                    ["conditions"] = {
+                        {
+                            ["type"] = "SPELL_CAST_COUNT",
+                            ["eq"] = 2,
+                            ["spell_id"] = 98934,
+                        }, -- [1]
+                    },
+                }, -- [1]
+            },
+            ["uuid"] = "b4aeb9ec-9f2a-5f03-c5bf-444ac5cec092",
+            ["metadata"] = {
+                ["name"] = "Spell Cast Count Condition",
+            },
+        }
     }
 }
 

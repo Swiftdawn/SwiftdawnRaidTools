@@ -168,9 +168,23 @@ function SwiftdawnRaidTools:TestModeStart()
         SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, "Sarune", 99052)
     end))
 
-    -- End of Test
+    -- Phase 6
 
     insert(timers, C_Timer.NewTimer(55, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, nil, 98934)
+    end))
+
+    insert(timers, C_Timer.NewTimer(58, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, nil, 98934)
+    end))
+
+    insert(timers, C_Timer.NewTimer(61, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, nil, 98934)
+    end))
+
+    -- End of Test
+
+    insert(timers, C_Timer.NewTimer(66, function()
         SwiftdawnRaidTools:TestModeEnd()
     end))
 end

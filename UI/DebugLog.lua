@@ -50,11 +50,6 @@ function SRTDebugLog:Initialize()
     self:UpdateAppearance()
 end
 
-function SRTDebugLog:ScrollToBottom()
-    local logFontSize = self:GetAppearance().logFontSize
-    self.scrollBar:SetValue(15 + #self.logItems * (logFontSize + 3))
-end
-
 --- Add a log statement to the debug log
 ---@param data table
 function SRTDebugLog:AddItem(data, ...)
@@ -91,14 +86,13 @@ function SRTDebugLog:AddItem(data, ...)
         cachedItem:UpdateAppearance()
         table.insert(self.logItems, cachedItem)
     end
-    if self:GetProfile().scrollToBottom then
-        self:ScrollToBottom()
-    end
+    self:UpdateAppearance()
 end
 
 function SRTDebugLog:UpdateAppearance()
     local logFontSize = self:GetAppearance().logFontSize
     self.scrollContentFrame:SetHeight(15 + #self.logItems * (logFontSize + 3) + 5)
+    self:UpdateAutoScroll()
     for _, item in ipairs(self.logItems) do
         item:UpdateAppearance()
     end
@@ -110,6 +104,11 @@ function SRTDebugLog:UpdateAutoScroll()
     if self:GetProfile().scrollToBottom then
         self:ScrollToBottom()
     end
+end
+
+function SRTDebugLog:ScrollToBottom()
+    local logFontSize = self:GetAppearance().logFontSize
+    self.scrollBar:SetValue(15 + #self.logItems * (logFontSize + 3) + 5)
 end
 
 function SRTDebugLog:ToggleAutoScroll()
