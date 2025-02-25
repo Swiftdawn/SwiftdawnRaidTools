@@ -360,7 +360,7 @@ function SwiftdawnRaidTools:GROUP_ROSTER_UPDATE()
 end
 
 function SwiftdawnRaidTools:COMBAT_LOG_EVENT_UNFILTERED()
-    local _, subEvent, _, _, sourceName, _, _, destGUID, destName, _, _, spellId = CombatLogGetCurrentEventInfo()
+    local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags, spellId = CombatLogGetCurrentEventInfo()
     self:HandleCombatLog(subEvent, sourceName, destGUID, destName, spellId)
 end
 
@@ -381,22 +381,24 @@ function SwiftdawnRaidTools:HandleCombatLog(subEvent, sourceName, destGUID, dest
         return
     end
     if subEvent == "SPELL_CAST_START" then
+        SpellCache.RegisterCastStart(sourceName, destName, spellId)
         AssignmentsController:HandleSpellCast(subEvent, spellId, sourceName, destName)
     elseif subEvent == "SPELL_CAST_SUCCESS" then
-        SpellCache.RegisterCast(sourceName, destName, spellId, function()
+        SpellCache.RegisterCastSuccess(sourceName, destName, spellId, function()
             AssignmentsController:UpdateGroups()
             self.overview:UpdateSpells()
             self.notification:UpdateSpells()
         end)
         AssignmentsController:HandleSpellCast(subEvent, spellId, sourceName, destName)
     elseif subEvent == "SPELL_AURA_APPLIED" then
-        SpellCache.RegisterCast(sourceName, destName, spellId, function()
+        SpellCache.RegisterCastSuccess(sourceName, destName, spellId, function()
             AssignmentsController:UpdateGroups()
             self.overview:UpdateSpells()
             self.notification:UpdateSpells()
         end)
         AssignmentsController:HandleSpellAura(subEvent, spellId, sourceName, destName)
     elseif subEvent == "SPELL_AURA_REMOVED" then
+        SpellCache.RegisterAuraRemoved(destName, spellId)
         AssignmentsController:HandleSpellAuraRemoved(subEvent, spellId, sourceName, destName)
     elseif subEvent == "UNIT_DIED" then
         if Utils:IsFriendlyRaidMemberOrPlayer(destGUID) then

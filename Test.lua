@@ -58,51 +58,119 @@ function SwiftdawnRaidTools:TestModeStart()
         SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "Aeolyne", nil, nil, 740)
     end))
 
-    insert(timers, C_Timer.NewTimer(5.5, function()
+    insert(timers, C_Timer.NewTimer(5.2, function()
         SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "Aeolyne", nil, nil, 740)
     end))
 
     -- Phase 1
 
-    insert(timers, C_Timer.NewTimer(14, function()
+    insert(timers, C_Timer.NewTimer(10, function()
         SwiftdawnRaidTools:HandleCombatLog("SPELL_AURA_APPLIED", "The Boss", nil, nil, 81572)
     end))
 
-    insert(timers, C_Timer.NewTimer(15.5, function()
-        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "Kondec", nil, nil, 62618)
-    end))
-
-    insert(timers, C_Timer.NewTimer(16.5, function()
+    insert(timers, C_Timer.NewTimer(12, function()
         SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "Kondec", nil, nil, 62618)
     end))
 
     -- Phase 2
 
-    insert(timers, C_Timer.NewTimer(21, function()
+    insert(timers, C_Timer.NewTimer(15, function()
         SwiftdawnRaidTools:CHAT_MSG_RAID_BOSS_EMOTE(nil, "I will breathe fire on you!")
     end))
 
-    insert(timers, C_Timer.NewTimer(22.5, function()
-        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "Anticipâte", nil, nil, 31821)
-    end))
-
-    insert(timers, C_Timer.NewTimer(23.5, function()
+    insert(timers, C_Timer.NewTimer(16, function()
         SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "Anticipâte", nil, nil, 31821)
     end))
 
     -- Phase 3
 
-    insert(timers, C_Timer.NewTimer(28, function()
+    insert(timers, C_Timer.NewTimer(20, function()
         SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, nil, 88853)
     end))
 
-    insert(timers, C_Timer.NewTimer(33, function()
+    insert(timers, C_Timer.NewTimer(23, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "Bushtree", nil, nil, 88853)
+    end))
+
+    insert(timers, C_Timer.NewTimer(26, function()
         SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, nil, 88853)
+    end))
+
+    -- Phase 4
+
+    insert(timers, C_Timer.NewTimer(30, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, "Bushpoke", 105256)
+    end))
+
+    insert(timers, C_Timer.NewTimer(31, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, "Bushpoke", 105256)
+    end))
+
+    insert(timers, C_Timer.NewTimer(33, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, "Oldmanbush", 105256)
+    end))
+
+    insert(timers, C_Timer.NewTimer(34, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, "Oldmanbush", 105256)
+    end))
+
+    insert(timers, C_Timer.NewTimer(34, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "Venmir", nil, nil, 98008)
+    end))
+
+    insert(timers, C_Timer.NewTimer(36, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, "Bushtree", 105256)
+    end))
+
+    insert(timers, C_Timer.NewTimer(37, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, "Bushtree", 105256)
+    end))
+
+    -- Phase 5
+
+    insert(timers, C_Timer.NewTimer(41, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_AURA_REMOVED", "The Boss", nil, "Dableach", 63510)
+    end))
+
+    insert(timers, C_Timer.NewTimer(42, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, "Sarune", 99052)
+    end))
+
+    insert(timers, C_Timer.NewTimer(43, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, "Sarune", 99052)
+    end))
+
+    insert(timers, C_Timer.NewTimer(44, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_AURA_REMOVED", "The Boss", nil, "Dableach", 63510)
+    end))
+
+    insert(timers, C_Timer.NewTimer(45, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, "Sarune", 99052)
+    end))
+
+    insert(timers, C_Timer.NewTimer(46, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, "Sarune", 99052)
+    end))
+
+    insert(timers, C_Timer.NewTimer(47, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "Bushtree", nil, nil, 740)
+    end))
+
+    insert(timers, C_Timer.NewTimer(48, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_AURA_REMOVED", "The Boss", nil, "Dableach", 63510)
+    end))
+
+    insert(timers, C_Timer.NewTimer(49, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_START", "The Boss", nil, "Sarune", 99052)
+    end))
+
+    insert(timers, C_Timer.NewTimer(50, function()
+        SwiftdawnRaidTools:HandleCombatLog("SPELL_CAST_SUCCESS", "The Boss", nil, "Sarune", 99052)
     end))
 
     -- End of Test
 
-    insert(timers, C_Timer.NewTimer(44, function()
+    insert(timers, C_Timer.NewTimer(55, function()
         SwiftdawnRaidTools:TestModeEnd()
     end))
 end

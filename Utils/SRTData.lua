@@ -930,7 +930,6 @@ local testAssignments = {
             ["encounter"] = 42001,
             ["triggers"] = {
                 {
-                    ["countdown"] = 3,
                     ["type"] = "RAID_BOSS_EMOTE",
                     ["delay"] = 1,
                     ["text"] = "I will breathe fire on you!",
@@ -969,102 +968,92 @@ local testAssignments = {
                 }, -- [2]
             },
             ["version"] = 1,
-            ["encounter"] = 1023,
+            ["encounter"] = 42001,
             ["triggers"] = {
                 {
                     ["spell_id"] = 88853,
                     ["type"] = "SPELL_CAST",
+                    ["source"] = "The Boss",
+                    ["conditions"] = {
+                        {
+                            ["type"] = "SPELL_CAST_COUNT",
+                            ["spell_id"] = 88853,
+                            ["gt"] = 1,
+                        }, -- [1]
+                    },
                 }, -- [1]
             },
             ["uuid"] = "e8b42653-abbe-418d-b675-6d323d8d78c8",
             ["metadata"] = {
-                ["name"] = "Spell Cast",
+                ["name"] = "Spell Cast By",
             },
         }, -- [4]  Spell Cast Phase
-        --{
-        --    ["assignments"] = {
-        --        {
-        --            {
-        --                ["spell_id"] = 64843,
-        --                ["type"] = "SPELL",
-        --                ["player"] = "Kondec",
-        --            }, -- [1]
-        --            {
-        --                ["spell_id"] = 98008,
-        --                ["type"] = "SPELL",
-        --                ["player"] = "Venmir",
-        --            }, -- [2]
-        --        }, -- [1]
-        --        {
-        --            {
-        --                ["spell_id"] = 740,
-        --                ["type"] = "SPELL",
-        --                ["player"] = "Aeolyne",
-        --            }, -- [1]
-        --            {
-        --                ["spell_id"] = 740,
-        --                ["type"] = "SPELL",
-        --                ["player"] = "Crawlern",
-        --            }, -- [2]
-        --        }, -- [2]
-        --    },
-        --    ["version"] = 1,
-        --    ["encounter"] = 1023,
-        --    ["triggers"] = {
-        --        {
-        --            ["spell_id"] = 82848,
-        --            ["type"] = "SPELL_CAST",
-        --            ["conditions"] = {
-        --                {
-        --                    ["pct_lt"] = 25,
-        --                    ["type"] = "UNIT_HEALTH",
-        --                    ["unit"] = "boss1",
-        --                }, -- [1]
-        --            },
-        --        }, -- [1]
-        --    },
-        --    ["uuid"] = "765b0f4c-141a-4286-b97f-24390a8001c5",
-        --    ["metadata"] = {
-        --        ["name"] = "Conditional Spell Cast Test",
-        --    },
-        --}, -- [5]  Conditional Spell Cast Phase
-        --{
-        --    ["assignments"] = {
-        --        {
-        --            {
-        --                ["spell_id"] = 64843,
-        --                ["type"] = "SPELL",
-        --                ["player"] = "Kondec",
-        --            }, -- [1]
-        --        }, -- [1]
-        --        {
-        --            {
-        --                ["spell_id"] = 740,
-        --                ["type"] = "SPELL",
-        --                ["player"] = "Aeolyne",
-        --            }, -- [1]
-        --        }, -- [2]
-        --    },
-        --    ["version"] = 1,
-        --    ["encounter"] = 42001,
-        --    ["triggers"] = {
-        --        {
-        --            ["pct_lt"] = 70,
-        --            ["type"] = "UNIT_HEALTH",
-        --            ["unit"] = "boss1",
-        --        }, -- [1]
-        --        {
-        --            ["pct_lt"] = 70,
-        --            ["type"] = "UNIT_HEALTH",
-        --            ["delay"] = 10,
-        --            ["unit"] = "boss1",
-        --        }, -- [2]
-        --    },
-        --    ["uuid"] = "b5aeb9ec-9f2a-4f03-b5bf-764ac5cec091",
-        --    ["metadata"] = {
-        --        ["name"] = "Unit Health Test",
-        --    },
-        --}, -- [6]  Unit Health Phase
+        {
+           ["assignments"] = {
+               {
+                   {
+                       ["spell_id"] = 64843,
+                       ["type"] = "SPELL",
+                       ["player"] = "Kondec",
+                   }, -- [1]
+                   {
+                       ["spell_id"] = 98008,
+                       ["type"] = "SPELL",
+                       ["player"] = "Venmir",
+                   }, -- [2]
+               }, -- [1]
+           },
+           ["version"] = 1,
+           ["encounter"] = 42001,
+           ["triggers"] = {
+               {
+                   ["spell_id"] = 105256,
+                   ["type"] = "SPELL_CAST",
+                   ["target"] = "Oldmanbush",
+               }, -- [1]
+           },
+           ["uuid"] = "765b0f4c-141a-4286-b97f-24390a8001c6",
+           ["metadata"] = {
+               ["name"] = "Spell Cast On",
+           },
+        }, -- [5]  Conditional Spell Cast Phase
+        {
+           ["assignments"] = {
+               {
+                   {
+                       ["spell_id"] = 740,
+                       ["type"] = "SPELL",
+                       ["player"] = "Bushtree",
+                   }, -- [1]
+                   {
+                       ["spell_id"] = 64843,
+                       ["type"] = "SPELL",
+                       ["player"] = "Kondec",
+                   }, -- [2]
+               }, -- [1]
+           },
+           ["version"] = 1,
+           ["encounter"] = 42001,
+           ["triggers"] = {
+               {
+                   ["spell_id"] = 99052,
+                   ["type"] = "SPELL_CAST",
+                   ["target"] = "Sarune",
+                   ["conditions"] = {
+                       {
+                           ["type"] = "AURA_REMOVED_COUNT",
+                           ["eq"] = 2,
+                           ["target"] = "Dableach",
+                           ["spell_id"] = 63510,
+                       }, -- [1]
+                   },
+               }, -- [1]
+           },
+           ["uuid"] = "b5aeb9ec-9f2a-4f03-b5bf-764ac5cec092",
+           ["metadata"] = {
+               ["name"] = "Aura Removed Condition",
+           },
+        }, -- [6]  Unit Health Phase
     }
 }
 

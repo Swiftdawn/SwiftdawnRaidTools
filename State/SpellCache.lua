@@ -2,14 +2,17 @@ local SwiftdawnRaidTools = SwiftdawnRaidTools
 
 SpellCache = {
     -- casts[spellID] = {[source] = {target = target, time = time, count = count}}
-    casts = {}
+    casts = {},
+    -- aura_removed[spellID] = {[target] = {time = time, count = count}}
+    aura_removed = {}
 }
 
 function SpellCache.Reset()
     SpellCache.casts = {}
+    SpellCache.aura_removed = {}
 end
 
-function SpellCache.RegisterCast(source, target, spellId, updateFunc)
+function SpellCache.RegisterCastStart(source, target, spellId)
     if not SpellCache.casts[spellId] then
         SpellCache.casts[spellId] = {}
     end
@@ -19,7 +22,28 @@ function SpellCache.RegisterCast(source, target, spellId, updateFunc)
         SpellCache.casts[spellId][source].count = SpellCache.casts[spellId][source].count + 1
         SpellCache.casts[spellId][source].time = GetTime()
     end
-    Log.info("Registered cast #".. SpellCache.casts[spellId][source].count .." of "..GetSpellInfo(spellId) .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime(), count=SpellCache.casts[spellId][source].count })
+    Log.debug("Registered cast start #".. SpellCache.casts[spellId][source].count .." of "..GetSpellInfo(spellId) .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime(), count=SpellCache.casts[spellId][source].count })
+end
+
+function SpellCache.RegisterCastSuccess(source, target, spellId, updateFunc)
+    -- Only register casts of instant spells, spells with cast time should have been counted on start
+    local spellInfo = C_Spell.GetSpellInfo(spellId)
+    if not spellInfo.castTime or spellInfo.castTime == 0 then
+        if not SpellCache.casts[spellId] then
+            SpellCache.casts[spellId] = {}
+        end
+        if not SpellCache.casts[spellId][source] then
+            SpellCache.casts[spellId][source] = {target = target, time = GetTime(), count = 1}
+        else
+            local now = GetTime()
+            local isChanneled = now - (SpellCache.GetCastTime(source, spellId) or now) < 0.5
+            if not isChanneled then
+                SpellCache.casts[spellId][source].count = SpellCache.casts[spellId][source].count + 1
+                SpellCache.casts[spellId][source].time = GetTime()
+            end
+        end
+    end
+    Log.debug("Registered cast success #".. SpellCache.casts[spellId][source].count .." of "..GetSpellInfo(spellId) .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime(), count=SpellCache.casts[spellId][source].count })
 
     if (UnitIsPlayer(source) and UnitInRaid(source)) or SRT_IsTesting() then
         local spell = SRTData.GetSpellByID(spellId)
@@ -34,6 +58,19 @@ function SpellCache.RegisterCast(source, target, spellId, updateFunc)
     end
 end
 
+function SpellCache.RegisterAuraRemoved(target, spellId)
+    if not SpellCache.aura_removed[spellId] then
+        SpellCache.aura_removed[spellId] = {}
+    end
+    if not SpellCache.aura_removed[spellId][target] then
+        SpellCache.aura_removed[spellId][target] = {time = GetTime(), count = 1}
+    else
+        SpellCache.aura_removed[spellId][target].count = SpellCache.aura_removed[spellId][target].count + 1
+        SpellCache.aura_removed[spellId][target].time = GetTime()
+    end
+    Log.debug("Registered aura removed #".. SpellCache.aura_removed[spellId][target].count .." of "..GetSpellInfo(spellId) .. " from " .. target, { target=target, spell=spellId, time=GetTime(), count=SpellCache.aura_removed[spellId][target].count })
+end
+
 function SpellCache.GetCastTime(source, spellId)
     if not SpellCache.casts[spellId] then
         return nil
@@ -46,12 +83,38 @@ end
 
 function SpellCache.GetCastCount(source, spellId)
     if not SpellCache.casts[spellId] then
-        return nil
+        return 0
     end
-    if not SpellCache.casts[spellId][source] then
-        return nil
+    if source then
+        if not SpellCache.casts[spellId][source] then
+            return 0
+        end
+        return SpellCache.casts[spellId][source].count
+    else
+        local totalCount = 0
+        for _, data in pairs(SpellCache.casts[spellId]) do
+            totalCount = totalCount + data.count
+        end
+        return totalCount
     end
-    return SpellCache.casts[spellId][source].count
+end
+
+function SpellCache.GetAuraRemovedCount(target, spellId)
+    if not SpellCache.aura_removed[spellId] then
+        return 0
+    end
+    if target then
+        if not SpellCache.aura_removed[spellId][target] then
+            return 0
+        end
+        return SpellCache.aura_removed[spellId][target].count
+    else
+        local totalCount = 0
+        for _, data in pairs(SpellCache.aura_removed[spellId]) do
+            totalCount = totalCount + data.count
+        end
+        return totalCount
+    end
 end
 
 function SpellCache.IsSpellReady(source, spellId, timestamp)
