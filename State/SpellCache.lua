@@ -22,7 +22,7 @@ function SpellCache.RegisterCastStart(source, target, spellId)
         SpellCache.casts[spellId][source].count = SpellCache.casts[spellId][source].count + 1
         SpellCache.casts[spellId][source].time = GetTime()
     end
-    Log.debug("Registered cast start #".. SpellCache.casts[spellId][source].count .." of "..GetSpellInfo(spellId) .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime(), count=SpellCache.casts[spellId][source].count })
+    -- Log.debug("Registered cast start #".. SpellCache.casts[spellId][source].count .." of "..GetSpellInfo(spellId) .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime(), count=SpellCache.casts[spellId][source].count })
 end
 
 function SpellCache.RegisterCastSuccess(source, target, spellId, updateFunc)
@@ -43,7 +43,7 @@ function SpellCache.RegisterCastSuccess(source, target, spellId, updateFunc)
             end
         end
     end
-    Log.debug("Registered cast success #".. SpellCache.casts[spellId][source].count .." of "..GetSpellInfo(spellId) .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime(), count=SpellCache.casts[spellId][source].count })
+    -- Log.debug("Registered cast success #".. SpellCache.casts[spellId][source].count .." of "..GetSpellInfo(spellId) .. " by " .. source, { source=source, target=target, spell=spellId, time=GetTime(), count=SpellCache.casts[spellId][source].count })
 
     if (UnitIsPlayer(source) and UnitInRaid(source)) or SRT_IsTesting() then
         local spell = SRTData.GetSpellByID(spellId)
@@ -68,7 +68,7 @@ function SpellCache.RegisterAuraRemoved(target, spellId)
         SpellCache.aura_removed[spellId][target].count = SpellCache.aura_removed[spellId][target].count + 1
         SpellCache.aura_removed[spellId][target].time = GetTime()
     end
-    Log.debug("Registered aura removed #".. SpellCache.aura_removed[spellId][target].count .." of "..GetSpellInfo(spellId) .. " from " .. target, { target=target, spell=spellId, time=GetTime(), count=SpellCache.aura_removed[spellId][target].count })
+    -- Log.debug("Registered aura removed #".. SpellCache.aura_removed[spellId][target].count .." of "..GetSpellInfo(spellId) .. " from " .. target, { target=target, spell=spellId, time=GetTime(), count=SpellCache.aura_removed[spellId][target].count })
 end
 
 function SpellCache.GetCastTime(source, spellId)
