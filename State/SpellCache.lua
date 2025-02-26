@@ -16,6 +16,7 @@ function SpellCache.RegisterCastStart(source, target, spellId)
     if not SpellCache.casts[spellId] then
         SpellCache.casts[spellId] = {}
     end
+    if not source then source = "__empty__" end
     if not SpellCache.casts[spellId][source] then
         SpellCache.casts[spellId][source] = {target = target, time = GetTime(), count = 1}
     else
@@ -32,6 +33,7 @@ function SpellCache.RegisterCastSuccess(source, target, spellId, updateFunc)
         if not SpellCache.casts[spellId] then
             SpellCache.casts[spellId] = {}
         end
+        if not source then source = "__empty__" end
         if not SpellCache.casts[spellId][source] then
             SpellCache.casts[spellId][source] = {target = target, time = GetTime(), count = 1}
         else
@@ -62,6 +64,7 @@ function SpellCache.RegisterAuraRemoved(target, spellId)
     if not SpellCache.aura_removed[spellId] then
         SpellCache.aura_removed[spellId] = {}
     end
+    if not target then target = "__empty__" end
     if not SpellCache.aura_removed[spellId][target] then
         SpellCache.aura_removed[spellId][target] = {time = GetTime(), count = 1}
     else
