@@ -1120,6 +1120,7 @@ function SRTData.Initialize()
         FrenziedRegeneration = SRTSpell:New(22842, "Frenzied Regeneration", 60 * 3, 20),
         Tranquility = SRTSpell:New(740, "Tranquility", 60 * 8, 8),
         StampedingRoar = SRTSpell:New(77764, "Stampeding Roar", 60 * 2, 8),
+        TreeOfLife = SRTSpell:New(33891, "Tree of Life", 60 * 3, 25),
         -- Paladin
         DivineProtection = SRTSpell:New(498, "Divine Protection", 60 * 1, 10),
         GuardianOfAncientKings = SRTSpell:New(86659, "Guardian of Ancient Kings", 0, 12),
@@ -1156,6 +1157,7 @@ function SRTData.Initialize()
             SRT_Global().srt_data.spells.Barkskin,
             SRT_Global().srt_data.spells.SurvivalInstincts,
             SRT_Global().srt_data.spells.FrenziedRegeneration,
+            SRT_Global().srt_data.spells.FrenziedRegeneration2,
             SRT_Global().srt_data.spells.Tranquility,
             SRT_Global().srt_data.spells.StampedingRoar,
         }),
