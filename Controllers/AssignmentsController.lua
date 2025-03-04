@@ -169,6 +169,10 @@ function AssignmentsController:StartEncounter(encounterID, encounterName)
 end
 
 function AssignmentsController:EndEncounter(encounterID, encounterName, success)
+    AssignmentsController:ResetState()
+    Groups.Reset()
+    SwiftdawnRaidTools.overview:UpdateActiveGroups()
+
     if not AssignmentsController.activeEncounterID then
         return
     end
@@ -177,10 +181,6 @@ function AssignmentsController:EndEncounter(encounterID, encounterName, success)
     else
         Log.info(string.format("Encounter '%s' (id:%s) ended with %s at %s", tostring(encounterName), tostring(encounterID), success == 1 and "SUCCESS" or "FAILURE", Utils:Timestamp()))
     end
-
-    AssignmentsController:ResetState()
-    Groups.Reset()
-    SwiftdawnRaidTools.overview:UpdateActiveGroups()
 end
 
 function AssignmentsController:IsInEncounter()
