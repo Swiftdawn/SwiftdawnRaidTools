@@ -11,6 +11,7 @@ function LogItem:New(data, ...)
     ---@class LogItem
     local obj = {}
     setmetatable(obj, LogItem)
+    obj.time = Utils:Timestamp(true) .. ": "
     if type(data) == "string" then
         obj.triggerType = "STRING"
         obj.line = data
@@ -86,45 +87,63 @@ function LogItem:getLogFontType()
     return SharedMedia:Fetch("font", SRT_Profile().debuglog.appearance.logFontType)
 end
 
-function LogItem:CreateFrame(parentFrame)
-    self.frame = CreateFrame("Frame", "LogLine", parentFrame)
-    self.frame:SetClipsChildren(true)
-    self.timestamp = self.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    self.timestamp:SetShadowOffset(1, -1)
-    self.timestamp:SetShadowColor(0, 0, 0, 1)
-    self.timestamp:SetJustifyH("LEFT")
-    self.timestamp:SetWordWrap(false)
-    self.timestamp:SetTextColor(1, 1, 1)
-    self.timestamp:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 0, 0)
-    self.text = self.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+function LogItem:CreateString(parentFrame, previousItem)
+    self.text = parentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     self.text:SetShadowOffset(1, -1)
     self.text:SetShadowColor(0, 0, 0, 1)
     self.text:SetJustifyH("LEFT")
     self.text:SetWordWrap(false)
-    self.text:SetPoint("LEFT", self.timestamp, "RIGHT", 0, 0)
-    self.extraText = self.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    self.extraText:SetShadowOffset(1, -1)
-    self.extraText:SetShadowColor(0, 0, 0, 1)
-    self.extraText:SetJustifyH("LEFT")
-    self.extraText:SetWordWrap(true)
-    self.extraText:SetTextColor(1, 0.80, 1)
-    self.extraText:SetPoint("TOPLEFT", self.timestamp, "BOTTOMLEFT", 5, -3)
-    self.extraText:Hide()
-    self.frame:SetScript("OnMouseDown", function(_, button)
-        if button == "LeftButton" and (not self.line or self.extra) then
-            self.showExtra = not self.showExtra
-            self:UpdateAppearance()
-        end
-    end)
+    self.text:SetTextColor(SRTColor.LightGray.r, SRTColor.LightGray.g, SRTColor.LightGray.b)
+    self.text:SetFont(self:getLogFontType(), SRT_Profile().debuglog.appearance.logFontSize)
+    self.text:SetWidth(parentFrame:GetWidth() - 10)
+    if previousItem then
+        self.text:SetPoint("TOPLEFT", previousItem, "BOTTOMLEFT", 0, -3)
+    else
+        self.text:SetPoint("TOPLEFT", parentFrame, "TOPLEFT", 5, -3)
+    end
     self:UpdateAppearance()
 end
 
+function LogItem:CreateFrame(parentFrame)
+    -- self.frame = CreateFrame("Frame", "LogLine", parentFrame)
+    -- self.frame:SetClipsChildren(true)
+    -- self.timestamp = self.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    -- self.timestamp:SetShadowOffset(1, -1)
+    -- self.timestamp:SetShadowColor(0, 0, 0, 1)
+    -- self.timestamp:SetJustifyH("LEFT")
+    -- self.timestamp:SetWordWrap(false)
+    -- self.timestamp:SetTextColor(1, 1, 1)
+    -- self.timestamp:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 0, 0)
+    -- self.text = self.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    -- self.text:SetShadowOffset(1, -1)
+    -- self.text:SetShadowColor(0, 0, 0, 1)
+    -- self.text:SetJustifyH("LEFT")
+    -- self.text:SetWordWrap(false)
+    -- self.text:SetPoint("LEFT", self.timestamp, "RIGHT", 0, 0)
+    -- self.extraText = self.frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    -- self.extraText:SetShadowOffset(1, -1)
+    -- self.extraText:SetShadowColor(0, 0, 0, 1)
+    -- self.extraText:SetJustifyH("LEFT")
+    -- self.extraText:SetWordWrap(true)
+    -- self.extraText:SetTextColor(1, 0.80, 1)
+    -- self.extraText:SetPoint("TOPLEFT", self.timestamp, "BOTTOMLEFT", 5, -3)
+    -- self.extraText:Hide()
+    -- self.frame:SetScript("OnMouseDown", function(_, button)
+    --     if button == "LeftButton" and (not self.line or self.extra) then
+    --         self.showExtra = not self.showExtra
+    --         self:UpdateAppearance()
+    --     end
+    -- end)
+    -- self:UpdateAppearance()
+end
+
 function LogItem:UpdateAppearance()
-    local logFontSize = SRT_Profile().debuglog.appearance.logFontSize
-    self.frame:SetWidth(self.frame:GetParent():GetWidth() - 10)
-    self.timestamp:SetFont(self:getLogFontType(), logFontSize)
-    self.timestamp:SetWidth(self.timestamp:GetStringWidth())
-    self.timestamp:SetText(Utils:Timestamp(true) .. ": ")
+    self.text:SetText(self.time .. self:GetString())
+    -- local logFontSize = SRT_Profile().debuglog.appearance.logFontSize
+    -- self.frame:SetWidth(self.frame:GetParent():GetWidth() - 10)
+    -- self.timestamp:SetFont(self:getLogFontType(), logFontSize)
+    -- self.timestamp:SetWidth(self.timestamp:GetStringWidth())
+    -- self.timestamp:SetText(Utils:Timestamp(true) .. ": ")
     if self.triggerType == "STRING" and not self.extra then
         self.text:SetTextColor(0.80, 0.80, 0.80)
     elseif self.triggerType == "STRING" and self.extra then
@@ -132,36 +151,36 @@ function LogItem:UpdateAppearance()
     else
         self.text:SetTextColor(SRTColor.GameYellow.r, SRTColor.GameYellow.g, SRTColor.GameYellow.b)
     end
-    self.text:SetFont(self:getLogFontType(), logFontSize)
-    self.text:SetWidth(self.frame:GetWidth() - self.timestamp:GetStringWidth() - 2)
-    self.text:SetText(self:GetString())
-    self.extraText:SetFont(self:getLogFontType(), logFontSize)
-    self.extraText:SetWidth(self.frame:GetWidth() - 5)
-    self.extraText:SetHeight(self.extraText:GetStringHeight())
-    self.extraText:SetText(self:GetExtraString())
-    if self.showExtra then
-        self.extraText:Show()
-        self.frame:SetHeight(logFontSize + 3 + self.extraText:GetHeight())
-    else
-        self.extraText:Hide()
-        self.frame:SetHeight(logFontSize + 3)
-    end
+    -- self.text:SetFont(self:getLogFontType(), logFontSize)
+    -- self.text:SetWidth(self.frame:GetWidth() - self.timestamp:GetStringWidth() - 2)
+    -- self.text:SetText(self:GetString())
+    -- self.extraText:SetFont(self:getLogFontType(), logFontSize)
+    -- self.extraText:SetWidth(self.frame:GetWidth() - 5)
+    -- self.extraText:SetHeight(self.extraText:GetStringHeight())
+    -- self.extraText:SetText(self:GetExtraString())
+    -- if self.showExtra then
+    --     self.extraText:Show()
+    --     self.frame:SetHeight(logFontSize + 3 + self.extraText:GetHeight())
+    -- else
+    --     self.extraText:Hide()
+    --     self.frame:SetHeight(logFontSize + 3)
+    -- end
 end
 
 function LogItem:DeleteFrame()
-    self.frame:Hide()
-    self.frame:ClearAllPoints()
-    self.frame:SetScript("OnMouseDown", nil)
-    self.frame = nil
-    self.timestamp:Hide()
-    self.timestamp:ClearAllPoints()
-    self.timestamp = nil
+    -- self.frame:Hide()
+    -- self.frame:ClearAllPoints()
+    -- self.frame:SetScript("OnMouseDown", nil)
+    -- self.frame = nil
+    -- self.timestamp:Hide()
+    -- self.timestamp:ClearAllPoints()
+    -- self.timestamp = nil
     self.text:Hide()
     self.text:ClearAllPoints()
     self.text = nil
-    self.extraText:Hide()
-    self.extraText:ClearAllPoints()
-    self.extraText = nil
+    -- self.extraText:Hide()
+    -- self.extraText:ClearAllPoints()
+    -- self.extraText = nil
 end
 
 return LogItem

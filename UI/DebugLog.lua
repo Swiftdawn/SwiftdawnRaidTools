@@ -53,6 +53,9 @@ end
 --- Add a log statement to the debug log
 ---@param data table
 function SRTDebugLog:AddItem(data, ...)
+    if not SRT_IsDebugging() then
+        return
+    end
     if AssignmentsController:IsInEncounter() then
         local encounterID = AssignmentsController.activeEncounterID
         local encounterStart = AssignmentsController.encounterStart
@@ -66,22 +69,22 @@ function SRTDebugLog:AddItem(data, ...)
     if #self.logItems < self.maxFrames then
         -- Create a new frame and attach at the bottom
         local newItem = LogItem:New(data, ...)
-        newItem:CreateFrame(self.scrollContentFrame)
+        newItem:CreateString(self.scrollContentFrame, self.logItems[#self.logItems] and self.logItems[#self.logItems].text or nil)
         if #self.logItems == 0 then
-            newItem.frame:SetPoint("TOPLEFT", self.scrollContentFrame, "TOPLEFT", 5, -3)
+            newItem.text:SetPoint("TOPLEFT", self.scrollContentFrame, "TOPLEFT", 5, -3)
         else
-            newItem.frame:SetPoint("TOPLEFT", self.logItems[#self.logItems].frame, "BOTTOMLEFT", 0, -3)
+            newItem.text:SetPoint("TOPLEFT", self.logItems[#self.logItems].text, "BOTTOMLEFT", 0, -3)
         end
         table.insert(self.logItems, newItem)
     else
         -- Grab first frame, update and attach at the bottom
         local cachedItem = table.remove(self.logItems, 1)
-        cachedItem.frame:ClearAllPoints()
+        cachedItem.text:ClearAllPoints()
         local firstItem = self.logItems[1]
-        firstItem.frame:ClearAllPoints()
-        firstItem.frame:SetPoint("TOPLEFT", self.scrollContentFrame, "TOPLEFT", 5, -3)
+        firstItem.text:ClearAllPoints()
+        firstItem.text:SetPoint("TOPLEFT", self.scrollContentFrame, "TOPLEFT", 5, -3)
         local lastItem = self.logItems[#self.logItems]
-        cachedItem.frame:SetPoint("TOPLEFT", lastItem.frame, "BOTTOMLEFT", 0, -3)
+        cachedItem.text:SetPoint("TOPLEFT", lastItem.text, "BOTTOMLEFT", 0, -3)
         cachedItem:NewData(data, ...)
         cachedItem:UpdateAppearance()
         table.insert(self.logItems, cachedItem)
@@ -91,7 +94,7 @@ end
 
 function SRTDebugLog:UpdateAppearance()
     local logFontSize = self:GetAppearance().logFontSize
-    self.scrollContentFrame:SetHeight(15 + #self.logItems * (logFontSize + 3) + 5)
+    self.scrollContentFrame:SetHeight(#self.logItems * (logFontSize + 3))
     self:UpdateAutoScroll()
     for _, item in ipairs(self.logItems) do
         item:UpdateAppearance()
