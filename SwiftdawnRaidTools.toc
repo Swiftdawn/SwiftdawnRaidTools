@@ -47,6 +47,7 @@ Utils\Utils.lua
 Utils\YAML.lua
 Utils\WAHelper.lua
 Utils\BossInfo.lua
+Utils\Testing.lua
 Models\Data\BossAbility.lua
 Models\Data\Class.lua
 Models\Data\Encounter.lua
@@ -69,3 +70,5 @@ Models\Conditions\AuraRemovedCountCondition.lua
 Models\Conditions\CastCountCondition.lua
 Models\Conditions\UnitHealthCondition.lua
 Models\Enum\Condition.lua
+Tests\MainTest.lua
+Tests\SequentialTest.lua
