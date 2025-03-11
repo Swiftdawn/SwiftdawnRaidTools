@@ -98,7 +98,8 @@ local mainOptions = {
                     desc = "Toggle Test Mode on and off.",
                     func = function()
                         if not InCombatLockdown() then
-                            SwiftdawnRaidTools:TestModeToggle()
+                            -- SwiftdawnRaidTools:TestModeToggle()
+                            Testing:ToggleMainTest()
                         end
                     end,
                     order = 2,
@@ -965,6 +966,45 @@ local troubleshootOptions = {
     }
 }
 
+local testingOptions = {
+    name = "Testing",
+    type = "group",
+    args = {
+        mainTestDescription = {
+            type = "description",
+            name = "Toggle: Main Test",
+            width = "normal",
+            order = 1
+        },
+        mainTest = {
+            type = "execute",
+            name = "Main Test",
+            width = "double",
+            desc = "Main Test",
+            func = function()
+                Testing:ToggleMainTest()
+            end,
+            order = 2
+        },
+        sequentialTestDescription = {
+            type = "description",
+            name = "Toggle: Sequential Test",
+            width = "normal",
+            order = 11
+        },
+        sequentialTest = {
+            type = "execute",
+            name = "Sequential Test",
+            width = "double",
+            desc = "Sequential Test",
+            func = function()
+                Testing:ToggleSequentialTest()
+            end,
+            order = 12
+        },
+    }
+}
+
 function SwiftdawnRaidTools:OptionsInit()
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools", mainOptions)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools", "Swiftdawn Raid Tools")
@@ -977,6 +1017,9 @@ function SwiftdawnRaidTools:OptionsInit()
 
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Troubleshooting", troubleshootOptions)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Troubleshooting", "Troubleshooting", "Swiftdawn Raid Tools")
+
+    LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Testing", testingOptions)
+    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Testing", "Testing", "Swiftdawn Raid Tools")
 
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SwiftdawnRaidTools Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("SwiftdawnRaidTools Profiles", "Profiles", "Swiftdawn Raid Tools")
