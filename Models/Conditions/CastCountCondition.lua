@@ -18,17 +18,18 @@ function CastCountCondition:New(name, spellID, source, target, operator, count)
 end
 
 function CastCountCondition:GetDisplayName()
+    local spellName = C_Spell.GetSpellName(self.spellID)
     if self.source ~= "" then
         if self.target ~= "" then
-            return self.source .. " casts " .. (GetSpellInfo(self.spellID) or "Spell not found") .. " " .. self.operator .. " " .. self.count .. " times on " .. self.target
+            return self.source .. " casts " .. (spellName or "Spell not found") .. " " .. self.operator .. " " .. self.count .. " times on " .. self.target
         else
-            return self.source .. " casts " .. (GetSpellInfo(self.spellID) or "Spell not found") .. " " .. self.operator .. " " .. self.count .. " times"
+            return self.source .. " casts " .. (spellName or "Spell not found") .. " " .. self.operator .. " " .. self.count .. " times"
         end
     else
         if self.target ~= "" then
-            return (GetSpellInfo(self.spellID) or "Spell not found") .. " is cast " .. self.operator .. " " .. self.count .. " times on " .. self.target
+            return (spellName or "Spell not found") .. " is cast " .. self.operator .. " " .. self.count .. " times on " .. self.target
         else
-            return (GetSpellInfo(self.spellID) or "Spell not found") .. " is cast " .. self.operator .. " " .. self.count .. " times"
+            return (spellName or "Spell not found") .. " is cast " .. self.operator .. " " .. self.count .. " times"
         end
     end
 end

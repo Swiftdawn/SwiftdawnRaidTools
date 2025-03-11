@@ -20,16 +20,17 @@ function SpellCastTrigger:New(name, spellID, source, target, delay, countdown, t
 end
 
 function SpellCastTrigger:GetDisplayName()
+    local spellName = C_Spell.GetSpellName(self.spellID)
     if self.source ~= "" then
         if self.target ~= "" then
-            return "\'"..(GetSpellInfo(self.spellID) or "Spell not found") .. "\' is cast by " .. self.source .. " on " .. self.target .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+            return "\'"..(spellName or "Spell not found") .. "\' is cast by " .. self.source .. " on " .. self.target .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
         else
-            return "\'"..(GetSpellInfo(self.spellID) or "Spell not found") .. "\' is cast by " .. self.source .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+            return "\'"..(spellName or "Spell not found") .. "\' is cast by " .. self.source .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
         end
     elseif self.target ~= "" then
-        return "\'"..(GetSpellInfo(self.spellID) or "Spell not found") .. "\' is cast on " .. self.target .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+        return "\'"..(spellName or "Spell not found") .. "\' is cast on " .. self.target .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
     else
-        return "\'"..(GetSpellInfo(self.spellID) or "Spell not found") .. "' is cast" .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+        return "\'"..(spellName or "Spell not found") .. "' is cast" .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
     end
 end
 

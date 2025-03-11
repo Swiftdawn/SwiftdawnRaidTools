@@ -18,17 +18,18 @@ function AuraRemovedCountCondition:New(name, spellID, source, target, operator, 
 end
 
 function AuraRemovedCountCondition:GetDisplayName()
+    local spellName = C_Spell.GetSpellName(self.spellID)
     if self.source ~= "" then
         if self.target ~= "" then
-            return self.source .. " removed " .. (GetSpellInfo(self.spellID) or "Spell not found") .. " " .. self.operator .. " " .. self.count .. " times on " .. self.target
+            return self.source .. " removed " .. (spellName or "Spell not found") .. " " .. self.operator .. " " .. self.count .. " times on " .. self.target
         else
-            return self.source .. " removed " .. (GetSpellInfo(self.spellID) or "Spell not found") .. " " .. self.operator .. " " .. self.count .. " times"
+            return self.source .. " removed " .. (spellName or "Spell not found") .. " " .. self.operator .. " " .. self.count .. " times"
         end
     else
         if self.target ~= "" then
-            return (GetSpellInfo(self.spellID) or "Spell not found") .. " is removed " .. self.operator .. " " .. self.count .. " times on " .. self.target
+            return (spellName or "Spell not found") .. " is removed " .. self.operator .. " " .. self.count .. " times on " .. self.target
         else
-            return (GetSpellInfo(self.spellID) or "Spell not found") .. " is removed " .. self.operator .. " " .. self.count .. " times"
+            return (spellName or "Spell not found") .. " is removed " .. self.operator .. " " .. self.count .. " times"
         end
     end
 end

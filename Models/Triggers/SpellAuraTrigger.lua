@@ -20,16 +20,17 @@ function SpellAuraTrigger:New(name, spellID, source, target, delay, countdown, t
 end
 
 function SpellAuraTrigger:GetDisplayName()
+    local spellName = C_Spell.GetSpellName(self.spellID)
     if self.source ~= "" then
         if self.target ~= "" then
-            return "\'"..(GetSpellInfo(self.spellID) or "Spell not found") .. "\' is activated by " .. self.source .. " on " .. self.target .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+            return "\'"..(spellName or "Spell not found") .. "\' is activated by " .. self.source .. " on " .. self.target .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
         else
-            return "\'"..(GetSpellInfo(self.spellID) or "Spell not found") .. "\' is activated by " .. self.source .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+            return "\'"..(spellName or "Spell not found") .. "\' is activated by " .. self.source .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
         end
     elseif self.target ~= "" then
-        return "\'"..(GetSpellInfo(self.spellID) or "Spell not found") .. "\' is activated on " .. self.target .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+        return "\'"..(spellName or "Spell not found") .. "\' is activated on " .. self.target .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
     else
-        return "\'"..(GetSpellInfo(self.spellID) or "Spell not found") .. "' is activated" .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
+        return "\'"..(spellName or "Spell not found") .. "' is activated" .. (self.delay > 0 and "\nTrigger after " .. tostring(self.delay) .. " seconds" or "")
     end
 end
 
