@@ -92,18 +92,6 @@ local mainOptions = {
                     end,
                     order = 1,
                 },
-                toggleTestMode = {
-                    type = "execute",
-                    name = "Toggle Test Mode",
-                    desc = "Toggle Test Mode on and off.",
-                    func = function()
-                        if not InCombatLockdown() then
-                            -- SwiftdawnRaidTools:TestModeToggle()
-                            Testing:ToggleMainTest()
-                        end
-                    end,
-                    order = 2,
-                },
                 resetAppearance = {
                     type = "execute",
                     name = "Reset Appearance",
