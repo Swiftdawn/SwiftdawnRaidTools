@@ -127,7 +127,7 @@ function SpellCache.IsSpellReady(source, spellId, timestamp)
         end
 
         if not UnitIsPlayer(source) and not UnitInRaid(source) then
-            -- print("Unit is not player or in raid", source)
+            -- SwiftdawnRaidTools:Print("Unit is not player or in raid", source)
             return false
         end
     end
@@ -156,7 +156,7 @@ function SpellCache.IsSpellActive(source, spellId, timestamp)
         end
 
         if not UnitIsPlayer(source) and not UnitInRaid(source) then
-            -- print("Unit is not player or in raid", source)
+            -- SwiftdawnRaidTools:Print("Unit is not player or in raid", source)
             return false
         end
     end

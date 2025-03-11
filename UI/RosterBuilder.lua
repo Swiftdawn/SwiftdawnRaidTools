@@ -1421,7 +1421,7 @@ function RosterBuilder:UpdateCreateAssignments()
 
     if self.state == State.PICK_SPELL then
         if self.pickedPlayer == nil then
-            print("Unable to open spell picker, no player selected")
+            SwiftdawnRaidTools:Print("Unable to open spell picker, no player selected")
             self.state = State.CREATE_ASSIGNMENTS
             return
         end
@@ -1921,7 +1921,7 @@ function RosterBuilder:UpdateEditTriggers()
                                 local conditionID = string.format("%d_%d_untrigger%d_condition%d", self.selectedEncounterID, self.selectedAbilityID, ti, ci)
                                 local parsedCondition = Utils:ParseCondition(condition)
                                 if not parsedCondition then
-                                    print("Failed to parse condition", Utils:TableToString(condition))
+                                    SwiftdawnRaidTools:Print("Failed to parse condition", Utils:TableToString(condition))
                                     return
                                 end
                                 local conditionFrame = untriggerFrame.AddCondition(conditionID, parsedCondition, function (cnd)

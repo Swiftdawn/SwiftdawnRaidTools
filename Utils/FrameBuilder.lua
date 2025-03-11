@@ -172,7 +172,6 @@ function FrameBuilder.CreateTriggerFrame(parentFrame, triggerID, trigger, type, 
         frame:SetBackdropColor(0, 0, 0, 0)
     end
     frame.GetNextConditionID = function ()
-        -- print(#frame.items + 1)
         return #frame.items + 1
     end
     frame:SetWidth(width)

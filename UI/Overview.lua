@@ -183,7 +183,6 @@ function SRTOverview:UpdateMain()
     local encounter = SRTData.GetActiveEncounters()[self:GetProfile().selectedEncounterId]
 
     if encounter then
-        DevTool:AddData(encounter, "Active Encounter")
         local previousAbilityFrame
         for _, ability in ipairs(encounter) do
             local abilityFrame = self.bossAbilities[ability.uuid] or CreateFrame("Frame", nil, self.main)
