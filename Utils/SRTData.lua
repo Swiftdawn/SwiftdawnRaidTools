@@ -710,13 +710,25 @@ local defaultAssignments = {
 local testAssignments = {
     [42001] = {
         {
+            {
+                {
+                    ["spell_id"] = 740,
+                    ["type"] = "SPELL",
+                    ["player"] = "Clutex",
+                }, -- [1]
+            },
             ["assignments"] = {
                 {
                     {
                         ["spell_id"] = 740,
                         ["type"] = "SPELL",
                         ["player"] = "Aeolyne",
-                    } -- [1]
+                    }, -- [1]
+                    {
+                        ["spell_id"] = 31821,
+                        ["type"] = "SPELL",
+                        ["player"] = "Elí",
+                    }, -- [2]
                 }, -- [1]
             },
             ["version"] = 1,
@@ -737,10 +749,27 @@ local testAssignments = {
             ["assignments"] = {
                 {
                     {
+                        ["spell_id"] = 740,
+                        ["type"] = "SPELL",
+                        ["player"] = "Aeolyne",
+                    }, -- [1]
+                    {
+                        ["spell_id"] = 31821,
+                        ["type"] = "SPELL",
+                        ["player"] = "Anticipâte",
+                    }, -- [2]
+                },
+                {
+                    {
                         ["spell_id"] = 62618,
                         ["type"] = "SPELL",
                         ["player"] = "Kondec",
-                    } -- [1]
+                    }, -- [1]
+                    {
+                        ["spell_id"] = 31821,
+                        ["type"] = "SPELL",
+                        ["player"] = "Elí",
+                    }, -- [2]
                 }, -- [1]
             },
             ["version"] = 1,
@@ -904,15 +933,10 @@ local testAssignments = {
             ["assignments"] = {
                 {
                     {
-                        ["spell_id"] = 740,
-                        ["type"] = "SPELL",
-                        ["player"] = "Bushtree",
-                    }, -- [1]
-                    {
                         ["spell_id"] = 64843,
                         ["type"] = "SPELL",
-                        ["player"] = "Kondec",
-                    }, -- [2]
+                        ["player"] = "Managobrr",
+                    },
                 }, -- [1]
             },
             ["version"] = 1,
