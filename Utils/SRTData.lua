@@ -423,160 +423,6 @@ local defaultAssignments = {
             },
         }
     },
-    [42001] = {
-        {
-            ["assignments"] = {
-            },
-            ["untriggers"] = {
-                {
-                    ["delay"] = 18,
-                    ["type"] = "ENCOUNTER_START",
-                },
-                {
-                    ["text"] = "Test emote by the boss",
-                    ["type"] = "RAID_BOSS_EMOTE",
-                },
-                {
-                    ["spell_id"] = 90125,
-                    ["type"] = "SPELL_CAST",
-                },
-                {
-                    ["spell_id"] = 90125,
-                    ["type"] = "SPELL_AURA",
-                },
-                {
-                    ["spell_id"] = 90125,
-                    ["type"] = "SPELL_AURA_REMOVED",
-                },
-                {
-                    ["unit"] = "boss1",
-                    ["pct_lt"] = 50,
-                    ["type"] = "UNIT_HEALTH",
-                },
-                {
-                    ["key"] = "numen.key",
-                    ["type"] = "FOJJI_NUMEN_TIMER",
-                },
-                {
-                    ["delay"] = 18,
-                    ["type"] = "ENCOUNTER_START",
-                    ["conditions"] = {
-                        {
-                            ["type"] = "UNIT_HEALTH",
-                            ["lt"] = 50,
-                            ["unit"] = "boss1",
-                        },
-                    },
-                },
-                {
-                    ["text"] = "Test emote by the boss",
-                    ["type"] = "RAID_BOSS_EMOTE",
-                    ["conditions"] = {
-                        {
-                            ["type"] = "SPELL_CAST_COUNT",
-                            ["gt"] = 1,
-                            ["spell_id"] = 90125,
-                        },
-                    },
-                }
-            },
-            ["metadata"] = {
-                ["name"] = "Test Ability",
-            },
-            ["triggers"] = {
-                {
-                    ["delay"] = 18,
-                    ["type"] = "ENCOUNTER_START",
-                    ["countdown"] = 0,
-                    ["throttle"] = 0
-                },
-                {
-                    ["text"] = "Other test emote by the boss",
-                    ["type"] = "RAID_BOSS_EMOTE",
-                    ["delay"] = 0,
-                    ["countdown"] = 0,
-                    ["throttle"] = 0
-                },
-                {
-                    ["spell_id"] = 90125,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 0,
-                    ["countdown"] = 0,
-                    ["throttle"] = 0
-                },
-                {
-                    ["spell_id"] = 90125,
-                    ["type"] = "SPELL_AURA",
-                    ["delay"] = 0,
-                    ["countdown"] = 0,
-                    ["throttle"] = 0
-                },
-                {
-                    ["spell_id"] = 90125,
-                    ["type"] = "SPELL_AURA_REMOVED",
-                    ["delay"] = 0,
-                    ["countdown"] = 0,
-                    ["throttle"] = 0
-                },
-                {
-                    ["unit"] = "boss1",
-                    ["pct_lt"] = 50,
-                    ["type"] = "UNIT_HEALTH",
-                    ["delay"] = 0,
-                    ["countdown"] = 0,
-                    ["throttle"] = 0
-                },
-                {
-                    ["key"] = "numen.key",
-                    ["type"] = "FOJJI_NUMEN_TIMER",
-                    ["delay"] = 0,
-                    ["countdown"] = 0,
-                    ["throttle"] = 0
-                },
-                {
-                    ["delay"] = 18,
-                    ["type"] = "ENCOUNTER_START",
-                    ["countdown"] = 0,
-                    ["throttle"] = 0,
-                    ["conditions"] = {
-                        {
-                            ["type"] = "UNIT_HEALTH",
-                            ["pct_lt"] = 50,
-                            ["unit"] = "boss1",
-                        },
-                    },
-                },
-                {
-                    ["text"] = "Yet another test emote by the boss",
-                    ["type"] = "RAID_BOSS_EMOTE",
-                    ["delay"] = 0,
-                    ["countdown"] = 0,
-                    ["throttle"] = 0,
-                    ["conditions"] = {
-                        {
-                            ["type"] = "UNIT_HEALTH",
-                            ["lt"] = 50,
-                            ["unit"] = "boss1",
-                        },
-                    },
-                },
-                {
-                    ["spell_id"] = 90125,
-                    ["type"] = "SPELL_CAST",
-                    ["delay"] = 0,
-                    ["countdown"] = 0,
-                    ["throttle"] = 0,
-                    ["conditions"] = {
-                        {
-                            ["type"] = "SPELL_CAST_COUNT",
-                            ["gt"] = 1,
-                            ["spell_id"] = 90125,
-                        },
-                    },
-                }
-            },
-        },
-    },
     [1206] = {
         {
             ["assignments"] = {},
@@ -944,18 +790,6 @@ local testAssignments = {
             ["assignments"] = {
                 {
                     {
-                        ["spell_id"] = 740,
-                        ["type"] = "SPELL",
-                        ["player"] = "Clutex",
-                    }, -- [1]
-                    {
-                        ["spell_id"] = 31821,
-                        ["type"] = "SPELL",
-                        ["player"] = "Elí",
-                    }, -- [2]
-                }, -- [1]
-                {
-                    {
                         ["spell_id"] = 64843,
                         ["type"] = "SPELL",
                         ["player"] = "Managobrr",
@@ -964,6 +798,18 @@ local testAssignments = {
                         ["spell_id"] = 31821,
                         ["type"] = "SPELL",
                         ["player"] = "Anticipâte",
+                    }, -- [2]
+                }, -- [1]
+                {
+                    {
+                        ["spell_id"] = 740,
+                        ["type"] = "SPELL",
+                        ["player"] = "Clutex",
+                    }, -- [1]
+                    {
+                        ["spell_id"] = 31821,
+                        ["type"] = "SPELL",
+                        ["player"] = "Elí",
                     }, -- [2]
                 }, -- [2]
             },
@@ -1089,7 +935,73 @@ local testAssignments = {
                 ["name"] = "Spell Cast Count Condition",
             },
         }
+    },
+    [42002] = {
+        {
+            ["assignments"] = {
+                {
+                    {
+                        ["spell_id"] = 740,
+                        ["type"] = "SPELL",
+                        ["player"] = "Clutex",
+                    }, -- [1]
+                    {
+                        ["spell_id"] = 31821,
+                        ["type"] = "SPELL",
+                        ["player"] = "Elí",
+                    }, -- [2]
+                }, -- [1]
+                {
+                    {
+                        ["spell_id"] = 64843,
+                        ["type"] = "SPELL",
+                        ["player"] = "Managobrr",
+                    }, -- [1]
+                    {
+                        ["spell_id"] = 31821,
+                        ["type"] = "SPELL",
+                        ["player"] = "Anticipâte",
+                    }, -- [2]
+                }, -- [2]
+                {
+                    {
+                        ["spell_id"] = 740,
+                        ["type"] = "SPELL",
+                        ["player"] = "Aeolyne",
+                    } -- [1]
+                }, -- [3]
+                {
+                    {
+                        ["spell_id"] = 62618,
+                        ["type"] = "SPELL",
+                        ["player"] = "Kondec",
+                    } -- [1]
+                }, -- [4]
+                {
+                    {
+                        ["spell_id"] = 740,
+                        ["type"] = "SPELL",
+                        ["player"] = "Bushtree",
+                    } -- [1]
+                }, -- [4]
+            },
+            ["version"] = 1,
+            ["encounter"] = 42002,
+            ["order"] = "sequential",
+            ["triggers"] = {
+                {
+                    ["spell_id"] = 99052,
+                    ["type"] = "SPELL_CAST",
+                    ["source"] = "The Boss",
+                }, -- [1]
+            },
+            ["uuid"] = "2efa23fe-f83c-41f3-b998-92409158e203",
+            ["metadata"] = {
+                ["name"] = "Sequential Order",
+            },
+        }
     }
+
 }
 
 --- Database class for Swiftdawn Raid Tools
