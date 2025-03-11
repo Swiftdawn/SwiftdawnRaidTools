@@ -183,10 +183,10 @@ function SRTOverview:UpdateMain()
     local encounter = SRTData.GetActiveEncounters()[self:GetProfile().selectedEncounterId]
 
     if encounter then
-
+        DevTool:AddData(encounter, "Active Encounter")
         local previousAbilityFrame
-        for abilityIndex, ability in ipairs(encounter) do
-            local abilityFrame = self.bossAbilities[abilityIndex] or CreateFrame("Frame", nil, self.main)
+        for _, ability in ipairs(encounter) do
+            local abilityFrame = self.bossAbilities[ability.uuid] or CreateFrame("Frame", nil, self.main)
             if previousAbilityFrame then
                 abilityFrame:SetPoint("TOPLEFT", previousAbilityFrame, "BOTTOMLEFT", 0, 0)
                 abilityFrame:SetPoint("TOPRIGHT", previousAbilityFrame, "BOTTOMRIGHT", 0, 0)
@@ -252,7 +252,7 @@ function SRTOverview:UpdateMain()
 
             abilityFrame:Show()
     
-            self.bossAbilities[abilityIndex] = abilityFrame
+            self.bossAbilities[ability.uuid] = abilityFrame
             previousAbilityFrame = abilityFrame
         end
     end
