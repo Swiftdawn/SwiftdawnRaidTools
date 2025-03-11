@@ -383,6 +383,7 @@ function SwiftdawnRaidTools:HandleCombatLog(subEvent, sourceName, destGUID, dest
     if subEvent == "SPELL_CAST_START" then
         SpellCache.RegisterCastStart(sourceName, destName, spellId)
         AssignmentsController:HandleSpellCast(subEvent, spellId, sourceName, destName)
+        AssignmentsController:UpdateGroups()
     elseif subEvent == "SPELL_CAST_SUCCESS" then
         SpellCache.RegisterCastSuccess(sourceName, destName, spellId, function()
             AssignmentsController:UpdateGroups()
