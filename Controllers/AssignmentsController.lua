@@ -222,18 +222,15 @@ function AssignmentsController:UpdateGroups()
     if not AssignmentsController.activeEncounterID then
         return
     end
-    DevTool:AddData("Updating Groups:", "")
 
     local groupsUpdated = false
 
     for _, part in ipairs(AssignmentsController:GetActiveEncounter()) do
-        DevTool:AddData(part, "Part "..part.uuid)
 
         local activeGroups = Groups.GetActive(part.uuid)
 
         local allActiveGroupsReady = false
         if not part.order or part.order == "smart" then
-            print("checking if all active groups are ready")
             -- Smart Order: Prevent active group from being updated if all spells in the current active group is still ready
             allActiveGroupsReady = true
     
@@ -242,7 +239,6 @@ function AssignmentsController:UpdateGroups()
             else
                 for _, groupIndex in ipairs(activeGroups) do
                     local group = part.assignments[groupIndex]
-                    DevTool:AddData(group, "Active group "..groupIndex.." for "..part.uuid)
     
                     for _, assignment in ipairs(group) do
                         if not SpellCache.IsSpellReady(assignment.player, assignment.spell_id) then
@@ -254,7 +250,6 @@ function AssignmentsController:UpdateGroups()
         end
 
         if not allActiveGroupsReady then
-            print("selecting group")
             local selectedGroups = AssignmentsController:SelectGroup(part.uuid, part.assignments, part.order)
 
             if not AssignmentsController:IsGroupsEqual(activeGroups, selectedGroups) then
@@ -311,8 +306,6 @@ function AssignmentsController:SelectGroup(partUuid, assignments, order)
     order = order or "smart"
     local groups = {}
 
-    DevTool:AddData(assignments, "SelectGroup assignments")
-
     if order == "smart" then
         table.insert(groups, AssignmentsController:SelectBestMatchIndex(assignments))
     elseif order == "sequential" then
@@ -323,8 +316,6 @@ function AssignmentsController:SelectGroup(partUuid, assignments, order)
         end
         table.insert(groups, nextIndex)
     end
-
-    DevTool:AddData(groups, "SelectGroup selected groups")
 
     return groups
 end
@@ -461,34 +452,39 @@ function AssignmentsController:Trigger(trigger, context, countdown, ignoreTrigge
             SwiftdawnRaidTools:SendRaidMessage("TRIGGER", data)
 
             -- Record sequential assignments if needed
-            DevTool:AddData({trigger = trigger, data = data}, "Trigger data")
-            DevTool:AddData(self:GetActiveEncounter(), "Active Encounter")
             local activeGroupIndex = activeGroups[1]
             for _, part in ipairs(self:GetActiveEncounter()) do
                 if part.uuid == trigger.uuid then
                     if part.order == "sequential" then
                         local lastTriggeredIndex = AssignmentsController.sequentialAssignmentsCache[trigger.uuid] or 0
-                        print("Active group index", activeGroupIndex, "Last triggered index", lastTriggeredIndex)
-                        if activeGroupIndex > lastTriggeredIndex then
-                            AssignmentsController.sequentialAssignmentsCache[trigger.uuid] = activeGroupIndex
-                        end
+                        AssignmentsController.sequentialAssignmentsCache[trigger.uuid] = activeGroupIndex == #part.assignments and 0 or activeGroupIndex
                     end
                 end
             end
 
             -- Fade in and out the background of assignment that was triggered
-            local frame = SwiftdawnRaidTools.overview.bossAbilities[trigger.uuid].groups[activeGroupIndex]
-            frame:SetBackdropColor(1, 0, 0, 0.6)
+            local groupFrame = SwiftdawnRaidTools.overview.bossAbilities[trigger.uuid].groups[activeGroupIndex]
+            local overlay = CreateFrame("Frame", nil, groupFrame, "BackdropTemplate")
+            overlay:SetAllPoints()
+            overlay:SetFrameLevel(100)
+            overlay:SetBackdrop({
+                bgFile = "Interface\\Addons\\SwiftdawnRaidTools\\Media\\gradient32x32.tga",
+                tile = true,
+                tileSize = groupFrame:GetHeight(),
+            })
+            overlay:SetBackdropColor(1, 0, 0, 0.6)
+
             local fadeOutTime = 1.5
             local fadeOutStep = 0.1
             C_Timer.NewTicker(fadeOutStep, function(ticker)
-                local r, g, b, a = frame:GetBackdropColor()
+                local r, g, b, a = overlay:GetBackdropColor()
                 a = a - (fadeOutStep / fadeOutTime) * 0.6
                 if a <= 0 then
-                    frame:SetBackdropColor(r, g, b, 0)
+                    overlay:SetBackdropColor(r, g, b, 0)
+                    overlay:Hide()
                     ticker:Cancel()
                 else
-                    frame:SetBackdropColor(r, g, b, a)
+                    overlay:SetBackdropColor(r, g, b, a)
                 end
             end)
         end
