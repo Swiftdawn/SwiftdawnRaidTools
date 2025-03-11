@@ -27,6 +27,8 @@ AssignmentsController = {
     fojjiNumenTimers = {},
     -- key: part uuid, value = [C_Timer.NewTimer]
     delayTimers = {},
+    -- key: part uuid, value = last triggered index
+    sequentialAssignmentsCache = {},
     activeEncounterID = nil,
     encounterStart = nil
 }
@@ -44,6 +46,7 @@ function AssignmentsController:ResetState()
     AssignmentsController.raidBossEmoteTriggersCache = {}
     AssignmentsController.raidBossEmoteUntriggersCache = {}
     AssignmentsController.fojjiNumenTimersTriggersCache = {}
+    AssignmentsController.sequentialAssignmentsCache = {}
 
     for key, timer in pairs(AssignmentsController.fojjiNumenTimers) do
         timer:Cancel()
@@ -219,31 +222,40 @@ function AssignmentsController:UpdateGroups()
     if not AssignmentsController.activeEncounterID then
         return
     end
+    DevTool:AddData("Updating Groups:", "")
 
     local groupsUpdated = false
 
     for _, part in ipairs(AssignmentsController:GetActiveEncounter()) do
-        -- Prevent active group from being updated if all spells in the current active group is still ready
-        local allActiveGroupsReady = true
+        DevTool:AddData(part, "Part "..part.uuid)
 
         local activeGroups = Groups.GetActive(part.uuid)
 
-        if not activeGroups or #activeGroups == 0 then
-            allActiveGroupsReady = false
-        else
-            for _, groupIndex in ipairs(activeGroups) do
-                local group = part.assignments[groupIndex]
-
-                for _, assignment in ipairs(group) do
-                    if not SpellCache.IsSpellReady(assignment.player, assignment.spell_id) then
-                        allActiveGroupsReady = false
+        local allActiveGroupsReady = false
+        if not part.order or part.order == "smart" then
+            print("checking if all active groups are ready")
+            -- Smart Order: Prevent active group from being updated if all spells in the current active group is still ready
+            allActiveGroupsReady = true
+    
+            if not activeGroups or #activeGroups == 0 then
+                allActiveGroupsReady = false
+            else
+                for _, groupIndex in ipairs(activeGroups) do
+                    local group = part.assignments[groupIndex]
+                    DevTool:AddData(group, "Active group "..groupIndex.." for "..part.uuid)
+    
+                    for _, assignment in ipairs(group) do
+                        if not SpellCache.IsSpellReady(assignment.player, assignment.spell_id) then
+                            allActiveGroupsReady = false
+                        end
                     end
                 end
             end
         end
 
         if not allActiveGroupsReady then
-            local selectedGroups = AssignmentsController:SelectGroup(part.assignments)
+            print("selecting group")
+            local selectedGroups = AssignmentsController:SelectGroup(part.uuid, part.assignments, part.order)
 
             if not AssignmentsController:IsGroupsEqual(activeGroups, selectedGroups) then
                 -- Log.debug("Updated groups for", part.uuid, Utils:StringJoin(selectedGroups))
@@ -269,13 +281,11 @@ function AssignmentsController:SelectBestMatchIndex(assignments)
         local ready = true
         for _, assignment in ipairs(group) do
             if not SpellCache.IsSpellActive(assignment.player, assignment.spell_id, GetTime() + 5) and not SpellCache.IsSpellReady(assignment.player, assignment.spell_id) then
-                -- Log.debug("Found an assignment that is not ready", assignment.player, assignment.spell_id)
                 ready = false
                 break
             end
         end
         if ready then
-            -- Log.debug("Found a group where all assignments are ready", i, group)
             return i
         end
     end
@@ -297,17 +307,28 @@ function AssignmentsController:SelectBestMatchIndex(assignments)
     return bestMatchIndex
 end
 
-function AssignmentsController:SelectGroup(assignments)
+function AssignmentsController:SelectGroup(partUuid, assignments, order)
+    order = order or "smart"
     local groups = {}
 
-    local bestMatchIndex = AssignmentsController:SelectBestMatchIndex(assignments)
+    DevTool:AddData(assignments, "SelectGroup assignments")
 
-    if bestMatchIndex then
-        table.insert(groups, bestMatchIndex)
+    if order == "smart" then
+        table.insert(groups, AssignmentsController:SelectBestMatchIndex(assignments))
+    elseif order == "sequential" then
+        local lastTriggeredIndex = AssignmentsController.sequentialAssignmentsCache[partUuid] or 0
+        local nextIndex = lastTriggeredIndex + 1
+        if nextIndex > #assignments then
+            nextIndex = 1
+        end
+        table.insert(groups, nextIndex)
     end
+
+    DevTool:AddData(groups, "SelectGroup selected groups")
 
     return groups
 end
+
 
 function AssignmentsController:CheckTriggerConditions(conditions)
     if conditions then
@@ -434,9 +455,42 @@ function AssignmentsController:Trigger(trigger, context, countdown, ignoreTrigge
                 AssignmentsController:Trigger(trigger, context, countdown, true)
             end))
         else
+            -- Actually trigger
             trigger.lastTriggerTime = GetTime()
             Log.debug("Sending message TRIGGER "..tostring(trigger.type), data)
             SwiftdawnRaidTools:SendRaidMessage("TRIGGER", data)
+
+            -- Record sequential assignments if needed
+            DevTool:AddData({trigger = trigger, data = data}, "Trigger data")
+            DevTool:AddData(self:GetActiveEncounter(), "Active Encounter")
+            local activeGroupIndex = activeGroups[1]
+            for _, part in ipairs(self:GetActiveEncounter()) do
+                if part.uuid == trigger.uuid then
+                    if part.order == "sequential" then
+                        local lastTriggeredIndex = AssignmentsController.sequentialAssignmentsCache[trigger.uuid] or 0
+                        print("Active group index", activeGroupIndex, "Last triggered index", lastTriggeredIndex)
+                        if activeGroupIndex > lastTriggeredIndex then
+                            AssignmentsController.sequentialAssignmentsCache[trigger.uuid] = activeGroupIndex
+                        end
+                    end
+                end
+            end
+
+            -- Fade in and out the background of assignment that was triggered
+            local frame = SwiftdawnRaidTools.overview.bossAbilities[trigger.uuid].groups[activeGroupIndex]
+            frame:SetBackdropColor(1, 0, 0, 0.6)
+            local fadeOutTime = 1.5
+            local fadeOutStep = 0.1
+            C_Timer.NewTicker(fadeOutStep, function(ticker)
+                local r, g, b, a = frame:GetBackdropColor()
+                a = a - (fadeOutStep / fadeOutTime) * 0.6
+                if a <= 0 then
+                    frame:SetBackdropColor(r, g, b, 0)
+                    ticker:Cancel()
+                else
+                    frame:SetBackdropColor(r, g, b, a)
+                end
+            end)
         end
     end
 end
